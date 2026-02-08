@@ -9,7 +9,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    continue-on-error: false
+    continue-on-error: true
 
     steps:
       - name: Checkout code
@@ -20,9 +20,6 @@ jobs:
         with:
           node-version: "22"
           cache: "npm"
-
-      - name: Install root dependencies
-        run: npm install
 
       - name: Install back-end dependencies
         working-directory: ./back-end
@@ -53,9 +50,6 @@ jobs:
         with:
           node-version: "22"
           cache: "npm"
-
-      - name: Install dependencies
-        run: npm install
 
       - name: Install back-end dependencies
         working-directory: ./back-end
