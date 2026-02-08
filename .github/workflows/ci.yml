@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install back-end dependencies
+        working-directory: ./back-end
+        run: npm ci
+
+      - name: Install front-end dependencies
+        working-directory: ./front-end
+        run: npm ci
+
+      - name: Check back-end formatting
+        working-directory: ./back-end
+        run: npx prettier --check "src/**/*.{ts,js,json}"
+
+      - name: Check front-end formatting
+        working-directory: ./front-end
+        run: npx prettier --check "src/**/*.{ts,tsx,js,jsx,json,css}"
+
+  build:
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install back-end dependencies
+        working-directory: ./back-end
+        run: npm ci
+
+      - name: Install front-end dependencies
+        working-directory: ./front-end
+        run: npm ci
+
+      - name: Build back-end
+        working-directory: ./back-end
+        run: npm run build
+
+      - name: Build front-end
+        working-directory: ./front-end
+        run: npm run build

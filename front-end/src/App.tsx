@@ -1,18 +1,9 @@
-import React from 'react'
-
 function App() {
-  return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      fontFamily: 'Arial, sans-serif',
-      fontSize: '2rem'
-    }}>
-      <h1>Hello World</h1>
-    </div>
-  )
+	return (
+		<div className="flex justify-center items-center h-screen">
+			<img src="/eztrack-logo.png" alt="eztrack logo" className="max-w-md" />
+		</div>
+	);
 }
 
-export default App
+export default App;
