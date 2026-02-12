@@ -1,8 +1,13 @@
+import Header from "./components/Header";
+
 function App() {
 	return (
-		<div className="flex justify-center items-center h-screen">
-			<img src="/eztrack-logo.png" alt="eztrack logo" className="max-w-md" />
-		</div>
+		<>
+			<Header />
+			<div className="flex justify-center items-center h-screen">
+				<img src="/eztrack-logo.png" alt="eztrack logo" className="max-w-md" />
+			</div>
+		</>
 	);
 }
 
