@@ -8,7 +8,7 @@ const router = Router();
  */
 router.post("/", (req, res) => {
 	// Inject response, we don't have actual data yet
-  // TODO: remove this later when controller is being created
+	// TODO: remove this later when controller is being created
 	const fakedProjectData = {
 		id: "9d7aca13-0490-4dd7-9e23-d56d4eb64a1c",
 		projectName: "Dirty Laundry: Laundromat",
