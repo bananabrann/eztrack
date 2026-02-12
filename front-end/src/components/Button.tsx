@@ -3,7 +3,7 @@ type Variant = "blue" | "orange";
 type ButtonProps = {
   label: string;
   variant: Variant;
-  onClick: () => void;
+  onClick: React.MouseEventHandler<HTMLButtonElement>;
   ariaLabel?: string;
   disabled?: boolean;
 };
@@ -41,7 +41,6 @@ export function Button({
           ? "bg-[#D6D7D7] text-gray-500 cursor-not-allowed"
           : variantClasses,
       ].join(" ")}>
-      
       {label}
     </button>
   );
