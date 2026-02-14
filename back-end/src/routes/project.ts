@@ -26,4 +26,10 @@ router.post("/", (req, res) => {
 	return res.status(200).json(fakedProjectData);
 });
 
+// DELETE projects endpoint
+
+router.delete("/:id", (req, res) => {
+	return res.status(200).json({ message: "Project was deleted successfully." });
+});
+
 export default router;
