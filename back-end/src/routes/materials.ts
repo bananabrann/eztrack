@@ -1,6 +1,5 @@
 import { Router } from "express";
 
-
 import { materials } from "../faked/materials";
 
 const router = Router();
@@ -16,21 +15,20 @@ router.get("/", (req, res) => {
  */
 router.patch("/:id", (req, res) => {
 	const materialId = req.params.id;
-  const updateData = req.body
+	const updateData = req.body;
 
-	// TODO: Implement actual update logic using materialId and updateData
-// For now, return a mock updated material
-  const updatedMaterial = {
-    id: materialId,
-    name: updateData.name,
-    unitQty: updateData.unitQty,
-    unitCost: updateData.unitCost,
-    lowStockThreshold: updateData.lowStockThreshold,
-projectId: "projec"
-  }
-	return res
-		.status(200)
-		.json({ message: `Materials ${materialId} was deleted successfully.` });
+	const materialIndex = materials.findIndex(
+		material => material.id === materialId,
+	);
+
+	if (materialIndex === -1) {
+		return res.status(404).json({ message: "Material not found" });
+	}
+
+	// update the material
+	materials[materialIndex] = { ...materials[materialIndex], ...updateData };
+	const updatedMaterial = materials[materialIndex];
+	return res.status(200).json(updatedMaterial);
 });
 
 export default router;
