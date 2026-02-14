@@ -1,9 +1,3 @@
-// [#4F5D75] Gray/blue
-// [#EA5C1F] Orange
-// [#F5F5F5] White
-// [#D6D7D7] Lite gray
-// [#212431] Dark blue
-
 export default function ToolsManagement() {
    return (
       <main className="max-w-7xl mx-auto px-6 py-16">
