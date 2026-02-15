@@ -1,8 +1,13 @@
+import {BrowserRouter, Routes, Route } from "react-router-dom";	
+import Login from "./pages/Login";
+
 function App() {
 	return (
-		<div className="flex justify-center items-center h-screen">
-			<img src="/eztrack-logo.png" alt="eztrack logo" className="max-w-md" />
-		</div>
+		<BrowserRouter>
+			<Routes>
+				<Route path="/" element={<Login />} />
+			</Routes>
+		</BrowserRouter>
 	);
 }
 
