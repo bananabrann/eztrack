@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import projectRouter from "./routes/project";
+import toolsRouter from "./routes/tools";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -11,6 +12,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/projects", projectRouter);
+app.use("/api/tools", toolsRouter);
 
 app.listen(PORT, () => {
 	console.log(`Server running on http://localhost:${PORT}`);
