@@ -13,6 +13,8 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/projects", projectsRouter);
+app.use("/api/materials", materialsRouter);
+app.use("/api/tools", toolsRouter);
 
 app.listen(PORT, () => {
 	console.log(`Server running on http://localhost:${PORT}`);
