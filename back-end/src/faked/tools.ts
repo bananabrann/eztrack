@@ -1,7 +1,7 @@
 export type Tool = {
 	id: string;
 	name: string;
-	status: "AVAILABLE" | "UNAVAILABLE";
+	status: "AVAILABLE" | "CHECKEDOUT";
 	qty: number;
 };
 
