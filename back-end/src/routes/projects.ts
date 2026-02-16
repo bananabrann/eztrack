@@ -32,4 +32,26 @@ router.delete("/:id", (req, res) => {
 	return res.status(200).json({ message: "Project was deleted successfully." });
 });
 
+/**
+ * API for updating a project
+ * PATCH /api/projects/:id
+ */
+router.patch("/:id", (req, res) => {
+	const projectId = req.params.id;
+	const updateData = req.body;
+
+	const projectIndex = projects.findIndex(project => project.id === projectId);
+
+	if (projectIndex === -1) {
+		return res.status(404).json({ message: "Project not found" });
+	}
+
+	// update the project
+	projects[projectIndex] = { ...projects[projectIndex], ...updateData };
+	const updatedProject = projects[projectIndex];
+	return res
+		.status(200)
+		.json({ message: "The project was updated successfully.", updatedProject });
+});
+
 export default router;
