@@ -49,9 +49,7 @@ router.patch("/:id", (req, res) => {
 	// update the project
 	projects[projectIndex] = { ...projects[projectIndex], ...updateData };
 	const updatedProject = projects[projectIndex];
-	return res
-		.status(200)
-		.json({ message: "The project was updated successfully.", updatedProject });
+	return res.status(200).json({ updatedProject });
 });
 
 export default router;
