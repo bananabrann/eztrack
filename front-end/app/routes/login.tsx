@@ -1,8 +1,25 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
 	const [showPassword, setShowPassword] = useState(false);
+	const [email, setEmail] = useState("");
+	const [emailError, setEmailError] = useState("");
+
+	const validateEmail = (value: string) => {
+		const normalizedValue = value.trim();
+		if (!normalizedValue) return "Email is required.";
+		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		return emailPattern.test(normalizedValue)
+			? ""
+			: "Please enter a valid email address.";
+	};
+
+	const handleEmailBlur = () => {
+		setEmailError(validateEmail(email));
+	};
+
+	// Validate email on form submit as well to prevent submission with invalid email
 
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -14,14 +31,25 @@ export default function Login() {
 				/>
 
 				{/* Email */}
-				{/* Validate email format and show error message if invalid */}
 				<label htmlFor="email">User Email</label>
 				<input
 					id="email"
 					type="email"
+					value={email}
+					onChange={event => {
+						setEmail(event.target.value);
+						if (emailError) setEmailError(validateEmail(event.target.value));
+					}}
+					onBlur={handleEmailBlur}
+					aria-invalid={Boolean(emailError)}
+					aria-describedby={emailError ? "email-error" : undefined}
 					className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-					required
 				/>
+				{emailError ? (
+					<p id="email-error" className="text-sm text-red-600">
+						{emailError}
+					</p>
+				) : null}
 				<label htmlFor="password">Password</label>
 
 				{/* Password */}
@@ -33,7 +61,6 @@ export default function Login() {
 						className="w-full border border-gray-300 rounded px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
 						required
 					/>
-
 					<button
 						type="button"
 						onClick={() => setShowPassword(s => !s)}
@@ -51,6 +78,7 @@ export default function Login() {
 
 				{/* Login Button goes here */}
 				<p className="pt-4"> [LOGIN BUTTON]</p>
+				
 			</form>
 		</div>
 	);
