@@ -5,7 +5,8 @@ function App() {
 	return (
 		<BrowserRouter>
 			<Routes>
-				<Route path="/" element={<Login />} />
+				{/* move this to a login page and add a route for it */}
+				<Route path="/login" element={<Login />} />
 			</Routes>
 		</BrowserRouter>
 	);

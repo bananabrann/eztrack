@@ -14,6 +14,7 @@ export default function Login() {
 				/>
 
 				{/* Email */}
+				{/* Validate email format and show error message if invalid */}
 				<label htmlFor="email">User Email</label>
 				<input
 					id="email"
@@ -24,6 +25,7 @@ export default function Login() {
 				<label htmlFor="password">Password</label>
 
 				{/* Password */}
+				{/* Validate password strength and show error message if weak */}
 				<div className="relative">
 					<input
 						id="password"
