@@ -7,16 +7,23 @@ export default function ToolsManagement() {
 			</h1>
 
 			{/* Search Bar Placeholder */}
-			<div className=" w-11/12 max-w-md mx-auto mb-6 flex items-center justify-center">
+			<div className="w-11/12 max-w-md mx-auto mb-6 flex items-center justify-center">
 				<input
 					type="text"
 					placeholder="Search tool..."
-					className="w-full border-[#4F5D75] border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#EA5C1F]"
+					className="w-full border-[#4F5D75] border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#EA5C1F]"
+				/>
+			</div>
+			<div className=" w-48 max-w-md mx-auto mb-6 flex items-center justify-center">
+				<input
+					type="text"
+					placeholder="Filter..."
+					className="w-full border-[#4F5D75] border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#EA5C1F]"
 				/>
 			</div>
 
 			{/* Tools Placeholder Section */}
-			<section className="w-10/12 md:w-3/4  max-w-7xl min-w-[600px] mx-auto">
+			<section className="w-10/12 md:w-3/4  max-w-7xl min-w-0 mx-auto">
 				<div className="border-[#4F5D75] border rounded p-10 text-center text-gray-500">
 					<div className="grid grid-cols-2 grid-rows-3 gap-y-8 gap-x-8">
 						{/* <!-- Box 1 --> */}
