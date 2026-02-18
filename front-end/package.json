@@ -3,18 +3,23 @@
   "version": "0.0.0",
   "description": "Stop your shrinkage and save your money with EZTrack: Free, simple, effective construction site tool and material tracking. DSD 2026 Q1 Team Amanda and Lee",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
+    "dev": "react-router dev",
+    "build": "react-router build",
+    "start": "react-router start",
+    "preview": "react-router preview",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\""
   },
   "dependencies": {
+    "@react-router/node": "^7.13.0",
     "lucide-react": "^0.564.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^7.13.0"
+    "react-router": "^7.13.0",
+    "react-router-dom": "^7.13.0",
+    "isbot": "^5"
   },
   "devDependencies": {
+    "@react-router/dev": "^7.13.0",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "@vitejs/plugin-react": "^4.2.1",
