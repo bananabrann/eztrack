@@ -51,7 +51,7 @@ export const materials: Material[] = [
 	{
 		id: "3f5c0e42-e347-4381-9117-562d07e4ac4a",
 		name: "Roof Shingles",
-		unitQty: 300,
+		unitQty: 5,
 		unitCost: 45,
 		lowStockThreshold: 10,
 		projectId: "2b7d9af6-01a5-4192-8ba2-7a5fc65d7a54",

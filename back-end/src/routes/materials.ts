@@ -49,6 +49,23 @@ router.post("/", (req, res) => {
 	return res.status(200).json(newMaterial);
 });
 
+// GET low stock materials
+router.get("/low-stock-alerts", (req, res) => {
+	const lowStockMaterial = materials.filter(
+		material => material.unitQty < material.lowStockThreshold,
+	);
+
+	return res.status(200).json(
+		lowStockMaterial.map(material => ({
+			id: material.id,
+			name: material.name,
+			unitQty: material.unitQty,
+			lowStockMaterial: material.lowStockThreshold,
+			projectId: material.projectId,
+		})),
+	);
+});
+
 /**
  * API for updating a material from a project
  * PATCH /api/materials/:id
