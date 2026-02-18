@@ -4,7 +4,9 @@ import { Eye, EyeOff } from "lucide-react";
 export default function Login() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 	const [emailError, setEmailError] = useState("");
+	const [passwordError, setPasswordError] = useState("");
 
 	const validateEmail = (value: string) => {
 		const normalizedValue = value.trim();
@@ -19,11 +21,30 @@ export default function Login() {
 		setEmailError(validateEmail(email));
 	};
 
-	// Validate email on form submit as well to prevent submission with invalid email
+	const validatePassword = (value: string) => {
+		if (!value) return "Password is required.";
+		if (value.length < 8) return "Password must be at least 8 characters.";
+		if (!/[A-Z]/.test(value)) {
+			return "Password must include at least one uppercase letter.";
+		}
+		if (!/[a-z]/.test(value)) {
+			return "Password must include at least one lowercase letter.";
+		}
+		if (!/[0-9]/.test(value)) return "Password must include at least one number.";
+		return "";
+	};
+
+	const handlePasswordBlur = () => {
+		setPasswordError(validatePassword(password));
+	};
+
+	// Validate form on submit and show errors
 
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-gray-100">
 			<form className="bg-white p-6 rounded-lg shadow-md w-85 flex flex-col gap-4">
+
+				{/* EZTrack logo */}
 				<img
 					src="/eztrack-logo.png"
 					alt="eztrack logo"
@@ -53,13 +74,21 @@ export default function Login() {
 				<label htmlFor="password">Password</label>
 
 				{/* Password */}
-				{/* Validate password strength and show error message if weak */}
 				<div className="relative">
 					<input
 						id="password"
 						type={showPassword ? "text" : "password"}
+						value={password}
+						onChange={event => {
+							setPassword(event.target.value);
+							if (passwordError) {
+								setPasswordError(validatePassword(event.target.value));
+							}
+						}}
+						onBlur={handlePasswordBlur}
+						aria-invalid={Boolean(passwordError)}
+						aria-describedby={passwordError ? "password-error" : undefined}
 						className="w-full border border-gray-300 rounded px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-						required
 					/>
 					<button
 						type="button"
@@ -75,6 +104,11 @@ export default function Login() {
 						)}
 					</button>
 				</div>
+				{passwordError ? (
+					<p id="password-error" className="text-sm text-red-600">
+						{passwordError}
+					</p>
+				) : null}
 
 				{/* Login Button goes here */}
 				<p className="pt-4"> [LOGIN BUTTON]</p>
