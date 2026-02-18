@@ -93,15 +93,13 @@ router.post("/:id/usage", (req, res) => {
 		totalCost,
 	});
 
-	return res
-		.status(200)
-		.json({
-			materialId: materialId,
-			projectId: material.projectId,
-			quantityUsed,
-			remainingQty,
-			totalCost,
-		});
+	return res.status(200).json({
+		materialId: materialId,
+		projectId: material.projectId,
+		quantityUsed,
+		remainingQty,
+		totalCost,
+	});
 });
 
 /**
