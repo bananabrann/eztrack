@@ -19,10 +19,10 @@ export function Button({
 
 	if (variant === "blue") {
 		variantClasses =
-			"bg-[#4F5D75] hover:bg-[#3f4b60] active:bg-[#2f394a] focus-visible:ring-[#4F5D75]";
+			"bg-tertiary hover:bg-[#3f4b60] active:bg-[#2f394a] focus-visible:ring-tertiary";
 	} else {
 		variantClasses =
-			"bg-[#EA5C1F] hover:bg-[#cf4f18] active:bg-[#b94414] focus-visible:ring-[#EA5C1F]";
+			"bg-secondary hover:bg-[#cf4f18] active:bg-[#b94414] focus-visible:ring-secondary";
 	}
 
 	return (
@@ -38,7 +38,7 @@ export function Button({
 				"transition-colors",
 				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
 				disabled
-					? "bg-[#D6D7D7] text-gray-500 cursor-not-allowed"
+					? "bg-disabled text-gray-500 cursor-not-allowed"
 					: variantClasses,
 			].join(" ")}
 		>
