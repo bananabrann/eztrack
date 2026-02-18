@@ -1,10 +1,10 @@
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import ToolsManagement from "./components/ToolsManagement";
 
 function App() {
 	return (
-		<>			
+		<>
 			<Header />
 
 			<Routes>
@@ -18,12 +18,12 @@ function App() {
 								className="max-w-md"
 							/>
 						</div>
-						}
-					/>
+					}
+				/>
 
-					<Route path="/tools-management" element={<ToolsManagement />} />
-					</Routes>
-				</>
+				<Route path="/tools-management" element={<ToolsManagement />} />
+			</Routes>
+		</>
 	);
 }
 
