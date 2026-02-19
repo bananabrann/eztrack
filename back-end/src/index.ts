@@ -1,10 +1,8 @@
 import express, { Request, Response } from "express";
-import 'dotenv/config'
+import "dotenv/config";
 import projectsRouter from "./routes/projects";
 import materialsRouter from "./routes/materials";
 import toolsRouter from "./routes/tools";
-
-console.log("ENV CHECK:", process.env.SUPABASE_URL);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
