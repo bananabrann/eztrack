@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import ToolsManagement from "./components/ToolsManagement";
+import ToolsCheck from "./components/ToolsCheck";
 
 function App() {
 	return (
@@ -22,6 +23,7 @@ function App() {
 				/>
 
 				<Route path="/tools-management" element={<ToolsManagement />} />
+				<Route path="/tools-check" element={<ToolsCheck />} />
 			</Routes>
 		</>
 	);
