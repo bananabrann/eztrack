@@ -3,5 +3,5 @@ import { router } from "./main";
 import "./index.css";
 
 export default function App() {
-	return <RouterProvider router={router}/>
+	return <RouterProvider router={router} />;
 }
