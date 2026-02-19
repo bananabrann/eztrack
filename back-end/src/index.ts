@@ -4,8 +4,8 @@ dotenv.config();
 import express, { Request, Response } from "express";
 import projectsRouter from "./routes/projects";
 import materialsRouter from "./routes/materials";
-import supabaseClint from "./config/supabase";
 import toolsRouter from "./routes/tools";
+import { testSupabaseConnection } from "./config/supbaseHealthCheck";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -24,12 +24,5 @@ app.listen(PORT, async () => {
 	console.log(`Server running on http://localhost:${PORT}`);
 
 	// Test Supabase connection
-	// TODO will be remove later
-	try {
-		await supabaseClint.from("projects").select("*").limit(1);
-
-		console.log("Supabase Connected");
-	} catch (error) {
-		console.error("Supabase connection error", error);
-	}
+	await testSupabaseConnection();
 });
