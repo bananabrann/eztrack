@@ -8,7 +8,7 @@ export const testSupabaseConnection = async () => {
 
 		const response = await fetch(healthUrl, {
 			headers: {
-				apikey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
+				apikey: process.env.SUPABASE_ANON_KEY || "",
 			},
 		});
 
