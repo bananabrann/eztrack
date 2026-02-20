@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import express, { Request, Response } from "express";
+import "dotenv/config";
 import projectsRouter from "./routes/projects";
 import materialsRouter from "./routes/materials";
 import toolsRouter from "./routes/tools";
