@@ -39,7 +39,7 @@ router.post("/:id/checkout", (req, res) => {
 	const tool = tools[toolIdx];
 
 	if (tool.status !== "AVAILABLE") {
-		return res.status(400).json({ message: "Tool is not available" });
+		return res.status(404).json({ message: "Tool is not available" });
 	}
 
 	tools[toolIdx] = { ...tool, status: "CHECKEDOUT" };
