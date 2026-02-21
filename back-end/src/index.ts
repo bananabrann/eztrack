@@ -7,6 +7,7 @@ import projectsRouter from "./routes/projects";
 import materialsRouter from "./routes/materials";
 import toolsRouter from "./routes/tools";
 import { testSupabaseConnection } from "./config/supbaseHealthCheck";
+import { verifyAuth } from "./middleware/auth-middleware";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -15,6 +16,14 @@ app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
 	res.json({ message: "Hello World from Backend!" });
+});
+
+// TODO: Test auth middleware endpoint well be remove later
+app.get("/api/test-auth", verifyAuth, (req: Request, res: Response) => {
+	res.json({
+		message: "Authentication successful!",
+		user: req.authUser,
+	});
 });
 
 app.use("/api/projects", projectsRouter);
