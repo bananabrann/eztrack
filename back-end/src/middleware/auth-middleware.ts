@@ -5,8 +5,8 @@ import supabaseClient from "../config/supabase";
  * User roles enum in Supabase database
  */
 export enum UserRole {
-	FOREMAN = "foreman",
-	CREW = "crew",
+	FOREMAN = "FOREMAN",
+	CREW = "CREW",
 }
 
 /**
