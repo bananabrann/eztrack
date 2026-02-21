@@ -32,7 +32,7 @@ router.get("/me", verifyAuth, (req: Request, res: Response) => {
 	}
 });
 
-// TODO all these tests can be deleted later 
+// TODO all these tests can be deleted later
 // Only FOREMAN can access
 router.get(
 	"/foreman-only",
