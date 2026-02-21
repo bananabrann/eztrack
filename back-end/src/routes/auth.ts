@@ -1,5 +1,9 @@
 import { Router, Request, Response } from "express";
-import { verifyAuth } from "../middleware/auth-middleware";
+import {
+	verifyAuth,
+	UserRole,
+	requireRole,
+} from "../middleware/auth-middleware";
 
 const router = Router();
 
@@ -27,5 +31,47 @@ router.get("/me", verifyAuth, (req: Request, res: Response) => {
 		res.status(500).json({ error: "Failed to retrieve user profile" });
 	}
 });
+
+// TODO all these tests can be deleted later 
+// Only FOREMAN can access
+router.get(
+	"/foreman-only",
+	verifyAuth,
+	requireRole([UserRole.FOREMAN]),
+	(req: Request, res: Response) => {
+		res.status(200).json({
+			message: "Only FORMANs can access this",
+			user: req.authUser,
+		});
+	},
+);
+
+// Only CREW can access
+router.get(
+	"/crew-only",
+	verifyAuth,
+	requireRole([UserRole.CREW]),
+	(req: Request, res: Response) => {
+		res.status(200).json({
+			message: "Only CREW can access this",
+			user: req.authUser,
+		});
+	},
+);
+
+/**
+ * Test endpoint: Both FOREMAN and CREW can access
+ */
+router.get(
+	"/both",
+	verifyAuth,
+	requireRole([UserRole.FOREMAN, UserRole.CREW]),
+	(req: Request, res: Response) => {
+		res.status(200).json({
+			message: "You are authorized",
+			user: req.authUser,
+		});
+	},
+);
 
 export default router;
