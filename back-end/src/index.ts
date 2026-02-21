@@ -8,6 +8,7 @@ import materialsRouter from "./routes/materials";
 import toolsRouter from "./routes/tools";
 import { testSupabaseConnection } from "./config/supbaseHealthCheck";
 import { verifyAuth } from "./middleware/auth-middleware";
+import authRouter from "./routes/auth";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -29,6 +30,7 @@ app.get("/api/test-auth", verifyAuth, (req: Request, res: Response) => {
 app.use("/api/projects", projectsRouter);
 app.use("/api/materials", materialsRouter);
 app.use("/api/tools", toolsRouter);
+app.use("/api/auth", authRouter);
 
 app.listen(PORT, async () => {
 	console.log(`Server running on http://localhost:${PORT}`);
