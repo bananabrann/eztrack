@@ -221,3 +221,151 @@ using(
 with check(user_id = auth.uid());
 
 
+-- ==================
+-- Materials: FOREMAN only
+-- ==================
+
+alter table public.materials enable row level security;
+
+drop policy if exists "FOREMAN can view materials" on public.materials;
+create policy "FOREMAN can view materials"
+on public.materials
+as permissive
+for select
+to authenticated
+using(
+  exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  )
+);
+
+drop policy if exists "FOREMAN can insert material" on public.materials;
+create policy "FOREMAN can insert material"
+on public.materials
+as permissive
+for insert
+to authenticated
+with check(
+  exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  )
+);
+
+drop policy if exists "FOREMAN can update material" on public.materials;
+create policy "FOREMAN can update material"
+on public.materials
+as permissive
+for update
+to authenticated
+using(
+  exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  )
+)
+with check(
+  exists(
+    select 1
+    from public.account account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  )
+);
+
+drop policy if exists "FOREMAN can delete material" on public.materials;
+create policy "FOREMAN can delete material"
+on public.materials
+as permissive
+for delete
+to authenticated
+using(
+  exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  )
+);
+
+-- ==================
+-- Material_Usage: FOREMAN only
+-- ==================
+
+alter table public.material_usage row level security;
+
+drop policy if exists "FOREMAN can view material_usage"
+create policy "FOREMAN can view material_usage"
+on public.material_usage
+as permissive
+for select
+to authenticated
+using(
+  exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  )
+)
+
+drop policy if exists "FOREMAN can insert material_usage" on public.material_usage;
+create policy "FOREMAN can insert material_usage"
+on public.material_usage
+as permissive
+for insert
+to authenticated
+with check(
+  exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  )
+);
+
+drop policy if exists "FOREMAN can update material_usage" on public.material_usage;
+create policy "FOREMAN can update material_usage"
+on public.material_usage
+as permissive
+for update
+to authenticated
+using(
+  exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  
+  )
+)
+with check(
+  exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  )
+);
+
+drop policy if exists "FOREMAN can delete material_usage";
+create policy "FOREMAN can delete material_usage"
+on public.material_usage
+as permissive
+for delete
+to authenticated
+using(
+  exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  )
+);
