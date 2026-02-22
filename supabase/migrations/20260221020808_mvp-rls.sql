@@ -25,7 +25,7 @@ drop policy if exists "Users can insert own account" on public.accounts;
 create policy "Users can insert own account"
 on public.accounts
 as permissive
-for INSERT
+for insert
 to authenticated
 with check (id = auth.uid());
 
@@ -51,12 +51,11 @@ as permissive
 for select
 to authenticated
 using(
-  -- is this a FOREMAN?
   exists(
     select 1
     from public.accounts account
     where account.id = auth.uid()
-      and account.role = "FOREMAN"
+      and account.role = 'FOREMAN'
   )
 );
 
@@ -66,12 +65,12 @@ on public.projects
 as permissive
 for insert
 to authenticated
-using(
+with check(
   exists(
     select 1
     from public.accounts account
     where account.id = auth.uid()
-      and account.role = "FOREMAN"
+      and account.role = 'FOREMAN'
   )
 );
 
@@ -86,7 +85,7 @@ using(
     select 1
     from public.accounts account
     where account.id = auth.uid()
-      and account.role = "FOREMAN"
+      and account.role = 'FOREMAN'
   )
 )
 with check(
@@ -94,7 +93,7 @@ with check(
     select 1
     from public.accounts account
     where account.id = auth.uid()
-      and account.role = "FOREMAN"
+      and account.role = 'FOREMAN'
   )
 );
 
@@ -109,6 +108,116 @@ using(
     select 1
     from public.accounts account
     where account.id = auth.uid()
-      and account.role = "FOREMAN"
+      and account.role = 'FOREMAN'
   )
 );
+
+-- ==================
+-- Tools: public read / FOREMAN CRUD
+-- ==================
+
+alter table public.tools enable row level security;
+
+drop policy if exists "Public can view tools" on public.tools;
+create policy "Public can view tools"
+on public.tools
+as permissive
+for select
+to anon, authenticated
+using (true);
+
+drop policy if exists "FOREMAN can insert tool" on public.tools;
+create policy "FOREMAN can insert tool"
+on public.tools
+as permissive
+for insert
+to authenticated
+with check(
+  exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  )
+);
+
+drop policy if exists "FOREMAN can update tool" on public.tools;
+create policy "FOREMAN can update tool"
+on public.tools
+as permissive
+for update
+to authenticated
+using(
+  exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  )
+)
+with check(
+  exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  )
+);
+
+drop policy if exists "FOREMAN can delete tool" on public.tools;
+create policy "FOREMAN can delete tool"
+on public.tools
+as permissive
+for delete
+to authenticated
+using(
+  exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  )
+);
+
+-- ==================
+-- Tool_Management: FOREMAN read, insert, update / CREW insert, update
+-- ==================
+
+alter table public.tool_management enable row level security;
+
+drop policy if exists "FOREMAN can view tool_management" on public.tool_management;
+create policy "FOREMAN can view tool_management"
+on public.tool_management
+as permissive
+for select
+to authenticated
+using(
+  exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  )
+);
+
+drop policy if exists "USER can checkout tool" on public.tool_management;
+create policy "USER can checkout tool"
+on public.tool_management
+as permissive
+for insert
+to authenticated
+with check(user_id = auth.uid());
+
+drop policy if exists "USER can return tool" on public.tool_management;
+create policy "USER can return tool"
+on public.tool_management
+as permissive
+for update
+to authenticated
+using(
+  user_id = auth.uid()
+  and checked_in is null
+)
+with check(user_id = auth.uid());
+
+
