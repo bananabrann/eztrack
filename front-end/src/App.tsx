@@ -1,9 +1,7 @@
-function App() {
-	return (
-		<div className="flex justify-center items-center h-screen">
-			<img src="/eztrack-logo.png" alt="eztrack logo" className="max-w-md" />
-		</div>
-	);
-}
+import { RouterProvider } from "react-router-dom";
+import { router } from "./main";
+import "./index.css";
 
-export default App;
+export default function App() {
+	return <RouterProvider router={router} />;
+}
