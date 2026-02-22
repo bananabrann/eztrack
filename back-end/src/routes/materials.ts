@@ -2,41 +2,48 @@ import { Router } from "express";
 
 import { materials } from "../faked/materials";
 
-const randUUID = crypto.randomUUID();
+import crypto from "crypto";
+import { materialUsage } from "../faked/materialUsage";
 
 const router = Router();
-// GET materials endpoint
+/**
+ * GET /api/materials
+ * Return full list of materials
+ */
 router.get("/", (req, res) => {
 	return res.status(200).json(materials);
 });
 
-// POST materials endpoint
+/**
+ * POST /api/materials
+ * Creates a new material
+ */
 router.post("/", (req, res) => {
 	const { name, unitQty, unitCost, lowStockThreshold, projectId } =
 		req.body ?? {};
 
 	if (name.trim().length === 0 || typeof name !== "string") {
-		return res.status(400).json({ error: "Invalid name" });
+		return res.status(400).json({ message: "Invalid name" });
 	}
 
 	if (projectId.trim().length === 0 || typeof projectId !== "string") {
-		return res.status(400).json({ error: "Invalid projectId" });
+		return res.status(400).json({ message: "Invalid projectId" });
 	}
 
 	if (typeof unitQty !== "number" || unitQty < 0) {
-		return res.status(400).json({ error: "Invalid unitQty" });
+		return res.status(400).json({ message: "Invalid unitQty" });
 	}
 
 	if (typeof unitCost !== "number" || unitCost < 0) {
-		return res.status(400).json({ error: "Invalid unitCost" });
+		return res.status(400).json({ message: "Invalid unitCost" });
 	}
 
 	if (typeof lowStockThreshold !== "number" || lowStockThreshold < 0) {
-		return res.status(400).json({ error: "Invalid lowStockThreshold" });
+		return res.status(400).json({ message: "Invalid lowStockThreshold" });
 	}
 
 	const newMaterial = {
-		id: randUUID,
+		id: crypto.randomUUID(),
 		name: name.trim(),
 		unitQty,
 		unitCost,
@@ -64,6 +71,52 @@ router.get("/low-stock-alerts", (req, res) => {
 			projectId: material.projectId,
 		})),
 	);
+});
+
+/**
+ * POST /api/materials/:id/usage
+ * Creates record of material usage
+ */
+router.post("/:id/usage", (req, res) => {
+	const materialId = req.params.id;
+	// need qty being used from req body
+	const { quantityUsed } = req.body ?? {};
+
+	if (!Number.isInteger(quantityUsed) || quantityUsed < 0) {
+		return res.status(400).json({ message: "Invalid quantityUsed" });
+	}
+
+	const materialIdx = materials.findIndex(m => m.id === materialId);
+	if (materialIdx === -1) {
+		return res.status(404).json({ message: "Material not found" });
+	}
+
+	const material = materials[materialIdx];
+	if (material.unitQty < quantityUsed) {
+		return res.status(400).json({ message: "Insufficient unitQty" });
+	}
+
+	const remainingQty = material.unitQty - quantityUsed;
+	const totalCost = Math.round(quantityUsed * material.unitCost * 100) / 100;
+
+	// updating material unitQty
+	materials[materialIdx] = { ...material, unitQty: remainingQty };
+
+	materialUsage.push({
+		id: crypto.randomUUID(),
+		materialId: material.id,
+		projectId: material.projectId,
+		quantityUsed,
+		totalCost,
+	});
+
+	return res.status(200).json({
+		materialId: materialId,
+		projectId: material.projectId,
+		quantityUsed,
+		remainingQty,
+		totalCost,
+	});
 });
 
 /**
