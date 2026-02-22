@@ -111,4 +111,4 @@ using(
     where account.id = auth.uid()
       and account.role = "FOREMAN"
   )
-)
+);
