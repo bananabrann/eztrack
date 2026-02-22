@@ -9,6 +9,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\""
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.97.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

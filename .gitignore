@@ -36,3 +36,6 @@ coverage/
 # Temp files
 *.tmp
 .cache/
+
+# Misc
+supabase.js
