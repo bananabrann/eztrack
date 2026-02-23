@@ -14,7 +14,7 @@ export default function ToolsCheck() {
 		<main className="max-w-3xl mx-auto px-6 py-16">
 			{/* Page Title */}
 			<h1 className="text-[#4F5D75] text-3xl font-bold mb-1 flex items-center justify-center">
-				Tool Check Out
+				Tool Check Out/Check In
 			</h1>
 
 			{/* Tools Placeholder Section */}
@@ -39,8 +39,14 @@ export default function ToolsCheck() {
 
 				{/* <!-- Buttons --> */}
 				<div className="flex flex-col items-center mt-6 space-y-4">
-					<button className={buttonStyles}>Check Out</button>
-					<button className={buttonStyles}>Check In</button>
+					<button className={buttonStyles}
+						onClick={() => console.log("Check Out clicked")}
+					>Check Out</button>
+					
+					<button className={buttonStyles}
+						onClick={() => console.log("Check In clicked")}
+					>
+					Check In</button>
 				</div>
 			</section>
 		</main>
