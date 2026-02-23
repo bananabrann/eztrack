@@ -8,6 +8,20 @@
 --                  authenticated checkout(INSERT)/return(UPDATE)
 -- materials + material_usage: FOREMAN only
 
+-- Helper function to check FOREMAN role
+create or replace function public.is_foreman()
+returns boolean
+language sql 
+stable
+as $$
+  select exists(
+    select 1
+    from public.accounts account
+    where account.id = auth.uid()
+      and account.role = 'FOREMAN'
+  );
+$$;
+
 -- ==================
 -- Users can see/edit their account row (profile)
 -- ==================
@@ -36,7 +50,14 @@ as permissive
 for update
 to authenticated
 using (id = auth.uid())
-with check (id = auth.uid());
+with check (
+  id = auth.uid()
+  and role = (
+    select account.role
+    from public.accounts account
+    where account.id = auth.uid()
+  )
+);
 
 -- ==================
 -- Projects: FOREMAN actions only
@@ -50,14 +71,7 @@ on public.projects
 as permissive
 for select
 to authenticated
-using(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-);
+using(public.is_foreman());
 
 drop policy if exists "FOREMAN can insert project" on public.projects;
 create policy "FOREMAN can insert project"
@@ -65,14 +79,7 @@ on public.projects
 as permissive
 for insert
 to authenticated
-with check(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-);
+with check(public.is_foreman());
 
 drop policy if exists "FOREMAN can update project" on public.projects;
 create policy "FOREMAN can update project"
@@ -80,22 +87,8 @@ on public.projects
 as permissive
 for update
 to authenticated
-using(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-)
-with check(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-);
+using(public.is_foreman())
+with check(public.is_foreman());
 
 drop policy if exists "FOREMAN can delete project" on public.projects;
 create policy "FOREMAN can delete project"
@@ -103,28 +96,28 @@ on public.projects
 as permissive
 for delete
 to authenticated
+using(public.is_foreman());
+
+-- ==================
+-- Tools: USERS read / FOREMAN CRUD
+-- ==================
+
+alter table public.tools enable row level security;
+
+drop policy if exists "USERS can view tools" on public.tools;
+create policy "USERS can view tools"
+on public.tools
+as permissive
+for select
+to authenticated
 using(
   exists(
     select 1
     from public.accounts account
     where account.id = auth.uid()
-      and account.role = 'FOREMAN'
+      and account.role in ('CREW', 'FOREMAN')
   )
 );
-
--- ==================
--- Tools: public read / FOREMAN CRUD
--- ==================
-
-alter table public.tools enable row level security;
-
-drop policy if exists "Public can view tools" on public.tools;
-create policy "Public can view tools"
-on public.tools
-as permissive
-for select
-to anon, authenticated
-using (true);
 
 drop policy if exists "FOREMAN can insert tool" on public.tools;
 create policy "FOREMAN can insert tool"
@@ -132,14 +125,7 @@ on public.tools
 as permissive
 for insert
 to authenticated
-with check(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-);
+with check(public.is_foreman());
 
 drop policy if exists "FOREMAN can update tool" on public.tools;
 create policy "FOREMAN can update tool"
@@ -147,22 +133,8 @@ on public.tools
 as permissive
 for update
 to authenticated
-using(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-)
-with check(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-);
+using(public.is_foreman())
+with check(public.is_foreman());
 
 drop policy if exists "FOREMAN can delete tool" on public.tools;
 create policy "FOREMAN can delete tool"
@@ -170,17 +142,10 @@ on public.tools
 as permissive
 for delete
 to authenticated
-using(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-);
+using(public.is_foreman());
 
 -- ==================
--- Tool_Management: FOREMAN read, insert, update / CREW insert, update
+-- Tool_Management: FOREMAN read / User insert, update
 -- ==================
 
 alter table public.tool_management enable row level security;
@@ -191,14 +156,7 @@ on public.tool_management
 as permissive
 for select
 to authenticated
-using(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-);
+using(public.is_foreman());
 
 drop policy if exists "USER can checkout tool" on public.tool_management;
 create policy "USER can checkout tool"
@@ -206,7 +164,10 @@ on public.tool_management
 as permissive
 for insert
 to authenticated
-with check(user_id = auth.uid());
+with check(
+  user_id = auth.uid()
+  and checked_in is null
+);
 
 drop policy if exists "USER can return tool" on public.tool_management;
 create policy "USER can return tool"
@@ -218,8 +179,21 @@ using(
   user_id = auth.uid()
   and checked_in is null
 )
-with check(user_id = auth.uid());
+with check(
+  user_id = auth.uid()
+  and checked_in is not null
+);
 
+drop policy if exists "USER can view own tool_management" on public.tool_management;
+create policy "USER can view own tool_management"
+on pubic.tool_management
+as permissive
+for select
+to authenticated
+using(
+  user_id = auth.uid()
+  and checked_in is null
+);
 
 -- ==================
 -- Materials: FOREMAN only
@@ -233,14 +207,7 @@ on public.materials
 as permissive
 for select
 to authenticated
-using(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-);
+using(public.is_foreman());
 
 drop policy if exists "FOREMAN can insert material" on public.materials;
 create policy "FOREMAN can insert material"
@@ -248,14 +215,7 @@ on public.materials
 as permissive
 for insert
 to authenticated
-with check(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-);
+with check(public.is_foreman());
 
 drop policy if exists "FOREMAN can update material" on public.materials;
 create policy "FOREMAN can update material"
@@ -263,22 +223,8 @@ on public.materials
 as permissive
 for update
 to authenticated
-using(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-)
-with check(
-  exists(
-    select 1
-    from public.account account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-);
+using(public.is_foreman())
+with check(public.is_foreman());
 
 drop policy if exists "FOREMAN can delete material" on public.materials;
 create policy "FOREMAN can delete material"
@@ -286,35 +232,21 @@ on public.materials
 as permissive
 for delete
 to authenticated
-using(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-);
+using(public.is_foreman());
 
 -- ==================
--- Material_Usage: FOREMAN only
+-- Material_Usage: FOREMAN only (INSERT)
 -- ==================
 
-alter table public.material_usage row level security;
+alter table public.material_usage enable row level security;
 
-drop policy if exists "FOREMAN can view material_usage"
+drop policy if exists "FOREMAN can view material_usage" on public.material_usage;
 create policy "FOREMAN can view material_usage"
 on public.material_usage
 as permissive
 for select
 to authenticated
-using(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-)
+using(public.is_foreman());
 
 drop policy if exists "FOREMAN can insert material_usage" on public.material_usage;
 create policy "FOREMAN can insert material_usage"
@@ -322,50 +254,11 @@ on public.material_usage
 as permissive
 for insert
 to authenticated
-with check(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-);
+with check(public.is_foreman());
 
-drop policy if exists "FOREMAN can update material_usage" on public.material_usage;
-create policy "FOREMAN can update material_usage"
-on public.material_usage
-as permissive
-for update
-to authenticated
-using(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  
-  )
-)
-with check(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-);
+-- ==================
+-- Indexes for performance
+-- ==================
 
-drop policy if exists "FOREMAN can delete material_usage";
-create policy "FOREMAN can delete material_usage"
-on public.material_usage
-as permissive
-for delete
-to authenticated
-using(
-  exists(
-    select 1
-    from public.accounts account
-    where account.id = auth.uid()
-      and account.role = 'FOREMAN'
-  )
-);
+create index if not exists "get materials" on public.materials(project_id);
+create index if not exists "get material-cost" on public.material_usage(project_id);
