@@ -18,7 +18,7 @@ export function ModuleCard({
 			aria-label={ariaLabel ?? label}
 			disabled={disabled}
 			className={[
-				"w-80 h-28",
+				"w-full max-w-80",
 				"rounded-md",
 				"bg-white",
 				"text-primary font-semibold",
