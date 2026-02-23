@@ -25,8 +25,7 @@ export default function Header() {
 						</li>
 						<li>
 							<Link
-								to="/"
-								// to="/dashboard"
+								to="/dashboard"
 								className="hover:text-[#EA5C1F] focus:outline-none focus:ring-2 focus:ring-[#EA5C1F] px-2 py-1 rounded"
 							>
 								Dashboard
@@ -42,8 +41,7 @@ export default function Header() {
 						</li>
 						<li>
 							<Link
-								to="/"
-								// to="/materials"
+								to="/materials"
 								className="hover:text-[#EA5C1F] focus:outline-none focus:ring-2 focus:ring-[#EA5C1F] px-2 py-1 rounded"
 							>
 								Materials
@@ -51,8 +49,7 @@ export default function Header() {
 						</li>
 						<li>
 							<Link
-								to="/"
-								// to="/projects"
+								to="/projects"
 								className="relative z-10 hover:text-[#EA5C1F] focus:outline-none focus:ring-2 focus:ring-[#EA5C1F] px-2 py-1 rounded"
 							>
 								Projects
@@ -63,7 +60,7 @@ export default function Header() {
 					{/* Column 3: Right Aligned Logout */}
 					<div className="flex justify-end pr-10">
 						<Link
-							to="/"
+							to="/logout"
 							className="hover:text-[#EA5C1F] text-sm focus:outline-none focus:ring-2 focus:ring-[#EA5C1F] px-2 py-1 rounded"
 						>
 							Logout
