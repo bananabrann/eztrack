@@ -2,9 +2,9 @@
 -- Roles in accounts.role: 'FOREMAN' | 'CREW'
 -- accounts.id == auth.users.id
 --
--- tools: public read, FOREMAN CRUD
+-- tools: USERS read, FOREMAN CRUD
 -- projects: FOREMAN only
--- tool_management: FOREMAN read only
+-- tool_management: USER read
 --                  authenticated checkout(INSERT)/return(UPDATE)
 -- materials + material_usage: FOREMAN only
 
@@ -145,7 +145,7 @@ to authenticated
 using(public.is_foreman());
 
 -- ==================
--- Tool_Management: FOREMAN read / User insert, update
+-- Tool_Management: USER can read, insert, update
 -- ==================
 
 alter table public.tool_management enable row level security;
@@ -186,7 +186,7 @@ with check(
 
 drop policy if exists "USER can view own tool_management" on public.tool_management;
 create policy "USER can view own tool_management"
-on pubic.tool_management
+on public.tool_management
 as permissive
 for select
 to authenticated
@@ -260,5 +260,4 @@ with check(public.is_foreman());
 -- Indexes for performance
 -- ==================
 
-create index if not exists "get materials" on public.materials(project_id);
 create index if not exists "get material-cost" on public.material_usage(project_id);
