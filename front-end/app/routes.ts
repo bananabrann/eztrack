@@ -5,5 +5,7 @@ export default [
     index("./routes/_index.tsx"),
     // routes to login page
     route("login", "./routes/login.tsx"),
+    // routes to foreman dashboard
+    route("dashboard", "./routes/foreman.tsx"),
 
 ] satisfies RouteConfig;
