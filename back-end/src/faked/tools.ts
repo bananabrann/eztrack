@@ -9,7 +9,7 @@ export const tools: Tool[] = [
 	{
 		id: "5af7f611-b39c-48d4-9188-f6ac1b332eb5",
 		name: "Hammer",
-		status: "AVAILABLE",
+		status: "CHECKEDOUT",
 		qty: 1,
 	},
 	{
