@@ -1,4 +1,4 @@
-import { ModuleCard } from "../src/components/ModuleCard";
+import { ModuleCard } from "../../src/components/ModuleCard";
 
 export default function Foreman() {
 	const handleClick: React.MouseEventHandler<HTMLButtonElement> = () => {
