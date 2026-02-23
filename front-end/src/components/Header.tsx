@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function Header() {
 	return (
-		<header className="min-w-full inline-block bg-[#4F5D75] text-white border-b">
+		<header className="sticky top-0 z-50 min-w-full inline-block bg-[#4F5D75] text-white border-b">
 			<div className="max-w-7xl mx-auto px-6">
 				<nav
 					className="flex flex-col md:grid md:grid-cols-3 gap-4 items-center py-6"
@@ -25,7 +25,8 @@ export default function Header() {
 						</li>
 						<li>
 							<Link
-								to="/dashboard"
+								to="/"
+								// to="/dashboard"
 								className="hover:text-[#EA5C1F] focus:outline-none focus:ring-2 focus:ring-[#EA5C1F] px-2 py-1 rounded"
 							>
 								Dashboard
@@ -41,7 +42,8 @@ export default function Header() {
 						</li>
 						<li>
 							<Link
-								to="/materials"
+								to="/"
+								// to="/materials"
 								className="hover:text-[#EA5C1F] focus:outline-none focus:ring-2 focus:ring-[#EA5C1F] px-2 py-1 rounded"
 							>
 								Materials
@@ -49,7 +51,8 @@ export default function Header() {
 						</li>
 						<li>
 							<Link
-								to="/projects"
+								to="/"
+								// to="/projects"
 								className="relative z-10 hover:text-[#EA5C1F] focus:outline-none focus:ring-2 focus:ring-[#EA5C1F] px-2 py-1 rounded"
 							>
 								Projects
