@@ -2,29 +2,34 @@ import crypto from "crypto";
 import { Router } from "express";
 import { tools } from "../faked/tools";
 import { toolManagement } from "../faked/toolManagement";
+import ToolsController from "../controllers/tools-controller";
+import { verifyAuth } from "../middleware/auth-middleware";
 
 const router = Router();
 
 /**
- * API for fetching all the tools
+ * API for fetching all the tools with optional status filtering
  * GET /api/tools/
  */
-router.get("/", (req, res) => {
-	return res.status(200).json({ tools });
-});
+router.get("/", ToolsController.get.bind(ToolsController));
 
+/**
+ * API for creating a new tool (requires authentication)
+ * POST /api/tools
+ */
+router.post("/", verifyAuth, ToolsController.post.bind(ToolsController));
 // POST tools endpoint
 
-router.post("/", (req, res) => {
-	const fakedToolData = {
-		id: "9d7aca13-0490-4dd7-9e23-d56d4eb64a1c",
-		name: "Cordless Drill",
-		status: "AVAILABLE",
-		qty: 1,
-	};
+// router.post("/", (req, res) => {
+// 	const fakedToolData = {
+// 		id: "9d7aca13-0490-4dd7-9e23-d56d4eb64a1c",
+// 		name: "Cordless Drill",
+// 		status: "AVAILABLE",
+// 		qty: 1,
+// 	};
 
-	return res.status(200).json(fakedToolData);
-});
+// 	return res.status(200).json(fakedToolData);
+// });
 
 /**
  * POST /api/tools/:id/checkout
