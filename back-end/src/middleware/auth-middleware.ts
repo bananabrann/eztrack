@@ -84,3 +84,29 @@ export const verifyAuth = async (
 		res.status(500).json({ error: "Authentication failed" });
 	}
 };
+
+/**
+ * Middleware to check user roles based on allowed roles
+ * Must be after verifyAuth middleware
+ */
+export const requireRole = (allowedRoles: UserRole[]) => {
+	return (req: Request, res: Response, next: NextFunction): void => {
+		try {
+			// Check if user is authenticated (set by verifyAuth middleware)
+			if (!req.authUser) {
+				res.status(401).json({ error: "Unauthorized" });
+				return;
+			}
+
+			// Check if user's role is in the allowed roles
+			if (!allowedRoles.includes(req.authUser.role as UserRole)) {
+				res.status(403).json({ error: "Forbidden: Insufficient Permissions" });
+				return;
+			}
+			// User has required role, proceed to next handler
+			next();
+		} catch (error) {
+			res.status(500).json({ error: "Role check failed" });
+		}
+	};
+};
