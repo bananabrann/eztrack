@@ -10,6 +10,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\""
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.97.0",
     "@react-router/node": "^7.13.0",
     "isbot": "^5",
     "lucide-react": "^0.564.0",
