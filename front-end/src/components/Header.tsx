@@ -4,9 +4,10 @@ import { LogOut } from "lucide-react";
 
 export default function Header() {
 	return (
-		<header className="navbar bg-tertiary shadow-sm px-6">
+		<header className="bg-tertiary shadow-sm px-6">
+			<div className="mx-auto flex min-h-16 w-full items-center justify-between gap-4">
 			{/* LEFT: Logo */}
-			<div className="navbar-start">
+			<div className="flex shrink-0 items-center">
 				<NavLink
 					to="/"
 					className="flex items-center"
@@ -17,7 +18,7 @@ export default function Header() {
 			</div>
 
 			{/* CENTER: Links */}
-			<div className="navbar-center hidden md:flex">
+			<div className="hidden flex-1 justify-center md:flex">
 				<nav className="flex items-center gap-6">
 					<NavLink
 						to="/"
@@ -51,13 +52,14 @@ export default function Header() {
 			</div>
 
 			{/* RIGHT: User Logout */}
-			<div className="navbar-end">
+			<div className="flex shrink-0 items-center">
 				<button
 					className="inline-flex items-center rounded-md border border-current px-3 py-1.5 text-sm leading-none hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-current focus:ring-offset-2"
 					aria-label="Log Out"
 				>
 					<LogOut className="w-8 h-8 mr-2" />
 				</button>
+			</div>
 			</div>
 		</header>
 	);
