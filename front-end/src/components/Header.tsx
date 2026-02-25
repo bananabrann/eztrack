@@ -7,7 +7,11 @@ export default function Header() {
 		<header className="navbar bg-tertiary shadow-sm px-6">
 			{/* LEFT: Logo */}
 			<div className="navbar-start">
-				<NavLink to="/" className="flex items-center" aria-label="Go to Home Page">
+				<NavLink
+					to="/"
+					className="flex items-center"
+					aria-label="Go to Home Page"
+				>
 					<Logo size="sm" />
 				</NavLink>
 			</div>
@@ -15,16 +19,32 @@ export default function Header() {
 			{/* CENTER: Links */}
 			<div className="navbar-center hidden md:flex">
 				<nav className="flex items-center gap-6">
-					<NavLink to="/" className="whitespace-nowrap" aria-label="Go to Home Page">
+					<NavLink
+						to="/"
+						className="whitespace-nowrap"
+						aria-label="Go to Home Page"
+					>
 						Home
 					</NavLink>
-					<NavLink to="/" className="whitespace-nowrap" aria-label="Go to Tools Management">
+					<NavLink
+						to="/"
+						className="whitespace-nowrap"
+						aria-label="Go to Tools Management"
+					>
 						Tools Management
 					</NavLink>
-					<NavLink to="/" className="whitespace-nowrap" aria-label="Go to Materials Management">
+					<NavLink
+						to="/"
+						className="whitespace-nowrap"
+						aria-label="Go to Materials Management"
+					>
 						Materials Management
 					</NavLink>
-					<NavLink to="/" className="whitespace-nowrap" aria-label="Go to Project Management">
+					<NavLink
+						to="/"
+						className="whitespace-nowrap"
+						aria-label="Go to Project Management"
+					>
 						Project Management
 					</NavLink>
 				</nav>
