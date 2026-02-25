@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom";
+import { Button } from "../components/Button";
 
 export default function ToolsCheck() {
 	const location = useLocation();
@@ -6,10 +7,7 @@ export default function ToolsCheck() {
 		toolName: "Unknown Tool",
 		toolDescription: "",
 	};
-
-	const buttonStyles =
-		"bg-[#212431] hover:bg-[#EA5C1F] focus:bg-[#4F5D75] active:bg-[#4F5D75] focus-visible:bg-[#4F5D75] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EA5C1F] focus-visible:ring-offset-2 text-white font-bold py-2 px-4 rounded w-full max-w-sm";
-
+	
 	return (
 		<main className="max-w-3xl mx-auto px-6 py-16">
 			{/* Page Title */}
@@ -39,14 +37,17 @@ export default function ToolsCheck() {
 
 				{/* <!-- Buttons --> */}
 				<div className="flex flex-col items-center mt-6 space-y-4">
-					<button className={buttonStyles}
+					<Button
+						label="Check Out"
+						variant="blue"
 						onClick={() => console.log("Check Out clicked")}
-					>Check Out</button>
-					
-					<button className={buttonStyles}
+					/>
+
+					<Button
+						label="Check In"
+						variant="blue"
 						onClick={() => console.log("Check In clicked")}
-					>
-					Check In</button>
+					/>
 				</div>
 			</section>
 		</main>
