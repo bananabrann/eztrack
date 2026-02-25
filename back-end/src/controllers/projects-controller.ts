@@ -16,9 +16,8 @@ export interface Project {
 	project_name: string;
 	status: ProjectStatus;
 	start_date: string;
-	end_date: string | null;
+	end_date: string;
 	created_at?: string;
-	updated_at?: string;
 }
 
 // Request type definitions
@@ -29,7 +28,7 @@ type CreateProjectRequest = Request<
 	{
 		projectName: string;
 		startDate: string;
-		endDate?: string;
+		endDate: string;
 		status?: ProjectStatus;
 	}
 >;
@@ -50,35 +49,31 @@ type DeleteProjectRequest = Request<{ id: string }>;
  */
 export default class ProjectsController {
 	/**
-	 * GET /api/projects
-	 * Get all projects for authenticated user with optional status filtering
+	 * [GET] /api/projects
+	 * Get all projects with optional status filtering
 	 */
 	static async get(req: GetProjectsRequest, res: Response): Promise<void> {
 		try {
-			const userId = req.authUser?.id;
-
-			if (!userId) {
-				res.status(401).json({ error: "Unauthorized" });
-				return;
-			}
-
+			// Validates and extract status filter from the query
 			const { status } = ProjectsController._validateGetRequest(req);
 
-			let query = supabaseClient
-				.from("projects")
-				.select("*")
-				.eq("user_id", userId);
+			// Start building the query to select all projects
+			let query = supabaseClient.from("projects").select("*");
 
+			// If status filter is provided, add it to the query
 			if (status) {
 				query = query.eq("status", status);
 			}
 
+			// Implement the query and sort it by newest created first
 			const { data, error } = await query.order("created_at", {
 				ascending: false,
 			});
 
+			// Guard for database query error
 			if (error) throw error;
 
+			// Return the success response
 			res.status(200).json({
 				message: "Projects retrieved successfully",
 				data: data || [],
@@ -95,31 +90,27 @@ export default class ProjectsController {
 	 */
 	static async post(req: CreateProjectRequest, res: Response): Promise<void> {
 		try {
-			const userId = req.authUser?.id;
-
-			if (!userId) {
-				res.status(401).json({ error: "Unauthorized" });
-				return;
-			}
-
+			// Validate request body and extract validated data
 			const validation = ProjectsController._validatePostRequest(req);
 			const { projectName, startDate, endDate, status } = validation;
 
+			// Insert new project data into the database and return the inserted record
 			const { data, error } = await supabaseClient
 				.from("projects")
 				.insert([
 					{
-						user_id: userId,
-						project_name: projectName.trim(),
+						project_name: projectName,
 						start_date: startDate,
-						end_date: endDate || null,
+						end_date: endDate,
 						status,
 					},
 				])
 				.select();
 
+			// Guard for database error
 			if (error) throw error;
 
+			// Return success response with created project
 			res.status(201).json({
 				message: "Project created successfully",
 				data: data[0],
@@ -135,38 +126,32 @@ export default class ProjectsController {
 	}
 
 	/**
-	 * PUT /api/projects/:id
+	 * PATCH /api/projects/:id
 	 * Update a project
 	 */
-	static async put(req: UpdateProjectRequest, res: Response): Promise<void> {
+	static async patch(req: UpdateProjectRequest, res: Response): Promise<void> {
 		try {
+			// Extract project ID from URL params
 			const { id } = req.params;
-			const userId = req.authUser?.id;
+			const validation = ProjectsController._validatePatchRequest(req);
 
-			if (!userId) {
-				res.status(401).json({ error: "Unauthorized" });
-				return;
-			}
-
-			const validation = ProjectsController._validatePutRequest(req);
-
-			// Check if project exists and belongs to user
+			// Check if project exists
 			const { data: existingProject, error: fetchError } = await supabaseClient
 				.from("projects")
 				.select("*")
 				.eq("id", id)
-				.eq("user_id", userId)
 				.single();
 
+			// Guard error if project not found
 			if (fetchError || !existingProject) {
 				res.status(404).json({ error: "Project not found" });
 				return;
 			}
 
-			// Build update object
-			const updateData: any = {};
+			// Build update object - only include fields that were provided
+			const updateData: Partial<Project> = {};
 			if (validation.projectName !== undefined)
-				updateData.project_name = validation.projectName.trim();
+				updateData.project_name = validation.projectName;
 			if (validation.status !== undefined)
 				updateData.status = validation.status;
 			if (validation.startDate !== undefined)
@@ -174,15 +159,17 @@ export default class ProjectsController {
 			if (validation.endDate !== undefined)
 				updateData.end_date = validation.endDate;
 
+			// Execute the update query
 			const { data, error } = await supabaseClient
 				.from("projects")
 				.update(updateData)
 				.eq("id", id)
-				.eq("user_id", userId)
 				.select();
 
+			// Guard error of the database
 			if (error) throw error;
 
+			// Return success response with updated project
 			res.status(200).json({
 				message: "Project updated successfully",
 				data: data[0],
@@ -203,42 +190,42 @@ export default class ProjectsController {
 	 */
 	static async delete(req: DeleteProjectRequest, res: Response): Promise<void> {
 		try {
+			// Extract project ID from URL params
 			const { id } = req.params;
-			const userId = req.authUser?.id;
 
-			if (!userId) {
-				res.status(401).json({ error: "Unauthorized" });
-				return;
-			}
-
+			// Check if project exists in database
 			const { data: project, error: fetchError } = await supabaseClient
 				.from("projects")
 				.select("*")
 				.eq("id", id)
-				.eq("user_id", userId)
 				.single();
 
+			// Guard for data not found and will return 404
 			if (fetchError || !project) {
 				res.status(404).json({ error: "Project not found" });
 				return;
 			}
 
+			// Delete project from database
 			const { error: deleteError } = await supabaseClient
 				.from("projects")
 				.delete()
-				.eq("id", id)
-				.eq("user_id", userId);
+				.eq("id", id);
 
+			// Guard for database error
 			if (deleteError) throw deleteError;
 
+			// Return success response
 			res.status(200).json({ message: "Project deleted successfully" });
 		} catch (error) {
 			console.error("Delete project error:", error);
 			res.status(500).json({ error: "Failed to delete project" });
 		}
 	}
+
 	/**
-	 * [VALIDATE @ GET]
+	 * Validate GET request query parameters
+	 * Checks if status filter is valid enum value
 	 */
 	private static _validateGetRequest(req: GetProjectsRequest) {
 		const { status } = req.query;
@@ -256,7 +243,7 @@ export default class ProjectsController {
 	}
 
 	/**
-	 * [VALIDATE @ POST]
+	 * Validate POST request body for creating a project
 	 */
 	private static _validatePostRequest(req: CreateProjectRequest) {
 		const {
@@ -284,25 +271,24 @@ export default class ProjectsController {
 			);
 		}
 
-		const startDateObj = new Date(startDate);
-		if (isNaN(startDateObj.getTime())) {
+		const startDateObject = new Date(startDate);
+		if (isNaN(startDateObject.getTime())) {
 			throw new Error("Validation: Start date must be a valid date");
 		}
 
-		// Validate endDate if provided
-		let endDateObj: Date | null = null;
-		if (endDate) {
-			endDateObj = new Date(endDate);
-			if (isNaN(endDateObj.getTime())) {
-				throw new Error("Validation: End date must be a valid date");
-			}
+		// Validate endDate (required)
+		if (!endDate || typeof endDate !== "string") {
+			throw new Error("Validation: End date is required and must be a string");
+		}
 
-			// Validate endDate >= startDate
-			if (endDateObj < startDateObj) {
-				throw new Error(
-					"Validation: End date cannot be earlier than start date",
-				);
-			}
+		const endDateObject = new Date(endDate);
+		if (isNaN(endDateObject.getTime())) {
+			throw new Error("Validation: End date must be a valid date");
+		}
+
+		// Validate endDate >= startDate
+		if (endDateObject < startDateObject) {
+			throw new Error("Validation: End date cannot be earlier than start date");
 		}
 
 		// Validate status
@@ -313,17 +299,17 @@ export default class ProjectsController {
 		}
 
 		return {
-			projectName,
+			projectName: projectName.trim(),
 			startDate,
-			endDate: endDate || null,
+			endDate,
 			status,
 		};
 	}
 
 	/**
-	 * [VALIDATE @ PUT]
+	 * Validation for PATCH (Updating a project)
 	 */
-	private static _validatePutRequest(req: UpdateProjectRequest) {
+	private static _validatePatchRequest(req: UpdateProjectRequest) {
 		const { projectName, status, startDate, endDate } = req.body;
 
 		// Validate projectName if provided

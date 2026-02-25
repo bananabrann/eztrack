@@ -1,58 +1,42 @@
 import { Router } from "express";
-import { projects } from "../faked/projects";
 import { materialUsage } from "../faked/materialUsage";
 import { materials } from "../faked/materials";
+import { verifyAuth } from "../middleware/auth-middleware";
+import ProjectsController from "../controllers/projects-controller";
 
 const router = Router();
 
-// GET projects endpoint
-router.get("/", (req, res) => {
-	return res.status(200).json(projects);
-});
+/**
+ * API for retrieving all projects with optional status filtering
+ * GET /api/projects
+ */
+router.get("/", verifyAuth, ProjectsController.get.bind(ProjectsController));
 
 /**
  * API for creating new project
  * POST /api/projects
  */
-router.post("/", (req, res) => {
-	// Inject response, we don't have actual data yet
-	// TODO: remove this later when controller is being created
-	const fakedProjectData = {
-		id: "9d7aca13-0490-4dd7-9e23-d56d4eb64a1c",
-		projectName: "Dirty Laundry: Laundromat",
-		status: "ACTIVE",
-		startDate: "2026-02-11",
-		endDate: "2026-08-01",
-	};
-
-	return res.status(200).json(fakedProjectData);
-});
-
-// DELETE projects endpoint
-
-router.delete("/:id", (req, res) => {
-	return res.status(200).json({ message: "Project was deleted successfully." });
-});
+router.post("/", verifyAuth, ProjectsController.post.bind(ProjectsController));
 
 /**
  * API for updating a project
  * PATCH /api/projects/:id
  */
-router.patch("/:id", (req, res) => {
-	const projectId = req.params.id;
-	const updateData = req.body;
+router.patch(
+	"/:id",
+	verifyAuth,
+	ProjectsController.patch.bind(ProjectsController),
+);
 
-	const projectIndex = projects.findIndex(project => project.id === projectId);
-
-	if (projectIndex === -1) {
-		return res.status(404).json({ message: "Project not found" });
-	}
-
-	// update the project
-	projects[projectIndex] = { ...projects[projectIndex], ...updateData };
-	const updatedProject = projects[projectIndex];
-	return res.status(200).json({ updatedProject });
-});
+/**
+ * API for deleting a project
+ * DELETE /api/projects/:id
+ */
+router.delete(
+	"/:id",
+	verifyAuth,
+	ProjectsController.delete.bind(ProjectsController),
+);
 
 export default router;
 
