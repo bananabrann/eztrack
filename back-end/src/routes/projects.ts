@@ -38,22 +38,21 @@ router.delete(
 	ProjectsController.delete.bind(ProjectsController),
 );
 
-
 /**
  * GET /api/:id/material-cost
  * calculate the total material cost for a project
-*/
+ */
 
 router.get("/:id/material-cost", (req, res) => {
-  const projectId = req.params.id;
+	const projectId = req.params.id;
 
 	const usageRows = materialUsage.filter(
-    usage => usage.projectId === projectId,
+		usage => usage.projectId === projectId,
 	);
 
 	if (usageRows.length === 0) {
-    return res.status(200).json({
-      projectId,
+		return res.status(200).json({
+			projectId,
 			totalCost: 0,
 			materials: [],
 		});
@@ -62,24 +61,24 @@ router.get("/:id/material-cost", (req, res) => {
 	let totalCost = 0;
 
 	const materialsList = usageRows
-  .map(usage => {
-    const material = materials.find(m => m.id === usage.materialId);
-    if (!material) return null;
+		.map(usage => {
+			const material = materials.find(m => m.id === usage.materialId);
+			if (!material) return null;
 
-    totalCost += usage.totalCost;
+			totalCost += usage.totalCost;
 
-    return {
-      materialId: material.id,
-      name: material.name,
-      quantityUsed: usage.quantityUsed,
-      unitCost: material.unitCost,
-      cost: usage.totalCost,
-    };
-  })
-  .filter(Boolean);
+			return {
+				materialId: material.id,
+				name: material.name,
+				quantityUsed: usage.quantityUsed,
+				unitCost: material.unitCost,
+				cost: usage.totalCost,
+			};
+		})
+		.filter(Boolean);
 
 	return res.status(200).json({
-    projectId,
+		projectId,
 		totalCost,
 		materials: materialsList,
 	});
