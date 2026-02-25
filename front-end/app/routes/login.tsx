@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { Button } from "../../src/components/Button";
 
 export default function Login() {
 	const [showPassword, setShowPassword] = useState(false);
@@ -110,9 +111,11 @@ export default function Login() {
 					</p>
 				) : null}
 
-				{/* Login Button goes here */}
-				<p className="pt-4"> [LOGIN BUTTON]</p>
-				
+				{/* Login Button */}
+				<Button 
+					label="Login" 
+					variant="blue" 
+					onClick={() => {}} />
 			</form>
 		</div>
 	);
