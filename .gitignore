@@ -36,6 +36,7 @@ coverage/
 # Temp files
 *.tmp
 .cache/
+supabase/.temp
 
 # Misc
 .react-router/
