@@ -8,3 +8,8 @@ export async function login(email: string, password: string) {
 
 	return result;
 }
+
+export async function logout() {
+	const result = await supabase.auth.signOut();
+	return result;
+}
