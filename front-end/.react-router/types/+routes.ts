@@ -17,12 +17,21 @@ type Pages = {
   "/login": {
     params: {};
   };
+  "/dashboard": {
+    params: {};
+  };
+  "/dashboard/foreman": {
+    params: {};
+  };
+  "/dashboard/crew": {
+    params: {};
+  };
 };
 
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/login";
+    page: "/" | "/login" | "/dashboard" | "/dashboard/foreman" | "/dashboard/crew";
   };
   "./routes/_index.tsx": {
     id: "routes/_index";
@@ -32,10 +41,25 @@ type RouteFiles = {
     id: "routes/login";
     page: "/login";
   };
+  "./routes/dashboard.tsx": {
+    id: "routes/dashboard";
+    page: "/dashboard";
+  };
+  "./routes/dashboard.foreman.tsx": {
+    id: "routes/dashboard.foreman";
+    page: "/dashboard/foreman";
+  };
+  "./routes/dashboard.crew.tsx": {
+    id: "routes/dashboard.crew";
+    page: "/dashboard/crew";
+  };
 };
 
 type RouteModules = {
   "root": typeof import("./app/root.tsx");
   "routes/_index": typeof import("./app/./routes/_index.tsx");
   "routes/login": typeof import("./app/./routes/login.tsx");
+  "routes/dashboard": typeof import("./app/./routes/dashboard.tsx");
+  "routes/dashboard.foreman": typeof import("./app/./routes/dashboard.foreman.tsx");
+  "routes/dashboard.crew": typeof import("./app/./routes/dashboard.crew.tsx");
 };
