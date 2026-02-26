@@ -65,6 +65,25 @@ router.post("/:id/checkout", (req, res) => {
 });
 
 /**
+ * API for updating a tool
+ * PATCH
+ */
+router.patch("/:id", (req, res) => {
+	const toolId = req.params.id;
+	const updateData = req.body;
+
+	const toolIndex = tools.findIndex(tool => tool.id === toolId);
+
+	if (toolIndex === -1) {
+		return res.status(404).json({ message: "Tool not found" });
+	}
+
+	tools[toolIndex] = { ...tools[toolIndex], ...updateData };
+	const updatedTool = tools[toolIndex];
+	return res.status(200).json({ updatedTool });
+});
+
+/**
  * DELETE tools endpoint
  * delete a tool
  */

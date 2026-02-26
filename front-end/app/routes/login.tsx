@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { login } from "../../src/features/auth/authApi";
 import { useNavigate } from "react-router";
+import { Button } from "../../src/components/Button";
 
 export default function Login() {
 	const [showPassword, setShowPassword] = useState(false);
@@ -153,13 +154,14 @@ export default function Login() {
 					</p>
 				) : null}
 
-				<button
+				{/* Login Button */}
+				<Button
+					label={isSubmitting ? "Logging in..." : "Login"}
+					variant="blue"
 					type="submit"
+					onClick={() => {}}
 					disabled={isSubmitting}
-					className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-				>
-					{isSubmitting ? "Logging in..." : "Login"}
-				</button>
+				/>
 			</form>
 		</div>
 	);
