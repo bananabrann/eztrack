@@ -64,10 +64,70 @@ router.post("/:id/checkout", (req, res) => {
 	});
 });
 
-// DELETE tools endpoint
+/**
+ * API for updating a tool
+ * PATCH
+ */
+router.patch("/:id", (req, res) => {
+	const toolId = req.params.id;
+	const updateData = req.body;
 
+	const toolIndex = tools.findIndex(tool => tool.id === toolId);
+
+	if (toolIndex === -1) {
+		return res.status(404).json({ message: "Tool not found" });
+	}
+
+	tools[toolIndex] = { ...tools[toolIndex], ...updateData };
+	const updatedTool = tools[toolIndex];
+	return res.status(200).json({ updatedTool });
+});
+
+/**
+ * DELETE tools endpoint
+ * delete a tool
+ */
 router.delete("/:id", (req, res) => {
 	return res.status(200).json({ message: "Tool was deleted successfully." });
 });
 
 export default router;
+
+/**
+ * RETURN Tools Endpoint
+ * return a tool and mark the tool as available again
+ */
+
+router.post("/:id/return", (req, res) => {
+	const toolId = req.params.id;
+	const toolIdx = tools.findIndex(tool => tool.id === toolId);
+
+	if (toolIdx === -1) {
+		return res.status(404).json({ message: "Tool not found" });
+	}
+
+	const tool = tools[toolIdx];
+
+	if (tool.status !== "CHECKEDOUT") {
+		return res.status(404).json({ message: "Tool is not checked out" });
+	}
+
+	tools[toolIdx] = { ...tool, status: "AVAILABLE" };
+
+	const recordIdx = toolManagement.findIndex(
+		record => record.toolId === toolId && record.checkedIn === null,
+	);
+
+	if (recordIdx === -1) {
+		return res.status(500).json({ message: "No active checkout record found" });
+	}
+
+	const checkedIn = new Date().toISOString();
+	toolManagement[recordIdx].checkedIn = checkedIn;
+
+	return res.status(200).json({
+		toolId,
+		checkedIn,
+		message: "Tool returned successfully",
+	});
+});
