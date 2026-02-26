@@ -1,30 +1,20 @@
 import { Request, Response } from "express";
 import supabaseClient from "../config/supabase";
+import { Database, Constants } from "../types/database.types";
 
-/**
- * Export the types and enums for tools to make sure it will be match the database
- */
-export enum ToolStatus {
-	AVAILABLE = "AVAILABLE",
-	CHECKEDOUT = "CHECKEDOUT",
-	ARCHIVE = "ARCHIVE",
-}
+export type Tool = Database["public"]["Tables"]["tools"]["Row"];
+export type ToolManagement =
+	Database["public"]["Tables"]["tool_management"]["Row"];
+export type ToolStatus = Database["public"]["Enums"]["tool_status"];
 
-export interface Tool {
-	id: string;
-	name: string;
-	status: ToolStatus;
-	created_at?: string;
-}
+export const TOOL_STATUS = {
+	AVAILABLE: "AVAILABLE",
+	CHECKEDOUT: "CHECKEDOUT",
+	ARCHIVE: "ARCHIVE",
+} as const satisfies Record<string, ToolStatus>;
 
-export interface ToolManagement {
-	id: string;
-	tool_id: string;
-	user_id: string;
-	checked_out: string;
-	checked_in: string | null;
-	created_at?: string;
-}
+// Use the array directly from database types
+export const TOOL_STATUS_VALUES = Constants.public.Enums.tool_status;
 
 // Request type definitions
 type GetToolsRequest = Request<{}, {}, {}, { status?: string }>;
@@ -191,7 +181,7 @@ export default class ToolsController {
 			}
 
 			// Check if the tool is currently checked out
-			if (tool.status === ToolStatus.CHECKEDOUT) {
+			if (tool.status === TOOL_STATUS.CHECKEDOUT) {
 				res.status(400).json({
 					error: "Cannot delete tool that is currently checked out",
 				});
@@ -201,7 +191,7 @@ export default class ToolsController {
 			// Archive the tool by updating the status to ARCHIVE (soft delete)
 			const { error: deleteError } = await supabaseClient
 				.from("tools")
-				.update({ status: ToolStatus.ARCHIVE })
+				.update({ status: TOOL_STATUS.ARCHIVE })
 				.eq("id", id);
 
 			// Guard for the database error
@@ -252,7 +242,7 @@ export default class ToolsController {
 			}
 
 			// Check if the tool status is not AVAILABLE, meaning it cannot be checked out
-			if (tool.status !== ToolStatus.AVAILABLE) {
+			if (tool.status !== TOOL_STATUS.AVAILABLE) {
 				res.status(400).json({
 					error: "Tool is not available for checkout",
 				});
@@ -287,7 +277,7 @@ export default class ToolsController {
 			// Update tool in the database with the new status
 			const { error: updateError } = await supabaseClient
 				.from("tools")
-				.update({ status: ToolStatus.CHECKEDOUT })
+				.update({ status: TOOL_STATUS.CHECKEDOUT })
 				.eq("id", id);
 
 			// Guard for the database error in updating the tool
@@ -387,7 +377,7 @@ export default class ToolsController {
 			// Update tool status back to AVAILABLE
 			const { error: updateError } = await supabaseClient
 				.from("tools")
-				.update({ status: ToolStatus.AVAILABLE })
+				.update({ status: TOOL_STATUS.AVAILABLE })
 				.eq("id", id);
 
 			// Guard for the database error in updating the tool
@@ -423,9 +413,9 @@ export default class ToolsController {
 	private static _validateGetRequest(req: GetToolsRequest) {
 		const { status } = req.query;
 
-		if (status && !Object.values(ToolStatus).includes(status as ToolStatus)) {
+		if (status && !TOOL_STATUS_VALUES.includes(status as ToolStatus)) {
 			throw new Error(
-				`Validation: Invalid status filter. Must be one of: ${Object.values(ToolStatus).join(", ")}`,
+				`Validation: Invalid status filter. Must be one of: ${TOOL_STATUS_VALUES.join(", ")}`,
 			);
 		}
 
@@ -436,7 +426,7 @@ export default class ToolsController {
 	 * Validation for POST method
 	 */
 	private static _validatePostRequest(req: CreateToolRequest) {
-		const { name, status = ToolStatus.AVAILABLE } = req.body;
+		const { name, status = TOOL_STATUS.AVAILABLE } = req.body;
 
 		if (!name || typeof name !== "string" || name.trim() === "") {
 			throw new Error(
@@ -444,9 +434,9 @@ export default class ToolsController {
 			);
 		}
 
-		if (!Object.values(ToolStatus).includes(status)) {
+		if (!TOOL_STATUS_VALUES.includes(status)) {
 			throw new Error(
-				`Validation: Status must be one of: ${Object.values(ToolStatus).join(", ")}`,
+				`Validation: Status must be one of: ${TOOL_STATUS_VALUES.join(", ")}`,
 			);
 		}
 
@@ -466,9 +456,9 @@ export default class ToolsController {
 		}
 
 		if (status !== undefined) {
-			if (!Object.values(ToolStatus).includes(status)) {
+			if (!TOOL_STATUS_VALUES.includes(status)) {
 				throw new Error(
-					`Validation: Status must be one of: ${Object.values(ToolStatus).join(", ")}`,
+					`Validation: Status must be one of: ${TOOL_STATUS_VALUES.join(", ")}`,
 				);
 			}
 		}
