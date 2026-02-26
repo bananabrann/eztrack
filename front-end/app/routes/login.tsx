@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { login } from "../../src/features/auth/authApi";
+import { useNavigate } from "react-router";
 
 export default function Login() {
 	const [showPassword, setShowPassword] = useState(false);
@@ -7,6 +9,10 @@ export default function Login() {
 	const [password, setPassword] = useState("");
 	const [emailError, setEmailError] = useState("");
 	const [passwordError, setPasswordError] = useState("");
+	const [authError, setAuthError] = useState("");
+	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	const navigate = useNavigate();
 
 	const validateEmail = (value: string) => {
 		const normalizedValue = value.trim();
@@ -30,7 +36,8 @@ export default function Login() {
 		if (!/[a-z]/.test(value)) {
 			return "Password must include at least one lowercase letter.";
 		}
-		if (!/[0-9]/.test(value)) return "Password must include at least one number.";
+		if (!/[0-9]/.test(value))
+			return "Password must include at least one number.";
 		return "";
 	};
 
@@ -40,10 +47,38 @@ export default function Login() {
 
 	// Validate form on submit and show errors
 
+	const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+
+		const emailErr = validateEmail(email);
+		const passwordErr = validatePassword(password);
+
+		setEmailError(emailErr);
+		setPasswordError(passwordErr);
+		setAuthError("");
+
+		if (emailErr || passwordErr) return;
+
+		setIsSubmitting(true);
+		const { error } = await login(email, password);
+		setIsSubmitting(false);
+
+		if (error) {
+			setAuthError(error.message);
+			return;
+		}
+
+		console.log();
+
+		navigate("/");
+	};
+
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-gray-100">
-			<form className="bg-white p-6 rounded-lg shadow-md w-85 flex flex-col gap-4">
-
+			<form
+				onSubmit={handleSubmit}
+				className="bg-white p-6 rounded-lg shadow-md w-85 flex flex-col gap-4"
+			>
 				{/* EZTrack logo */}
 				<img
 					src="/eztrack-logo.png"
@@ -110,9 +145,19 @@ export default function Login() {
 					</p>
 				) : null}
 
-				{/* Login Button goes here */}
-				<p className="pt-4"> [LOGIN BUTTON]</p>
-				
+				{authError ? (
+					<p id="auth-error" className="text-sm text-red-600">
+						{authError}
+					</p>
+				) : null}
+
+				<button
+					type="submit"
+					disabled={isSubmitting}
+					className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+				>
+					{isSubmitting ? "Logging in..." : "Login"}
+				</button>
 			</form>
 		</div>
 	);
