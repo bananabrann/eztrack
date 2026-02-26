@@ -112,10 +112,12 @@ export default function Login() {
 				) : null}
 
 				{/* Login Button */}
-				<Button 
-					label="Login" 
-					variant="blue" 
-					onClick={() => {}} />
+				<div className="mt-8">
+					<Button
+						label="Login"
+						variant="blue"
+						onClick={() => { }} />
+				</div>
 			</form>
 		</div>
 	);
