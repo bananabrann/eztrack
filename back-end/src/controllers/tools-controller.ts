@@ -22,13 +22,12 @@ export interface ToolManagement {
 	tool_id: string;
 	user_id: string;
 	checked_out: string;
-	checked_in: string;
+	checked_in: string | null;
 	created_at?: string;
 }
 
 // Request type definitions
 type GetToolsRequest = Request<{}, {}, {}, { status?: string }>;
-type GetToolRequest = Request<{ id: string }>;
 type CreateToolRequest = Request<{}, {}, { name: string; status?: ToolStatus }>;
 type UpdateToolRequest = Request<
 	{ id: string },
@@ -47,7 +46,7 @@ export default class ToolsController {
 	 * GET /api/tools
 	 * Get all tools with optional status filtering
 	 */
-	static async get(req: GetToolRequest, res: Response): Promise<void> {
+	static async get(req: GetToolsRequest, res: Response): Promise<void> {
 		try {
 			// Validates and extract status filter from the query
 			const { status } = ToolsController._validateGetRequest(req);
