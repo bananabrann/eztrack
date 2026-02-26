@@ -5,5 +5,6 @@ export default [
     index("./routes/_index.tsx"),
     // routes to login page
     route("login", "./routes/login.tsx"),
+    route("toolsManagement", "./routes/toolsManagement.tsx"),
 
 ] satisfies RouteConfig;
