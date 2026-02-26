@@ -60,17 +60,19 @@ export default function Login() {
 		if (emailErr || passwordErr) return;
 
 		setIsSubmitting(true);
-		const { error } = await login(email, password);
-		setIsSubmitting(false);
 
-		if (error) {
-			setAuthError(error.message);
-			return;
+		try {
+			const { error } = await login(email, password);
+			if (error) {
+				setAuthError(error.message);
+				return;
+			}
+			navigate("/");
+		} catch (err) {
+			setAuthError("Something went wrong while logging in, please try again");
+		} finally {
+			setIsSubmitting(false);
 		}
-
-		console.log();
-
-		navigate("/");
 	};
 
 	return (
