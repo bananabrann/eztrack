@@ -6,6 +6,7 @@ type ButtonProps = {
 	onClick: React.MouseEventHandler<HTMLButtonElement>;
 	ariaLabel?: string;
 	disabled?: boolean;
+	type?: "button" | "submit" | "reset";
 };
 
 export function Button({
@@ -14,6 +15,7 @@ export function Button({
 	onClick,
 	ariaLabel,
 	disabled = false,
+	type = "button",
 }: ButtonProps) {
 	let variantClasses = "";
 
@@ -27,7 +29,7 @@ export function Button({
 
 	return (
 		<button
-			type="button"
+			type={type}
 			onClick={onClick}
 			aria-label={ariaLabel ?? label}
 			disabled={disabled}

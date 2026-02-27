@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { login } from "../../src/features/auth/authApi";
+import { useNavigate } from "react-router";
 import { Button } from "../../src/components/Button";
 
 export default function Login() {
@@ -8,6 +10,10 @@ export default function Login() {
 	const [password, setPassword] = useState("");
 	const [emailError, setEmailError] = useState("");
 	const [passwordError, setPasswordError] = useState("");
+	const [authError, setAuthError] = useState("");
+	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	const navigate = useNavigate();
 
 	const validateEmail = (value: string) => {
 		const normalizedValue = value.trim();
@@ -31,7 +37,8 @@ export default function Login() {
 		if (!/[a-z]/.test(value)) {
 			return "Password must include at least one lowercase letter.";
 		}
-		if (!/[0-9]/.test(value)) return "Password must include at least one number.";
+		if (!/[0-9]/.test(value))
+			return "Password must include at least one number.";
 		return "";
 	};
 
@@ -41,10 +48,40 @@ export default function Login() {
 
 	// Validate form on submit and show errors
 
+	const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+
+		const emailErr = validateEmail(email);
+		const passwordErr = validatePassword(password);
+
+		setEmailError(emailErr);
+		setPasswordError(passwordErr);
+		setAuthError("");
+
+		if (emailErr || passwordErr) return;
+
+		setIsSubmitting(true);
+
+		try {
+			const { error } = await login(email, password);
+			if (error) {
+				setAuthError(error.message);
+				return;
+			}
+			navigate("/");
+		} catch (err) {
+			setAuthError("Something went wrong while logging in, please try again");
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-gray-100">
-			<form className="bg-white p-6 rounded-lg shadow-md w-85 flex flex-col gap-4">
-
+			<form
+				onSubmit={handleSubmit}
+				className="bg-white p-6 rounded-lg shadow-md w-85 flex flex-col gap-4"
+			>
 				{/* EZTrack logo */}
 				<img
 					src="/eztrack-logo.png"
@@ -111,6 +148,12 @@ export default function Login() {
 					</p>
 				) : null}
 
+				{authError ? (
+					<p id="auth-error" className="text-sm text-red-600">
+						{authError}
+					</p>
+				) : null}
+
 				{/* Login Button */}
 				<div className="mt-8">
 					<Button
@@ -118,6 +161,13 @@ export default function Login() {
 						variant="blue"
 						onClick={() => { }} />
 				</div>
+				<Button
+					label={isSubmitting ? "Logging in..." : "Login"}
+					variant="blue"
+					type="submit"
+					onClick={() => {}}
+					disabled={isSubmitting}
+				/>
 			</form>
 		</div>
 	);
