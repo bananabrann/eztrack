@@ -70,7 +70,11 @@ export default function Login() {
 			}
 			navigate("/");
 		} catch (err) {
-			setAuthError("Something went wrong while logging in, please try again");
+			setAuthError(
+				err instanceof Error
+					? err.message
+					: "Something went wrong while logging in, please try again",
+			);
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -156,11 +160,6 @@ export default function Login() {
 
 				{/* Login Button */}
 				<div className="mt-8">
-					<Button
-						label="Login"
-						variant="blue"
-						onClick={() => { }} />
-				</div>
 				<Button
 					label={isSubmitting ? "Logging in..." : "Login"}
 					variant="blue"
@@ -168,6 +167,7 @@ export default function Login() {
 					onClick={() => {}}
 					disabled={isSubmitting}
 				/>
+				</div>
 			</form>
 		</div>
 	);
