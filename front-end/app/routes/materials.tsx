@@ -1,4 +1,4 @@
-import { ApiTestComponent } from "../../src/features/materials/test";
+import { ApiTestComponent } from "../../src/features/materials/MaterialsTable";
 
 export default function Materials() {
 	return (
