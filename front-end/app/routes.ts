@@ -14,8 +14,8 @@ export default [
     // routes to dashboard page
     route("dashboard", "./routes/dashboard.tsx"),
     // routes to foremand dashboard 
-    route("dashboard/foreman", "./routes/dashboard/foreman.tsx"),
+    route("dashboard/foreman", "./routes/dashboard.foreman.tsx"),
     // routes to crew dashboard
-    route("dashboard/crew", "./routes/dashboard/crew.tsx"),
+    route("dashboard/crew", "./routes/dashboard.crew.tsx"),
 
 ] satisfies RouteConfig;
