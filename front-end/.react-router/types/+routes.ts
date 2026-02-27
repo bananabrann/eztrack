@@ -26,12 +26,22 @@ type Pages = {
   "/dashboard/crew": {
     params: {};
   };
+  "/tools": {
+    params: {};
+  };
+  "/materials": {
+    params: {};
+  };
+  "/projects": {
+    params: {};
+  };
 };
 
 type RouteFiles = {
   "root.tsx": {
     id: "root";
     page: "/" | "/login" | "/dashboard" | "/dashboard/foreman" | "/dashboard/crew";
+    page: "/" | "/login" | "/tools" | "/materials" | "/projects";
   };
   "./routes/_index.tsx": {
     id: "routes/_index";
@@ -53,6 +63,18 @@ type RouteFiles = {
     id: "routes/dashboard.crew";
     page: "/dashboard/crew";
   };
+  "./routes/tools.tsx": {
+    id: "routes/tools";
+    page: "/tools";
+  };
+  "./routes/materials.tsx": {
+    id: "routes/materials";
+    page: "/materials";
+  };
+  "./routes/projects.tsx": {
+    id: "routes/projects";
+    page: "/projects";
+  };
 };
 
 type RouteModules = {
@@ -62,4 +84,7 @@ type RouteModules = {
   "routes/dashboard": typeof import("./app/./routes/dashboard.tsx");
   "routes/dashboard.foreman": typeof import("./app/./routes/dashboard.foreman.tsx");
   "routes/dashboard.crew": typeof import("./app/./routes/dashboard.crew.tsx");
+  "routes/tools": typeof import("./app/./routes/tools.tsx");
+  "routes/materials": typeof import("./app/./routes/materials.tsx");
+  "routes/projects": typeof import("./app/./routes/projects.tsx");
 };

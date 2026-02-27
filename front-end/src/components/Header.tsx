@@ -27,21 +27,21 @@ export default function Header() {
 						Home
 					</NavLink>
 					<NavLink
-						to="/"
+						to="/tools"
 						className="whitespace-nowrap"
 						aria-label="Go to Tools Management"
 					>
 						Tools Management
 					</NavLink>
 					<NavLink
-						to="/"
+						to="/materials"
 						className="whitespace-nowrap"
 						aria-label="Go to Materials Management"
 					>
 						Materials Management
 					</NavLink>
 					<NavLink
-						to="/"
+						to="/projects"
 						className="whitespace-nowrap"
 						aria-label="Go to Project Management"
 					>
