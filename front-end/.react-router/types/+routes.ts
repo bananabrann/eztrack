@@ -17,12 +17,21 @@ type Pages = {
   "/login": {
     params: {};
   };
+  "/tools": {
+    params: {};
+  };
+  "/materials": {
+    params: {};
+  };
+  "/projects": {
+    params: {};
+  };
 };
 
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/login";
+    page: "/" | "/login" | "/tools" | "/materials" | "/projects";
   };
   "./routes/_index.tsx": {
     id: "routes/_index";
@@ -32,10 +41,25 @@ type RouteFiles = {
     id: "routes/login";
     page: "/login";
   };
+  "./routes/tools.tsx": {
+    id: "routes/tools";
+    page: "/tools";
+  };
+  "./routes/materials.tsx": {
+    id: "routes/materials";
+    page: "/materials";
+  };
+  "./routes/projects.tsx": {
+    id: "routes/projects";
+    page: "/projects";
+  };
 };
 
 type RouteModules = {
   "root": typeof import("./app/root.tsx");
   "routes/_index": typeof import("./app/./routes/_index.tsx");
   "routes/login": typeof import("./app/./routes/login.tsx");
+  "routes/tools": typeof import("./app/./routes/tools.tsx");
+  "routes/materials": typeof import("./app/./routes/materials.tsx");
+  "routes/projects": typeof import("./app/./routes/projects.tsx");
 };
