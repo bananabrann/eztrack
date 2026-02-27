@@ -11,7 +11,7 @@ if (!supabaseUrl) {
 
 if (!supabaseKey) {
 	throw new Error(
-		"Supabase key is required. Set VITE_SUPABASE_PUBLISHABLE_KEY or VITE_SUPABASE_ANON_KEY."
+		"Supabase key is required. Set VITE_SUPABASE_PUBLISHABLE_KEY or VITE_SUPABASE_ANON_KEY.",
 	);
 }
 
