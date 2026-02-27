@@ -18,7 +18,9 @@ if (missingEnvVars.length === 0 && supabaseUrl && supabaseKey) {
 
 export function getSupabaseClient() {
 	if (!supabaseClient) {
-		throw new Error(`Missing Supabase environment variable(s): ${missingEnvVars.join(", ")}`);
+		throw new Error(
+			`Missing Supabase environment variable(s): ${missingEnvVars.join(", ")}`,
+		);
 	}
 	return supabaseClient;
 }
