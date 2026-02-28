@@ -4,7 +4,7 @@ import { LogOut } from "lucide-react";
 
 export default function Header() {
 	return (
-		<header className="navbar bg-tertiary shadow-sm px-6">
+		<header className="navbar bg-tertiary shadow-sm px-6 text-white">
 			{/* LEFT: Logo */}
 			<div className="navbar-start">
 				<NavLink

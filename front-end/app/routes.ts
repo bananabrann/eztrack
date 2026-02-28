@@ -12,5 +12,11 @@ export default [
 	route("materials", "./routes/materials.tsx"),
     // routes to projects page
 	route("projects", "./routes/projects.tsx"),
+    // routes to dashboard page
+    route("dashboard", "./routes/dashboard.tsx"),
+    // routes to foremand dashboard 
+    route("dashboard/foreman", "./routes/dashboard.foreman.tsx"),
+    // routes to crew dashboard
+    route("dashboard/crew", "./routes/dashboard.crew.tsx"),
 
 ] satisfies RouteConfig;
