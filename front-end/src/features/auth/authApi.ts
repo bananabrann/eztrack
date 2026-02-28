@@ -15,3 +15,12 @@ export async function logout() {
 	const result = await supabase.auth.signOut();
 	return result;
 }
+
+/**
+ * Returns the current Supabase access token, or null if not authenticated
+ */
+export async function getAccessToken(): Promise<string | null> {
+	const supabase = getSupabaseClient();
+	const { data } = await supabase.auth.getSession();
+	return data.session?.access_token ?? null;
+}
