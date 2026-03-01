@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { login } from "../../src/features/auth/authApi";
+import { login } from "../../app/features/auth/authApi";
 import { useNavigate } from "react-router";
-import { Button } from "../../src/components/Button";
+import { Button } from "../../app/components/Button";
 
 export default function Login() {
 	const [showPassword, setShowPassword] = useState(false);
@@ -160,13 +160,13 @@ export default function Login() {
 
 				{/* Login Button */}
 				<div className="mt-8">
-				<Button
-					label={isSubmitting ? "Logging in..." : "Login"}
-					variant="blue"
-					type="submit"
-					onClick={() => {}}
-					disabled={isSubmitting}
-				/>
+					<Button
+						label={isSubmitting ? "Logging in..." : "Login"}
+						variant="blue"
+						type="submit"
+						onClick={() => {}}
+						disabled={isSubmitting}
+					/>
 				</div>
 			</form>
 		</div>
