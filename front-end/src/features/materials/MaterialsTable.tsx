@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Materials } from "../../types/materials";
-// import {apiFetch} form "../../types/"
+import { apiFetch } from "../../api/api";
 
 export function MaterialsTable() {
 	const [materials, setMaterials] = useState<Materials[]>([]);
