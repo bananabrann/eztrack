@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Materials } from "../../types/materials";
+import type { Materials } from "../../types/materials";
 import { apiFetch } from "../../api/api";
 
 export function MaterialsTable() {
@@ -8,40 +8,46 @@ export function MaterialsTable() {
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
-		apiFetch<Materials[]>("/materials")
-			.then(data => {
-				setMaterials(data);
+		apiFetch<{ data: Materials[]; message: string }>("/materials")
+			.then(({ data: materialsArray = [] }) => {
+				setMaterials(materialsArray);
 				setLoading(false);
 			})
-			.catch(error => {
-				setError(error.message || "Failed to fetch materials.");
+			.catch((err: unknown) => {
+				const message =
+					err instanceof Error ? err.message : "Failed to fetch materials.";
+				setError(message);
 				setLoading(false);
 			});
 	}, []);
 
+	// Loading indicator
 	if (loading) return <div>Loading...</div>;
+	// Error indicator
 	if (error) return <div>Error: {error}</div>;
 
 	return (
-		<table>
-			<thead>
-				<tr>
-					<th>Name</th>
-					<th>Quantity (unit_qty)</th>
-					<th>Unit Cost (unit_cost)</th>
-					<th>Low Stock Threshold (low_stock_threshold)</th>
-				</tr>
-			</thead>
-			<tbody>
-				{materials.map(material => (
-					<tr key={material.id}>
-						<td>{material.name}</td>
-						<td>{material.unit_qty}</td>
-						<td>{material.unit_cost}</td>
-						<td>{material.low_stock_threshold}</td>
+		<div className="overflow-x-auto">
+			<table className="table table-zebra">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Quantity</th>
+						<th>Unit Cost</th>
+						<th>Low Stock Threshold</th>
 					</tr>
-				))}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					{materials.map(material => (
+						<tr key={material.id} className="hover">
+							<td className="font-medium">{material.name}</td>
+							<td>{material.unit_qty}</td>
+							<td>${material.unit_cost.toFixed(2)}</td>
+							<td>{material.low_stock_threshold}</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
 	);
 }
