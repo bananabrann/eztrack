@@ -1,4 +1,4 @@
-import { ModuleCard } from "../../app/components/ModuleCard";
+import { ModuleCard } from "../components/ModuleCard";
 
 export default function Crew() {
 	const handleClick = () => {};

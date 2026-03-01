@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { login } from "../../app/features/auth/authApi";
+import { login } from "../features/auth/authApi";
 import { useNavigate } from "react-router";
-import { Button } from "../../app/components/Button";
+import { Button } from "../components/Button";
 
 export default function Login() {
 	const [showPassword, setShowPassword] = useState(false);
@@ -63,7 +63,9 @@ export default function Login() {
 		setIsSubmitting(true);
 
 		try {
-			const { error } = await login(email, password);
+			const { data, error } = await login(email, password);
+			console.log(data);
+
 			if (error) {
 				setAuthError(error.message);
 				return;
