@@ -13,9 +13,9 @@ export function MaterialsTable() {
 				setMaterials(materialsArray);
 				setLoading(false);
 			})
-			.catch((err: unknown) => {
+			.catch((error: unknown) => {
 				const message =
-					err instanceof Error ? err.message : "Failed to fetch materials.";
+					error instanceof Error ? error.message : "Failed to fetch materials.";
 				setError(message);
 				setLoading(false);
 			});
