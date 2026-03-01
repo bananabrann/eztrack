@@ -1,13 +1,12 @@
 export default function Projects() {
     return (
         <div className="flex flex-col gap-6 items-center mt-8">
-            <h1 className="text-2xl font-bold">Projects</h1>
-            <div className="flex w-52 flex-col gap-4">
-                <div className="skeleton h-32 w-full"></div>
-                <div className="skeleton h-4 w-28"></div>
-                <div className="skeleton h-4 w-full"></div>
-                <div className="skeleton h-4 w-full"></div>
-            </div>
+            <h1 className="text-2xl font-bold mb-8">Project Management</h1>
+            <ul className="list bg-base-100 rounded-box shadow-md">
+                <li className="list-row">
+                    <div>Project Name</div>
+                </li>
+            </ul>
         </div>
     );
 }   
