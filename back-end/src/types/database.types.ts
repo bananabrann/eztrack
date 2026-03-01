@@ -84,6 +84,7 @@ export type Database = {
 					name: string;
 					unit_cost: number;
 					unit_qty: number;
+					project_id: string;
 				};
 				Insert: {
 					id?: string;
@@ -91,6 +92,7 @@ export type Database = {
 					name: string;
 					unit_cost: number;
 					unit_qty: number;
+					project_id: string;
 				};
 				Update: {
 					id?: string;
@@ -98,8 +100,17 @@ export type Database = {
 					name?: string;
 					unit_cost?: number;
 					unit_qty?: number;
+					project_id?: string;
 				};
-				Relationships: [];
+				Relationships: [
+					{
+						foreignKeyName: "materials_projectId_fkey";
+						columns: ["project_id"];
+						isOneToOne: false;
+						referencedRelation: "projects";
+						referencedColumns: ["id"];
+					},
+				];
 			};
 			projects: {
 				Row: {

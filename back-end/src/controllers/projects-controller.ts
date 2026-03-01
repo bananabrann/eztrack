@@ -1,24 +1,20 @@
 import { Request, Response } from "express";
 import supabaseClient from "../config/supabase";
+import { Database, Constants } from "../types/database.types";
 
-/**
- * This is the types for the Project table
- * Make sure it will match the database
- */
-export enum ProjectStatus {
-	ACTIVE = "ACTIVE",
-	COMPLETED = "COMPLETED",
-}
+export type Project = Database["public"]["Tables"]["projects"]["Row"];
+export type MaterialUsage =
+	Database["public"]["Tables"]["material_usage"]["Row"];
+export type Material = Database["public"]["Tables"]["materials"]["Row"];
+export type ProjectStatus = Database["public"]["Enums"]["project_status"];
 
-export interface Project {
-	id: string;
-	user_id: string;
-	project_name: string;
-	status: ProjectStatus;
-	start_date: string;
-	end_date: string;
-	created_at?: string;
-}
+export const PROJECT_STATUS = {
+	ACTIVE: "ACTIVE",
+	COMPLETED: "COMPLETED",
+} as const satisfies Record<string, ProjectStatus>;
+
+// Use the array directly from database types
+export const PROJECT_STATUS_VALUES = Constants.public.Enums.project_status;
 
 // Request type definitions
 type GetProjectsRequest = Request<{}, {}, {}, { status?: string }>;
@@ -26,9 +22,9 @@ type CreateProjectRequest = Request<
 	{},
 	{},
 	{
-		projectName: string;
-		startDate: string;
-		endDate: string;
+		project_name: string;
+		start_date: string;
+		end_date: string;
 		status?: ProjectStatus;
 	}
 >;
@@ -36,20 +32,21 @@ type UpdateProjectRequest = Request<
 	{ id: string },
 	{},
 	{
-		projectName?: string;
+		project_name?: string;
 		status?: ProjectStatus;
-		startDate?: string;
-		endDate?: string;
+		start_date?: string;
+		end_date?: string;
 	}
 >;
 type DeleteProjectRequest = Request<{ id: string }>;
+type MaterialCostRequest = Request<{ id: string }>;
 
 /**
- * This is the Project Controller
+ * Projects Controller including material cost calculations
  */
 export default class ProjectsController {
 	/**
-	 * [GET] /api/projects
+	 * GET /api/projects
 	 * Get all projects with optional status filtering
 	 */
 	static async get(req: GetProjectsRequest, res: Response): Promise<void> {
@@ -65,7 +62,7 @@ export default class ProjectsController {
 				query = query.eq("status", status);
 			}
 
-			// Implement the query and sort it by newest created first
+			// Fetch the project data by sorting it from newest created project
 			const { data, error } = await query.order("created_at", {
 				ascending: false,
 			});
@@ -86,22 +83,22 @@ export default class ProjectsController {
 
 	/**
 	 * POST /api/projects
-	 * Create a new project for authenticated user
+	 * Create a new project
 	 */
 	static async post(req: CreateProjectRequest, res: Response): Promise<void> {
 		try {
 			// Validate request body and extract validated data
 			const validation = ProjectsController._validatePostRequest(req);
-			const { projectName, startDate, endDate, status } = validation;
+			const { project_name, start_date, end_date, status } = validation;
 
 			// Insert new project data into the database and return the inserted record
 			const { data, error } = await supabaseClient
 				.from("projects")
 				.insert([
 					{
-						project_name: projectName,
-						start_date: startDate,
-						end_date: endDate,
+						project_name,
+						start_date,
+						end_date,
 						status,
 					},
 				])
@@ -133,9 +130,11 @@ export default class ProjectsController {
 		try {
 			// Extract project ID from URL params
 			const { id } = req.params;
+
+			// Validate the update input using the validation function
 			const validation = ProjectsController._validatePatchRequest(req);
 
-			// Check if project exists
+			// Query the database to check if the project with the given ID exists
 			const { data: existingProject, error: fetchError } = await supabaseClient
 				.from("projects")
 				.select("*")
@@ -148,18 +147,18 @@ export default class ProjectsController {
 				return;
 			}
 
-			// Build update object - only include fields that were provided
+			// Initialize an empty object to hold the fields to update
 			const updateData: Partial<Project> = {};
-			if (validation.projectName !== undefined)
-				updateData.project_name = validation.projectName;
+			if (validation.project_name !== undefined)
+				updateData.project_name = validation.project_name;
 			if (validation.status !== undefined)
 				updateData.status = validation.status;
-			if (validation.startDate !== undefined)
-				updateData.start_date = validation.startDate;
-			if (validation.endDate !== undefined)
-				updateData.end_date = validation.endDate;
+			if (validation.start_date !== undefined)
+				updateData.start_date = validation.start_date;
+			if (validation.end_date !== undefined)
+				updateData.end_date = validation.end_date;
 
-			// Execute the update query
+			// Execute the update query and return the updated record
 			const { data, error } = await supabaseClient
 				.from("projects")
 				.update(updateData)
@@ -185,15 +184,15 @@ export default class ProjectsController {
 	}
 
 	/**
-	 * [DELETE] /api/projects/:id
-	 * Delete a project (only if belongs to authenticated user)
+	 * DELETE /api/projects/:id
+	 * Delete a project
 	 */
 	static async delete(req: DeleteProjectRequest, res: Response): Promise<void> {
 		try {
 			// Extract project ID from URL params
 			const { id } = req.params;
 
-			// Check if project exists in database
+			// Query the database to fetch the project with the given ID
 			const { data: project, error: fetchError } = await supabaseClient
 				.from("projects")
 				.select("*")
@@ -224,18 +223,97 @@ export default class ProjectsController {
 	}
 
 	/**
-	 * Validate GET request query parameters
-	 * Checks if status filter is valid enum value
+	 * GET /api/projects/:id/material-cost
+	 * Calculate the total material cost for a project using material_usage records
+	 */
+	static async materialCost(
+		req: MaterialCostRequest,
+		res: Response,
+	): Promise<void> {
+		try {
+			// Extract the project ID from the request path parameters
+			const { id: project_id } =
+				ProjectsController._validateMaterialCostRequest(req);
+
+			// Query the database to verify the project exists
+			const { data: project, error: projectError } = await supabaseClient
+				.from("projects")
+				.select("*")
+				.eq("id", project_id)
+				.single();
+
+			// Guard error if project not found
+			if (projectError || !project) {
+				res.status(404).json({ error: "Project not found" });
+				return;
+			}
+
+			// Fetch all material_usage rows for this project, joining material data
+			const { data: usageRows, error: usageError } = await supabaseClient
+				.from("material_usage")
+				.select("*, materials(*)")
+				.eq("project_id", project_id);
+
+			// Guard for database query error
+			if (usageError) throw usageError;
+
+			// If no usage records exist, return zero cost
+			if (!usageRows || usageRows.length === 0) {
+				res.status(200).json({
+					message: "Material cost retrieved successfully",
+					data: {
+						project_id,
+						total_cost: 0,
+						materials: [],
+					},
+				});
+				return;
+			}
+
+			// Accumulate total cost and build the materials breakdown list
+			let total_cost = 0;
+
+			const materials = usageRows
+				.map(usage => {
+					const material = usage.materials as Material | null;
+					if (!material) return null;
+
+					total_cost = Math.round((total_cost + usage.total_cost) * 100) / 100;
+
+					return {
+						material_id: material.id,
+						name: material.name,
+						quantity_used: usage.quantity_used,
+						unit_cost: material.unit_cost,
+						cost: usage.total_cost,
+					};
+				})
+				.filter(Boolean);
+
+			// Return a 200 success response with the cost breakdown
+			res.status(200).json({
+				message: "Material cost retrieved successfully",
+				data: {
+					project_id,
+					total_cost,
+					materials,
+				},
+			});
+		} catch (error) {
+			console.error("Material cost error:", error);
+			res.status(500).json({ error: "Failed to calculate material cost" });
+		}
+	}
+
+	/**
+	 * Validation for GET method
 	 */
 	private static _validateGetRequest(req: GetProjectsRequest) {
 		const { status } = req.query;
 
-		if (
-			status &&
-			!Object.values(ProjectStatus).includes(status as ProjectStatus)
-		) {
+		if (status && !PROJECT_STATUS_VALUES.includes(status as ProjectStatus)) {
 			throw new Error(
-				`Validation: Invalid status filter. Must be one of: ${Object.values(ProjectStatus).join(", ")}`,
+				`Validation: Invalid status filter. Must be one of: ${PROJECT_STATUS_VALUES.join(", ")}`,
 			);
 		}
 
@@ -243,120 +321,140 @@ export default class ProjectsController {
 	}
 
 	/**
-	 * Validate POST request body for creating a project
+	 * Validation for POST method
 	 */
 	private static _validatePostRequest(req: CreateProjectRequest) {
 		const {
-			projectName,
-			startDate,
-			endDate,
-			status = ProjectStatus.ACTIVE,
+			project_name,
+			start_date,
+			end_date,
+			status = PROJECT_STATUS.ACTIVE,
 		} = req.body;
 
-		// Validate projectName
+		// Validate project_name
 		if (
-			!projectName ||
-			typeof projectName !== "string" ||
-			projectName.trim() === ""
+			!project_name ||
+			typeof project_name !== "string" ||
+			project_name.trim() === ""
 		) {
 			throw new Error(
-				"Validation: Project name is required and must be a non-empty string",
+				"Validation: project_name is required and must be a non-empty string",
 			);
 		}
 
-		// Validate startDate
-		if (!startDate || typeof startDate !== "string") {
+		// Validate start_date
+		if (!start_date || typeof start_date !== "string") {
 			throw new Error(
-				"Validation: Start date is required and must be a string",
+				"Validation: start_date is required and must be a string",
 			);
 		}
 
-		const startDateObject = new Date(startDate);
+		const startDateObject = new Date(start_date);
 		if (isNaN(startDateObject.getTime())) {
-			throw new Error("Validation: Start date must be a valid date");
+			throw new Error("Validation: start_date must be a valid date");
 		}
 
-		// Validate endDate (required)
-		if (!endDate || typeof endDate !== "string") {
-			throw new Error("Validation: End date is required and must be a string");
+		// Validate end_date
+		if (!end_date || typeof end_date !== "string") {
+			throw new Error("Validation: end_date is required and must be a string");
 		}
 
-		const endDateObject = new Date(endDate);
+		const endDateObject = new Date(end_date);
 		if (isNaN(endDateObject.getTime())) {
-			throw new Error("Validation: End date must be a valid date");
+			throw new Error("Validation: end_date must be a valid date");
 		}
 
-		// Validate endDate >= startDate
+		// Validate end_date >= start_date
 		if (endDateObject < startDateObject) {
-			throw new Error("Validation: End date cannot be earlier than start date");
+			throw new Error("Validation: end_date cannot be earlier than start_date");
 		}
 
 		// Validate status
-		if (!Object.values(ProjectStatus).includes(status)) {
+		if (!PROJECT_STATUS_VALUES.includes(status)) {
 			throw new Error(
-				`Validation: Status must be one of: ${Object.values(ProjectStatus).join(", ")}`,
+				`Validation: status must be one of: ${PROJECT_STATUS_VALUES.join(", ")}`,
 			);
 		}
 
 		return {
-			projectName: projectName.trim(),
-			startDate,
-			endDate,
+			project_name: project_name.trim(),
+			start_date,
+			end_date,
 			status,
 		};
 	}
 
 	/**
-	 * Validation for PATCH (Updating a project)
+	 * Validation for PATCH method
 	 */
 	private static _validatePatchRequest(req: UpdateProjectRequest) {
-		const { projectName, status, startDate, endDate } = req.body;
+		const { project_name, status, start_date, end_date } = req.body;
 
-		// Validate projectName if provided
-		if (projectName !== undefined) {
-			if (typeof projectName !== "string" || projectName.trim() === "") {
-				throw new Error("Validation: Project name must be a non-empty string");
+		// Validate project_name if provided
+		if (project_name !== undefined) {
+			if (typeof project_name !== "string" || project_name.trim() === "") {
+				throw new Error("Validation: project_name must be a non-empty string");
 			}
 		}
 
 		// Validate status if provided
 		if (status !== undefined) {
-			if (!Object.values(ProjectStatus).includes(status)) {
+			if (!PROJECT_STATUS_VALUES.includes(status)) {
 				throw new Error(
-					`Validation: Status must be one of: ${Object.values(ProjectStatus).join(", ")}`,
+					`Validation: status must be one of: ${PROJECT_STATUS_VALUES.join(", ")}`,
 				);
 			}
 		}
 
-		// Validate startDate if provided
+		// Validate start_date if provided
 		let startDateObj: Date | null = null;
-		if (startDate !== undefined) {
-			if (typeof startDate !== "string") {
-				throw new Error("Validation: Start date must be a string");
+		if (start_date !== undefined) {
+			if (typeof start_date !== "string") {
+				throw new Error("Validation: start_date must be a string");
 			}
-			startDateObj = new Date(startDate);
+			startDateObj = new Date(start_date);
 			if (isNaN(startDateObj.getTime())) {
-				throw new Error("Validation: Start date must be a valid date");
+				throw new Error("Validation: start_date must be a valid date");
 			}
 		}
 
-		// Validate endDate if provided
+		// Validate end_date if provided
 		let endDateObj: Date | null = null;
-		if (endDate !== undefined) {
-			if (typeof endDate !== "string") {
-				throw new Error("Validation: End date must be a string");
+		if (end_date !== undefined) {
+			if (typeof end_date !== "string") {
+				throw new Error("Validation: end_date must be a string");
 			}
-			endDateObj = new Date(endDate);
+			endDateObj = new Date(end_date);
 			if (isNaN(endDateObj.getTime())) {
-				throw new Error("Validation: End date must be a valid date");
+				throw new Error("Validation: end_date must be a valid date");
 			}
 		}
 
-		// Validate endDate >= startDate (if both provided or if only endDate provided with existing startDate)
+		// Validate end_date >= start_date if both are provided
 		if (startDateObj && endDateObj && endDateObj < startDateObj) {
-			throw new Error("Validation: End date cannot be earlier than start date");
+			throw new Error("Validation: end_date cannot be earlier than start_date");
 		}
 
-		return { projectName, status, startDate, endDate };
+		return {
+			project_name: project_name?.trim(),
+			status,
+			start_date,
+			end_date,
+		};
+	}
+
+	/**
+	 * Validation for materialCost method
+	 */
+	private static _validateMaterialCostRequest(req: MaterialCostRequest) {
+		const { id } = req.params;
+
+		if (!id || typeof id !== "string" || id.trim() === "") {
+			throw new Error(
+				"Validation: project id is required and must be a non-empty string",
+			);
+		}
+
+		return { id: id.trim() };
 	}
 }
