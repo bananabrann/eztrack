@@ -2,6 +2,9 @@ import { defineConfig } from "vite";
 import { reactRouter } from "@react-router/dev/vite";
 
 export default defineConfig({
+	resolve: {
+		dedupe: ["react", "react-dom"],
+	},
 	plugins: [reactRouter()],
 	server: {
 		port: 3000,
