@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../api/api";
-import type { Material } from "../types/materials";
+import type { Materials } from "../types/materials";
 
 export function LowStockSection() {
-	const [items, setItems] = useState<Material[]>([]);
+	const [items, setItems] = useState<Materials[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
@@ -12,7 +12,7 @@ export function LowStockSection() {
 		setError(null);
 		try {
 			const response = await apiFetch<{
-				data: Material[];
+				data: Materials[];
 				message: string;
 			}>("/materials/low-stock");
 
@@ -50,6 +50,7 @@ export function LowStockSection() {
 					type="button"
 					className="btn btn-sm btn-ghost"
 					onClick={fetchLowStock}
+					disabled={loading}
 				>
 					Retry
 				</button>

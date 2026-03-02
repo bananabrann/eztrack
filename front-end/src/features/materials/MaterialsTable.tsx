@@ -1,26 +1,56 @@
 import { useEffect, useState } from "react";
+import type { Materials } from "../../types/materials";
 import { apiFetch } from "../../api/api";
 
-// TODO this is going to be change later on, this is just a test
-export function ApiTestComponent() {
-	const [data, setData] = useState(null);
-	const [error, setError] = useState(null);
+export function MaterialsTable() {
+	const [materials, setMaterials] = useState<Materials[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
+	/**
+	 * Fetching the API
+	 */
 	useEffect(() => {
-		// Test a simple GET call
-		apiFetch<any>("/materials")
-			.then(result => {
-				setData(result);
+		apiFetch<{ data: Materials[]; message: string }>("/materials")
+			.then(({ data: materialsArray = [] }) => {
+				setMaterials(materialsArray);
 				setLoading(false);
 			})
-			.catch(err => {
-				setError(err.message);
+			.catch((error: unknown) => {
+				const message =
+					error instanceof Error ? error.message : "Failed to fetch materials.";
+				setError(message);
 				setLoading(false);
 			});
 	}, []);
 
-	if (loading) return <div>Loading</div>;
+	// Loading indicator
+	if (loading) return <div>Loading...</div>;
+	// Error indicator
 	if (error) return <div>Error: {error}</div>;
-	return <pre>{JSON.stringify(data, null, 2)}</pre>;
+
+	return (
+		<div className="overflow-x-auto">
+			<table className="table table-zebra">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Quantity</th>
+						<th>Unit Cost</th>
+						<th>Low Stock Threshold</th>
+					</tr>
+				</thead>
+				<tbody>
+					{materials.map(material => (
+						<tr key={material.id} className="hover">
+							<td className="font-medium">{material.name}</td>
+							<td>{material.unit_qty}</td>
+							<td>${material.unit_cost.toFixed(2)}</td>
+							<td>{material.low_stock_threshold}</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+	);
 }
