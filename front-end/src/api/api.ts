@@ -21,7 +21,7 @@ export async function apiFetch<T>(
 	// Guard for the response
 	if (!response.ok) {
 		const error = await response.json().catch(() => ({}));
-		throw new Error(error.message || `API error: ${response.status}`);
+		throw new Error(error.message || error.error || `API error: ${response.status}`);
 	}
 
 	if (response.status === 204) {
