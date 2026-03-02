@@ -7,6 +7,8 @@ export default [
 	route("login", "./routes/login.tsx"),
 	// routes to tools page
 	route("tools", "./routes/tools.tsx"),
+	// routes to tools management page
+	route("toolsManagement", "./routes/toolsManagement.tsx"),
 	// routes to materials page
 	route("materials", "./routes/materials.tsx"),
 	// routes to projects page

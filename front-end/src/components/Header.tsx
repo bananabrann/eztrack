@@ -27,7 +27,7 @@ export default function Header() {
 						Home
 					</NavLink>
 					<NavLink
-						to="/tools"
+						to="/toolsManagement"
 						className="whitespace-nowrap"
 						aria-label="Go to Tools Management"
 					>
