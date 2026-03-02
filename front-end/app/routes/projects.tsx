@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getProjects } from "../../src/api/projects-api";
 import { Project } from "../../src/types/projects";
 
-
+import { Toolbox } from "lucide-react";
 
 export default function Projects() {
 
@@ -43,9 +43,10 @@ export default function Projects() {
             {projects.length === 0 ? (
                 <div className="text-gray-500">No projects found. Please create a new project.</div>
             ) : (
-                <ul className="list-row bg-base-100 rounded-box shadow-md">
+                <ul className="list w-full max-w-md space-y-4">
                     {projects.map((project) => (
-                        <li key={project.id} className="list-row">
+                        <li key={project.id} className="list-row  rounded-box shadow-md">
+                            <Toolbox className="w-6 h-6 text-gray-500" />
                             <div>{project.project_name}</div>
                         </li>
                     ))}
