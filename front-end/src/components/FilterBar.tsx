@@ -21,7 +21,7 @@ export function FilterBar({
 			<select
 				value={value}
 				onChange={e => onChange(e.target.value)}
-				className="w-full border-[--tertiary-color] border rounded-lg px-4 py-2 focus:outline:none focus:ring-2 focus:ring-[--secondary-color]"
+				className="w-full border-[--tertiary-color] border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[--secondary-color]"
 			>
 				<option value="">{label}</option>
 				{options.map(o => (

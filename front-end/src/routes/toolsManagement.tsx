@@ -16,7 +16,7 @@ export default function ToolsManagementRoute() {
 	return (
 		<>
 			<main className="max-w-7xl mx-auto px-6 py-16">
-				<h1 className="text-[#4F5D75] text-3xl font-bold mb-6 flex items-center justify-center">
+				<h1 className="text-[--tertiary-color] text-3xl font-bold mb-6 flex items-center justify-center">
 					Tools Management
 				</h1>
 				<SearchBar
