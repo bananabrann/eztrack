@@ -7,6 +7,9 @@ export function MaterialsTable() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
+	/**
+	 * Fetching the API
+	 */
 	useEffect(() => {
 		apiFetch<{ data: Materials[]; message: string }>("/materials")
 			.then(({ data: materialsArray = [] }) => {
