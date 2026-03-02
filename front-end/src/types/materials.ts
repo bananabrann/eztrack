@@ -1,7 +1,7 @@
 /**
  * Types interface for the materials
  */
-export interface Material {
+export interface Materials {
 	id: string;
 	name: string;
 	unit_qty: number;
