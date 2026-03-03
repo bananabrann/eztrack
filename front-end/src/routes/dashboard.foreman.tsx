@@ -10,9 +10,18 @@ export default function Foreman() {
 				<h1 className="text-2xl font-semibold text-primary">Welcome Foreman</h1>
 
 				<div className="flex w-full flex-col items-center gap-6">
-					<ModuleCard label="Tool Management" onClick={() => navigate("/toolsManagement")} />
-					<ModuleCard label="Materials Management" onClick={() => navigate("/materials")} />
-					<ModuleCard label="Project Management" onClick={() => navigate("/projects")} />
+					<ModuleCard
+						label="Tool Management"
+						onClick={() => navigate("/toolsManagement")}
+					/>
+					<ModuleCard
+						label="Materials Management"
+						onClick={() => navigate("/materials")}
+					/>
+					<ModuleCard
+						label="Project Management"
+						onClick={() => navigate("/projects")}
+					/>
 				</div>
 			</div>
 		</main>
