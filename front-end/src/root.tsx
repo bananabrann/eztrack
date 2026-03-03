@@ -3,6 +3,7 @@ import type { Route } from "./+types/root";
 import stylesheet from "./styles.css?url";
 
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 export const links: Route.LinksFunction = () => [
 	{ rel: "stylesheet", href: stylesheet },
@@ -20,6 +21,7 @@ export default function App() {
 				<Header />
 				<Outlet />
 				<Scripts />
+				<Footer />
 			</body>
 		</html>
 	);
