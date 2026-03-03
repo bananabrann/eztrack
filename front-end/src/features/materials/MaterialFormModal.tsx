@@ -10,12 +10,12 @@ type Props = {
 	projectId: string;
 };
 
-const emptyForm = (): Omit<Materials, "id"> => ({
+const emptyForm = (projectId: string): Omit<Materials, "id"> => ({
 	name: "",
 	unit_qty: 0,
 	unit_cost: 0,
 	low_stock_threshold: 0,
-	project_id: materials.project_id,
+	project_id: projectId,
 });
 
 export default function MaterialModalForm({
@@ -23,10 +23,11 @@ export default function MaterialModalForm({
 	onClose,
 	onSubmit,
 	initialData,
+	projectId,
 }: Props) {
 	const [form, setForm] = useState<
 		Materials | (Omit<Materials, "id"> & { id?: string })
-	>(initialData ?? emptyForm());
+	>(initialData ?? emptyForm(projectId));
 
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -34,9 +35,9 @@ export default function MaterialModalForm({
 	useEffect(() => {
 		if (isOpen) {
 			setError(null);
-			setForm(initialData ?? emptyForm());
+			setForm(initialData ?? emptyForm(projectId));
 		}
-	}, [isOpen, initialData]);
+	}, [isOpen, initialData, projectId]);
 
 	if (!isOpen) return null;
 
@@ -49,8 +50,6 @@ export default function MaterialModalForm({
 		setLoading(true);
 		setError(null);
 
-		const projectId = (form as any).project_id;
-
 		// Build payload (exclude id when creating)
 		const payload: any = {
 			name: (form as any).name,
@@ -61,15 +60,9 @@ export default function MaterialModalForm({
 
 		try {
 			if ((form as any).id) {
-				// Update existing material — include project_id as query param per backend requirement
-				if (!projectId || String(projectId).trim() === "") {
-					throw new Error("Validation: project_id is required");
-				}
-
+				// Update existing material
 				await apiFetch<void>(
-					`/materials/${encodeURIComponent(String((form as any).id))}?project_id=${encodeURIComponent(
-						String(projectId),
-					)}`,
+					`/materials/${encodeURIComponent(String((form as any).id))}?project_id=${encodeURIComponent(projectId)}`,
 					{
 						method: "PUT",
 						body: JSON.stringify(payload),
@@ -77,15 +70,11 @@ export default function MaterialModalForm({
 				);
 
 				const updated = { ...(form as any), ...payload } as Materials;
-				onSubmit?.(form as Materials);
+				onSubmit?.(updated);
 			} else {
-				// Creating new material: require projectId as query param
-				if (!projectId || String(projectId).trim() === "") {
-					throw new Error("Validation: project_id is required");
-				}
-
+				// Creating new material
 				const created = await apiFetch<Materials>(
-					`/materials?project_id=${encodeURIComponent(String(projectId))}`,
+					`/materials?project_id=${encodeURIComponent(projectId)}`,
 					{
 						method: "POST",
 						body: JSON.stringify(payload),
@@ -102,95 +91,102 @@ export default function MaterialModalForm({
 	}
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center">
-			<div className="absolute inset-0 bg-black opacity-40" onClick={onClose} />
-			<form
-				onSubmit={handleSubmit}
-				className="relative z-10 w-full max-w-lg rounded bg-white p-6 shadow-lg"
-			>
-				<h2 className="mb-4 text-lg font-medium">
+		<div className={`modal ${isOpen ? "modal-open" : ""}`}>
+			<div className="modal-box">
+				<h3 className="font-bold text-lg">
 					{(form as any).id ? "Edit" : "Add"} Material
-				</h2>
+				</h3>
 
-				{error && <div className="mb-3 text-sm text-red-600">{error}</div>}
+				{error && <div className="alert alert-error mt-4">{error}</div>}
 
-				<label className="mb-2 block">
-					<div className="text-sm">Name</div>
-					<input
-						className="w-full rounded border px-3 py-2"
-						value={(form as any).name}
-						onChange={e => update("name", e.target.value)}
-						required
-					/>
-				</label>
-
-				<div className="flex gap-3">
-					<label className="flex-1">
-						<div className="text-sm">Unit Qty</div>
+				<form onSubmit={handleSubmit} className="mt-4">
+					<div className="form-control">
+						<label className="label" htmlFor="material-name">
+							<span className="label-text">Name</span>
+						</label>
 						<input
+							id="material-name"
+							type="text"
+							className="input input-bordered"
+							value={(form as any).name}
+							onChange={e => update("name", e.target.value)}
+							required
+						/>
+					</div>
+
+					<div className="form-control mt-4">
+						<label className="label" htmlFor="material-unit-qty">
+							<span className="label-text">Unit Qty</span>
+						</label>
+						<input
+							id="material-unit-qty"
 							type="number"
-							className="w-full rounded border px-3 py-2"
+							className="input input-bordered"
+							placeholder="Unit Qty"
 							value={(form as any).unit_qty}
 							onChange={e => update("unit_qty", Number(e.target.value))}
 							min={0}
 							step={1}
 						/>
-					</label>
+					</div>
 
-					<label className="flex-1">
-						<div className="text-sm">Unit Cost</div>
+					<div className="form-control mt-4">
+						<label className="label" htmlFor="material-unit-cost">
+							<span className="label-text">Unit Cost</span>
+						</label>
 						<input
+							id="material-unit-cost"
 							type="number"
-							className="w-full rounded border px-3 py-2"
+							className="input input-bordered"
+							placeholder="Unit Cost"
 							value={(form as any).unit_cost}
 							onChange={e => update("unit_cost", Number(e.target.value))}
 							min={0}
 							step={0.01}
 						/>
-					</label>
-				</div>
+					</div>
 
-				<label className="mb-2 block mt-3">
-					<div className="text-sm">Low Stock Threshold</div>
-					<input
-						type="number"
-						className="w-full rounded border px-3 py-2"
-						value={(form as any).low_stock_threshold}
-						onChange={e =>
-							update("low_stock_threshold", Number(e.target.value))
-						}
-						min={0}
-						step={1}
-					/>
-				</label>
+					<div className="form-control mt-4">
+						<label className="label" htmlFor="material-low-stock-threshold">
+							<span className="label-text">Low Stock Threshold</span>
+						</label>
+						<input
+							id="material-low-stock-threshold"
+							type="number"
+							className="input input-bordered"
+							placeholder="Low Stock Threshold"
+							value={(form as any).low_stock_threshold}
+							onChange={e =>
+								update("low_stock_threshold", Number(e.target.value))
+							}
+							min={0}
+							step={1}
+						/>
+					</div>
 
-				<label className="mb-4 block">
-					<div className="text-sm">Project ID</div>
-					<input
-						className="w-full rounded border px-3 py-2"
-						value={(form as any).project_id}
-						onChange={e => update("project_id", e.target.value)}
-					/>
-				</label>
-
-				<div className="mt-4 flex justify-end gap-3">
-					<button
-						type="button"
-						className="rounded border px-4 py-2"
-						onClick={onClose}
-						disabled={loading}
-					>
-						Cancel
-					</button>
-					<button
-						type="submit"
-						className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
-						disabled={loading}
-					>
-						{loading ? "Saving..." : "Save"}
-					</button>
-				</div>
-			</form>
+					<div className="modal-action">
+						<button
+							type="button"
+							className="btn"
+							onClick={onClose}
+							disabled={loading}
+						>
+							Cancel
+						</button>
+						<button
+							type="submit"
+							className="btn btn-primary"
+							disabled={loading}
+						>
+							{loading ? (
+								<span className="loading loading-spinner loading-sm"></span>
+							) : (
+								"Save"
+							)}
+						</button>
+					</div>
+				</form>
+			</div>
 		</div>
 	);
 }
