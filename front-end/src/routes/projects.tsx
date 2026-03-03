@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { SquarePlus, Toolbox } from "lucide-react";
 import { apiFetch } from "../api/api";
+import { useNavigate } from "react-router";
 
 import { Button } from "../components/Button";
 
@@ -10,6 +11,7 @@ type Project = {
 };
 
 export default function Projects() {
+	const navigate = useNavigate();
 	const [projects, setProjects] = useState<Project[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
@@ -24,7 +26,15 @@ export default function Projects() {
 				});
 				setProjects(response.data);
 			} catch (err) {
-				setError("Failed to load projects. Please try again later.");
+				const message =
+					err instanceof Error
+						? err.message
+						: "Failed to load projects. Please try again later.";
+				if (message.toLowerCase().includes("unauthorized")) {
+					navigate("/login", { replace: true });
+					return;
+				}
+				setError(message);
 				console.error("Error fetching projects:", err);
 			} finally {
 				setLoading(false);
@@ -32,7 +42,7 @@ export default function Projects() {
 		};
 
 		fetchProjects();
-	}, []);
+	}, [navigate]);
 
 	// show loading state
 	if (loading) {
@@ -55,28 +65,61 @@ export default function Projects() {
 	return (
 		<div className="flex flex-col gap-6 items-center mt-8">
 			<h1 className="text-2xl font-bold mb-8">Project Management</h1>
-			<Button
-				label="Create New Project"
-				variant="orange"
-				icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
-				onClick={() => {
-					// Handle create new project logic
-				}}
-			/>
+
+			{/* Load projects */}
 			{projects.length === 0 ? (
 				<div className="text-gray-500">
 					No projects found. Please create a new project.
 				</div>
 			) : (
-				<ul className="list w-full max-w-md space-y-4 mt-6">
-					{projects.map(project => (
-						<li key={project.id} className="list-row rounded-box shadow-md">
-							<Toolbox className="w-6 h-6 text-gray-500" />
-							<div>{project.project_name}</div>
-						</li>
-					))}
-				</ul>
+				<div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 w-full max-w-3xl mt-6 mb-6">
+					<table className="table table-zebra">
+						<thead>
+							<tr>
+								<th className="w-16">#</th>
+								<th>Project Name</th>
+							</tr>
+						</thead>
+						<tbody>
+							{projects.map((project, index) => (
+								<tr key={project.id}>
+									<td className="text-gray-500">{index + 1}</td>
+									<td className="flex items-center gap-3">
+										<Toolbox className="w-5 h-5 text-gray-500" />
+										<span>{project.project_name}</span>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
 			)}
+
+			{/* Create New Project */}
+			<Button
+				label="Create New Project"
+				variant="orange"
+				icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
+				onClick={() => {
+					const modal = document.getElementById(
+						"new_project_modal",
+					) as HTMLDialogElement | null;
+					modal?.showModal();
+				}}
+			/>
+			<dialog id="new_project_modal" className="modal modal-bottom sm:modal-middle">
+				<div className="modal-box">
+					<h3 className="font-bold text-lg">Hello!</h3>
+					<p className="py-4">Press ESC key or click the button below to close</p>
+					<div className="modal-action">
+						<form method="dialog">
+							{/* if there is a button in form, it will close the modal */}
+							<button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+						</form>
+					</div>
+				</div>
+			</dialog>
+
 		</div>
 	);
 }
