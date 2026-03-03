@@ -32,6 +32,7 @@ export default function Projects() {
 		fetchProjects();
 	}, []);
 
+	// show loading state
 	if (loading) {
 		return (
 			<div className="flex justify-center items-center h-screen">
@@ -40,6 +41,7 @@ export default function Projects() {
 		);
 	}
 
+	/// show error state
 	if (error) {
 		return (
 			<div className="flex justify-center items-center h-screen text-red-500">
