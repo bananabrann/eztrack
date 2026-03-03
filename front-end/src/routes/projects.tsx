@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { SquarePlus, Toolbox } from "lucide-react";
+import { SquarePlus } from "lucide-react";
 import { apiFetch } from "../api/api";
 import { useNavigate } from "react-router";
 
@@ -85,7 +85,6 @@ export default function Projects() {
 								<tr key={project.id}>
 									<td className="text-gray-500">{index + 1}</td>
 									<td className="flex items-center gap-3">
-										<Toolbox className="w-5 h-5 text-gray-500" />
 										<span>{project.project_name}</span>
 									</td>
 								</tr>
