@@ -5,11 +5,7 @@ import { apiFetch } from "../../api/api";
 import MaterialModalForm from "./MaterialFormModal";
 import { Button } from "../../components/Button";
 
-type Props = {
-	projectId: string;
-};
-
-export function MaterialsTable({ projectId }: Props) {
+export function MaterialsTable() {
 	const [projects, setProjects] = useState<Project[]>([]);
 	const [selectedProjectId, setSelectedProjectId] = useState<string>("");
 	const [materials, setMaterials] = useState<Materials[]>([]);
