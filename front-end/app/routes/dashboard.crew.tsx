@@ -1,9 +1,7 @@
-import { useNavigate } from "react-router";
-import { ModuleCard } from "../components/ModuleCard";
+import { ModuleCard } from "../../src/components/ModuleCard";
 
 export default function Crew() {
-	const navigate = useNavigate();
-	const handleToolsClick = () => navigate("/toolsManagement");
+	const handleClick = () => {};
 
 	return (
 		<main className="min-h-screen bg-background px-6">
@@ -11,7 +9,7 @@ export default function Crew() {
 				<h1 className="text-2xl font-semibold text-primary">Welcome Crew</h1>
 
 				<div className="flex w-full flex-col items-center gap-6">
-					<ModuleCard label="Tool Management" onClick={handleToolsClick} />
+					<ModuleCard label="Tool Management" onClick={handleClick} />
 				</div>
 			</div>
 		</main>

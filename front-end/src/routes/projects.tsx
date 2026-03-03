@@ -1,39 +1,72 @@
-import React, { useState } from "react";
-import { Button } from "../../src/components/Button";
-import MaterialFormModal from "../../src/features/materials/MaterialFormModal";
-import type { Materials } from "../../src/types/materials";
+import { useEffect, useState } from "react";
+import { Toolbox } from "lucide-react";
+import { apiFetch } from "../api/api";
+
+type Project = {
+	id: string | number;
+	project_name: string;
+};
 
 export default function Projects() {
-	const [open, setOpen] = useState(false);
-	const [materials, setMaterials] = useState<Materials[]>([]);
+	const [projects, setProjects] = useState<Project[]>([]);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [error, setError] = useState<string | null>(null);
 
-	function handleSaved(m: Materials) {
-		setMaterials(prev => [m, ...prev]);
+	useEffect(() => {
+		const fetchProjects = async () => {
+			try {
+				setLoading(true);
+				setError(null);
+				const response = await apiFetch<{ data: Project[] }>("/projects", {
+					method: "GET",
+				});
+				setProjects(response.data);
+			} catch (err) {
+				setError("Failed to load projects. Please try again later.");
+				console.error("Error fetching projects:", err);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchProjects();
+	}, []);
+
+	// show loading state
+	if (loading) {
+		return (
+			<div className="flex justify-center items-center h-screen">
+				Loading projects...
+			</div>
+		);
+	}
+
+	/// show error state
+	if (error) {
+		return (
+			<div className="flex justify-center items-center h-screen text-red-500">
+				{error}
+			</div>
+		);
 	}
 
 	return (
 		<div className="flex flex-col gap-6 items-center mt-8">
-			<h1 className="text-2xl font-bold">Projects</h1>
-			<div className="flex w-52 flex-col gap-4">
-				<div className="skeleton h-32 w-full"></div>
-				<div className="skeleton h-4 w-28"></div>
-				<div className="skeleton h-4 w-full"></div>
-				<div className="skeleton h-4 w-full"></div>
-			</div>
-			<div className="w-52">
-				<Button
-					label="Add Material"
-					variant="blue"
-					onClick={() => setOpen(true)}
-				/>
-			</div>
-
-			<MaterialFormModal
-				isOpen={open}
-				onClose={() => setOpen(false)}
-				onSubmit={handleSaved}
-        projectId=""
-			/>
+			<h1 className="text-2xl font-bold mb-8">Project Management</h1>
+			{projects.length === 0 ? (
+				<div className="text-gray-500">
+					No projects found. Please create a new project.
+				</div>
+			) : (
+				<ul className="list w-full max-w-md space-y-4">
+					{projects.map(project => (
+						<li key={project.id} className="list-row rounded-box shadow-md">
+							<Toolbox className="w-6 h-6 text-gray-500" />
+							<div>{project.project_name}</div>
+						</li>
+					))}
+				</ul>
+			)}
 		</div>
 	);
 }

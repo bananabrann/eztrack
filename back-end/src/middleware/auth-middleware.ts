@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import supabaseClient from "../config/supabase";
+import supabaseClient, { createSupabaseUserClient } from "../config/supabase";
 
 /**
  * User roles enum in Supabase database
@@ -58,7 +58,8 @@ export const verifyAuth = async (
 		}
 
 		// Fetch the user's profile from the database
-		const { data: account, error: accountError } = await supabaseClient
+		const userSupabaseClient = createSupabaseUserClient(token);
+		const { data: account, error: accountError } = await userSupabaseClient
 			.from("accounts")
 			.select("role, name")
 			.eq("id", user.id)

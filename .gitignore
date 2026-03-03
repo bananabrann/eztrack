@@ -40,3 +40,4 @@ supabase/.temp
 
 # Misc
 .react-router/
++routes.ts
