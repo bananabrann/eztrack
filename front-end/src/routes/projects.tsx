@@ -3,7 +3,7 @@ import { Button } from "../../src/components/Button";
 import MaterialFormModal from "../../src/features/materials/MaterialFormModal";
 import type { Materials } from "../../src/types/materials";
 
-export default function Materials() {
+export default function Projects() {
 	const [open, setOpen] = useState(false);
 	const [materials, setMaterials] = useState<Materials[]>([]);
 
@@ -13,7 +13,7 @@ export default function Materials() {
 
 	return (
 		<div className="flex flex-col gap-6 items-center mt-8">
-			<h1 className="text-2xl font-bold">Materials</h1>
+			<h1 className="text-2xl font-bold">Projects</h1>
 			<div className="flex w-52 flex-col gap-4">
 				<div className="skeleton h-32 w-full"></div>
 				<div className="skeleton h-4 w-28"></div>
