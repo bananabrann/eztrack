@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Materials } from "../../types/materials";
 import { apiFetch } from "../../api/api";
+import { TriangleAlert } from "lucide-react";
 
 export function MaterialsTable() {
 	const [materials, setMaterials] = useState<Materials[]>([]);
@@ -43,7 +44,14 @@ export function MaterialsTable() {
 				<tbody>
 					{materials.map(material => (
 						<tr key={material.id} className="hover">
-							<td className="font-medium">{material.name}</td>
+							<td className="font-medium">
+								<span className="flex items-center gap-2">
+									{material.name}
+									{material.unit_qty < material.low_stock_threshold && (
+										<TriangleAlert size={16} className="text-warning" />
+									)}
+								</span>
+							</td>
 							<td>{material.unit_qty}</td>
 							<td>${material.unit_cost.toFixed(2)}</td>
 							<td>{material.low_stock_threshold}</td>
