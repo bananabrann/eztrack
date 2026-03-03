@@ -1,8 +1,20 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import { Logo } from "./Logo";
 import { LogOut } from "lucide-react";
+import { logout } from "../features/auth/authApi";
 
-export default function Header() {
+interface HeaderProps {
+	role?: string | null;
+}
+
+export default function Header({ role }: HeaderProps) {
+	const navigate = useNavigate();
+
+	const handleLogout = async () => {
+		await logout();
+		navigate("/login", { replace: true });
+	};
+
 	return (
 		<header className="navbar bg-tertiary shadow-sm px-6 text-white">
 			{/* LEFT: Logo */}
@@ -33,30 +45,36 @@ export default function Header() {
 					>
 						Tools Management
 					</NavLink>
-					<NavLink
-						to="/materials"
-						className="whitespace-nowrap"
-						aria-label="Go to Materials Management"
-					>
-						Materials Management
-					</NavLink>
-					<NavLink
-						to="/projects"
-						className="whitespace-nowrap"
-						aria-label="Go to Project Management"
-					>
-						Project Management
-					</NavLink>
+					{role !== "CREW" && (
+						<>
+							<NavLink
+								to="/materials"
+								className="whitespace-nowrap"
+								aria-label="Go to Materials Management"
+							>
+								Materials Management
+							</NavLink>
+							<NavLink
+								to="/projects"
+								className="whitespace-nowrap"
+								aria-label="Go to Project Management"
+							>
+								Project Management
+							</NavLink>
+						</>
+					)}
 				</nav>
 			</div>
 
 			{/* RIGHT: User Logout */}
 			<div className="navbar-end">
 				<button
+					onClick={handleLogout}
 					className="inline-flex items-center rounded-md border border-current px-3 py-1.5 text-sm leading-none hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-current focus:ring-offset-2"
 					aria-label="Log Out"
 				>
-					<LogOut className="w-8 h-8 mr-2" />
+					<LogOut className="w-5 h-5 mr-2" />
+					<span>Logout</span>
 				</button>
 			</div>
 		</header>
