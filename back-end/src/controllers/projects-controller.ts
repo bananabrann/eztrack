@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import supabaseClient from "../config/supabase";
+import { createSupabaseUserClient } from "../config/supabase";
 import { Database, Constants } from "../types/database.types";
 
 export type Project = Database["public"]["Tables"]["projects"]["Row"];
@@ -51,6 +51,8 @@ export default class ProjectsController {
 	 */
 	static async get(req: GetProjectsRequest, res: Response): Promise<void> {
 		try {
+			const supabaseClient = ProjectsController._supabaseForRequest(req);
+
 			// Validates and extract status filter from the query
 			const { status } = ProjectsController._validateGetRequest(req);
 
@@ -87,6 +89,8 @@ export default class ProjectsController {
 	 */
 	static async post(req: CreateProjectRequest, res: Response): Promise<void> {
 		try {
+			const supabaseClient = ProjectsController._supabaseForRequest(req);
+
 			// Validate request body and extract validated data
 			const validation = ProjectsController._validatePostRequest(req);
 			const { project_name, start_date, end_date, status } = validation;
@@ -128,6 +132,8 @@ export default class ProjectsController {
 	 */
 	static async patch(req: UpdateProjectRequest, res: Response): Promise<void> {
 		try {
+			const supabaseClient = ProjectsController._supabaseForRequest(req);
+
 			// Extract project ID from URL params
 			const { id } = req.params;
 
@@ -189,6 +195,8 @@ export default class ProjectsController {
 	 */
 	static async delete(req: DeleteProjectRequest, res: Response): Promise<void> {
 		try {
+			const supabaseClient = ProjectsController._supabaseForRequest(req);
+
 			// Extract project ID from URL params
 			const { id } = req.params;
 
@@ -231,6 +239,8 @@ export default class ProjectsController {
 		res: Response,
 	): Promise<void> {
 		try {
+			const supabaseClient = ProjectsController._supabaseForRequest(req);
+
 			// Extract the project ID from the request path parameters
 			const { id: project_id } =
 				ProjectsController._validateMaterialCostRequest(req);
@@ -318,6 +328,16 @@ export default class ProjectsController {
 		}
 
 		return { status: status as string | undefined };
+	}
+
+	private static _supabaseForRequest(req: Request) {
+		const token = req.headers.authorization?.split(" ")[1];
+
+		if (!token) {
+			throw new Error("Validation: Missing bearer token");
+		}
+
+		return createSupabaseUserClient(token);
 	}
 
 	/**
