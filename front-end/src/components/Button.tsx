@@ -25,10 +25,10 @@ export function Button({
 
 	if (variant === "blue") {
 		variantClasses =
-			"bg-tertiary hover:bg-[#3f4b60] active:bg-[#2f394a] focus-visible:ring-tertiary";
+			"bg-primary hover:bg-secondary active:bg-tertiary focus-visible:ring-tertiary";
 	} else {
 		variantClasses =
-			"bg-secondary hover:bg-[#cf4f18] active:bg-[#b94414] focus-visible:ring-secondary";
+			"bg-secondary hover:bg-tertiary active:bg-enabled focus-visible:ring-secondary";
 	}
 
 	return (
