@@ -3,6 +3,7 @@ import type { Materials } from "../../types/materials";
 import type { Project } from "../../types/projects";
 import { apiFetch } from "../../api/api";
 import MaterialModalForm from "./MaterialFormModal";
+import { FilterBar } from "../../components/FilterBar";
 import { Button } from "../../components/Button";
 
 export function MaterialsTable() {
@@ -33,7 +34,7 @@ export function MaterialsTable() {
 	};
 
 	/**
-	 * Fetching the API - filtered by projectId
+	 * Fetching the API - filtered by selectedProjectId
 	 */
 	const fetchMaterials = () => {
 		if (!selectedProjectId || selectedProjectId.trim() === "") {
@@ -49,7 +50,14 @@ export function MaterialsTable() {
 			`/materials?project_id=${encodeURIComponent(selectedProjectId)}`,
 		)
 			.then(({ data: materialsArray = [] }) => {
-				setMaterials(materialsArray);
+				// Ensure numeric fields are numbers, defaulting to 0 if null/undefined
+				const sanitizedMaterials = materialsArray.map(material => ({
+					...material,
+					unit_qty: Number(material.unit_qty) || 0,
+					unit_cost: Number(material.unit_cost) || 0,
+					low_stock_threshold: Number(material.low_stock_threshold) || 0,
+				}));
+				setMaterials(sanitizedMaterials);
 				setLoading(false);
 			})
 			.catch((error: unknown) => {
@@ -68,78 +76,68 @@ export function MaterialsTable() {
 		fetchMaterials();
 	}, [selectedProjectId]);
 
-	// Handle opening modal for new material
+	/**
+	 * Handle opening modal for new material
+	 */
 	const handleAddMaterial = () => {
 		setEditingMaterial(null);
 		setIsModalOpen(true);
 	};
 
-	// Handle opening modal for editing material
+	/**
+	 * Handle opening modal for editing material
+	 */
 	const handleEditMaterial = (material: Materials) => {
 		setEditingMaterial(material);
 		setIsModalOpen(true);
 	};
 
-	// Handle material submission (add or edit)
+	/**
+	 * Handle material submission (add or edit)
+	 */
 	const handleMaterialSubmit = (material: Materials) => {
+		const sanitizedMaterial = {
+			...material,
+			unit_qty: Number(material.unit_qty) || 0,
+			unit_cost: Number(material.unit_cost) || 0,
+			low_stock_threshold: Number(material.low_stock_threshold) || 0,
+		};
+
 		if (editingMaterial) {
-			// Update existing material in list
 			setMaterials(prev =>
-				prev.map(m => (m.id === material.id ? material : m)),
+				prev.map(m => (m.id === sanitizedMaterial.id ? sanitizedMaterial : m)),
 			);
 		} else {
-			// Add new material to list
-			setMaterials(prev => [...prev, material]);
+			setMaterials(prev => [...prev, sanitizedMaterial]);
 		}
 	};
 
-	// Handle closing modal
+	/**
+	 * Handle closing modal
+	 */
 	const handleCloseModal = () => {
 		setIsModalOpen(false);
 		setEditingMaterial(null);
 	};
 
-	// Handle project selection
-	const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		setSelectedProjectId(e.target.value);
-	};
+	const projectOptions = projects.map(project => ({
+		value: project.id,
+		label: project.project_name,
+	}));
 
 	return (
 		<div>
-			{/* Project Selection */}
-			<div className="mb-4">
-				<label className="form-control w-full max-w-xs">
-					<div className="label">
-						<span className="label-text">Select Project</span>
-					</div>
-					<select
-						value={selectedProjectId}
-						onChange={handleProjectChange}
-						className="select select-bordered"
-					>
-						<option value="">Select a project...</option>
-						{projects.map(project => (
-							<option key={project.id} value={project.id}>
-								{project.project_name}
-							</option>
-						))}
-					</select>
-				</label>
-			</div>
+			{/* Project Selection using FilterBar */}
+			<FilterBar
+				value={selectedProjectId}
+				onChange={value => setSelectedProjectId(value)}
+				options={projectOptions}
+				label="Select Project"
+			/>
 
 			{/* Show materials only if project is selected */}
 			{selectedProjectId ? (
 				<>
-					{/* Add Material Button */}
-					{/* Add Material Button */}
-					<div className="mb-4 flex justify-end">
-						<Button
-							label="Add Material"
-							variant="blue"
-							onClick={handleAddMaterial}
-						/>
-					</div>
-
 					{/* Loading indicator */}
 					{loading && (
 						<div className="loading loading-spinner loading-md"></div>
@@ -166,7 +164,7 @@ export function MaterialsTable() {
 										<tr key={material.id}>
 											<td className="font-medium">{material.name}</td>
 											<td>{material.unit_qty}</td>
-											<td>${material.unit_cost.toFixed(2)}</td>
+											<td>{`$${(material.unit_cost ?? 0).toFixed(2)}`}</td>
 											<td>{material.low_stock_threshold}</td>
 											<td>
 												<button
@@ -186,6 +184,19 @@ export function MaterialsTable() {
 			) : (
 				<div className="alert alert-warning">
 					Please select a project to view and manage materials.
+				</div>
+			)}
+
+			{/* Add Material Button using Button component */}
+			{selectedProjectId && (
+				<div className="mb-4 flex justify-center mt-8">
+					<div className="btn-wide">
+						<Button
+							label="Add Material"
+							variant="blue"
+							onClick={handleAddMaterial}
+						/>
+					</div>
 				</div>
 			)}
 
