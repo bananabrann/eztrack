@@ -1,9 +1,12 @@
+import type { ReactNode } from "react";
+
 type Variant = "blue" | "orange";
 
 type ButtonProps = {
 	label: string;
 	variant: Variant;
 	onClick: React.MouseEventHandler<HTMLButtonElement>;
+	icon?: ReactNode;
 	ariaLabel?: string;
 	disabled?: boolean;
 	type?: "button" | "submit" | "reset";
@@ -13,6 +16,7 @@ export function Button({
 	label,
 	variant,
 	onClick,
+	icon,
 	ariaLabel,
 	disabled = false,
 	type = "button",
@@ -36,6 +40,7 @@ export function Button({
 			className={[
 				"w-full max-w-[420px]",
 				"rounded-md px-6 py-3",
+				"inline-flex items-center justify-center gap-2",
 				"text-white font-semibold",
 				"transition-colors",
 				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
@@ -44,6 +49,7 @@ export function Button({
 					: variantClasses,
 			].join(" ")}
 		>
+			{icon}
 			{label}
 		</button>
 	);

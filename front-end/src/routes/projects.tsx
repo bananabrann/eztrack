@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { Toolbox } from "lucide-react";
+import { SquarePlus, Toolbox } from "lucide-react";
 import { apiFetch } from "../api/api";
+
+import { Button } from "../components/Button";
 
 type Project = {
 	id: string | number;
@@ -53,12 +55,20 @@ export default function Projects() {
 	return (
 		<div className="flex flex-col gap-6 items-center mt-8">
 			<h1 className="text-2xl font-bold mb-8">Project Management</h1>
+			<Button
+				label="Create New Project"
+				variant="orange"
+				icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
+				onClick={() => {
+					// Handle create new project logic
+				}}
+			/>
 			{projects.length === 0 ? (
 				<div className="text-gray-500">
 					No projects found. Please create a new project.
 				</div>
 			) : (
-				<ul className="list w-full max-w-md space-y-4">
+				<ul className="list w-full max-w-md space-y-4 mt-6">
 					{projects.map(project => (
 						<li key={project.id} className="list-row rounded-box shadow-md">
 							<Toolbox className="w-6 h-6 text-gray-500" />
