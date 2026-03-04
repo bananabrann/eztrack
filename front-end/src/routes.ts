@@ -22,6 +22,8 @@ export default [
 		route("materials", "./routes/materials.tsx"),
 		// routes to projects page
 		route("projects", "./routes/projects.tsx"),
+		// routes to project details page
+		route("projects/:projectId", "./routes/projects.$projectId.tsx"),
 		// routes to foremand dashboard
 		route("dashboard/foreman", "./routes/dashboard.foreman.tsx"),
 		// routes to crew dashboard
