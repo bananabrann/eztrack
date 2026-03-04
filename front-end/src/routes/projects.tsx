@@ -144,6 +144,9 @@ export default function Projects() {
 								/>
 							</label>
 							<div className="mt-4 mb-4">
+								<Button 
+									label="Cancel" 	
+									variant="orange" />
 								<Button
 									label="Save Project"
 									variant="blue"
