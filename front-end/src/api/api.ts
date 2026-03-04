@@ -13,17 +13,26 @@ export async function apiFetch<T>(
 		...options,
 		headers: {
 			"Content-Type": "application/json",
-			Authorization: token ? `Bearer ${token}` : "",
+			...(token ? { Authorization: `Bearer ${token}` } : {}),
 			...options?.headers,
 		},
 	});
 
 	// Guard for the response
 	if (!response.ok) {
-		const error = await response.json().catch(() => ({}));
-		throw new Error(
-			error.message || error.error || `API error: ${response.status}`,
-		);
+		const responseText = await response.text();
+		let message = `API error: ${response.status}`;
+
+		if (responseText) {
+			try {
+				const parsed = JSON.parse(responseText);
+				message = parsed.message || parsed.error || message;
+			} catch {
+				message = responseText;
+			}
+		}
+
+		throw new Error(message);
 	}
 
 	if (response.status === 204) {
