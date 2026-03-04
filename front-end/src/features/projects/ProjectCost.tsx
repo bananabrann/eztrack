@@ -1,14 +1,13 @@
 type ProjectCostProps = {
-	totalCost: number;
+    totalCost: number;
 };
 
 export default function ProjectCost({ totalCost }: ProjectCostProps) {
-	return (
-		<div className="mt-6 text-center">
-			<h2 className="text-xl font-semibold text-secondary">Total Project Cost</h2>
-			<p className="text-2xl font-bold text-secondary">
-				${totalCost.toFixed(2)}
-			</p>
-		</div>
-	);
+    return (
+        <div className="card bg-primary text-center text-primary-content w-100 max-w-4xl mx-auto mb-6 mt-8">
+            <div className="card-body">
+                <h2 className="text-xl font-bold text-secondary">Total Project Cost: ${totalCost.toFixed(2)}</h2>
+            </div>
+        </div>
+    );
 }
