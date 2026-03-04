@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
 import { SquarePlus } from "lucide-react";
-import { apiFetch } from "../api/api";
 import { useNavigate } from "react-router";
 import { Button } from "../components/Button";
 import ProjectsTable from "../features/projects/ProjectsTable";
 import ProjectFormModal from "../features/projects/ProjectFormModal";
-
-type Project = {
-	id: string | number;
-	project_name: string;
-};
+import { createProject, getProjects } from "../api/projects-api";
+import type { CreateProjectInput, Project } from "../types/projects";
 
 export default function Projects() {
 	const navigate = useNavigate();
@@ -23,9 +19,7 @@ export default function Projects() {
 			try {
 				setLoading(true);
 				setError(null);
-				const response = await apiFetch<{ data: Project[] }>("/projects", {
-					method: "GET",
-				});
+				const response = await getProjects();
 				setProjects(response.data);
 			} catch (err) {
 				const message =
@@ -45,6 +39,21 @@ export default function Projects() {
 
 		fetchProjects();
 	}, [navigate]);
+
+	const handleCreateProject = async (project: CreateProjectInput) => {
+		try {
+			const response = await createProject(project);
+			setProjects(prev => [response.data, ...prev]);
+		} catch (err) {
+			const message =
+				err instanceof Error ? err.message : "Failed to create project.";
+			if (message.toLowerCase().includes("unauthorized")) {
+				navigate("/login", { replace: true });
+				return;
+			}
+			throw err;
+		}
+	};
 
 	// show loading state
 	if (loading) {
@@ -87,9 +96,7 @@ export default function Projects() {
 			<ProjectFormModal
 				isOpen={isProjectModalOpen}
 				onClose={() => setIsProjectModalOpen(false)}
-				onSave={project => {
-					console.log("TODO: save project", project);
-				}}
+				onSave={handleCreateProject}
 			/>
 
 		</div>
