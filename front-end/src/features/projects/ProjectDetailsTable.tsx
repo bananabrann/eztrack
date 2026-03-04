@@ -39,14 +39,6 @@ export default function ProjectDetailsTable({
 						</tr>
 					))}
 				</tbody>
-				<tfoot>
-					<tr>
-						<th className="text-secondary text-xl">Project Total</th>
-						<th className="text-secondary text-xl">${totalPrice.toFixed(2)}</th>
-						<th></th>
-						<th></th>
-					</tr>
-				</tfoot>
 			</table>
 		</div>
 	);

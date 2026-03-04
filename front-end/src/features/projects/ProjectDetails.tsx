@@ -36,6 +36,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 	const [error, setError] = useState<string | null>(null);
 	const [rows, setRows] = useState<ProjectMaterialRow[]>([]);
 	const [projectName, setProjectName] = useState("");
+	const [totalCost, setTotalCost] = useState(0);
 
 	useEffect(() => {
 		const fetchProjectMaterials = async () => {
@@ -68,6 +69,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 						},
 						{},
 					);
+				setTotalCost(Number(materialCostResponse.data.total_cost) || 0);
 
 				const mappedRows = materialsResponse.data.map(material => ({
 					id: material.id,
@@ -131,7 +133,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 					totalPrice={calculateTotalPrice(rows)}
 				/>
 			)}
-			<ProjectCost />
+			<ProjectCost totalCost={totalCost} />
 		</div>
 	);
 }
