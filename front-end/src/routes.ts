@@ -14,6 +14,8 @@ export default [
 		index("./routes/_index.tsx"),
 		// routes to tools page
 		route("tools", "./routes/tools.tsx"),
+		// routes to tool detail page
+		route("tools/:id", "./routes/toolDetail.tsx"),
 		// routes to tools management page
 		route("toolsManagement", "./routes/toolsManagement.tsx"),
 		// routes to materials page
