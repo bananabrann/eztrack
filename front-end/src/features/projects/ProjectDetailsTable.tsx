@@ -8,9 +8,13 @@ type ProjectMaterialRow = {
 
 type ProjectDetailsTableProps = {
 	rows: ProjectMaterialRow[];
+	totalPrice: number;
 };
 
-export default function ProjectDetailsTable({ rows }: ProjectDetailsTableProps) {
+export default function ProjectDetailsTable({
+	rows,
+	totalPrice,
+}: ProjectDetailsTableProps) {
 	const totalUsed = rows.reduce((sum, row) => sum + row.quantityUsed, 0);
 
 	return (
@@ -37,7 +41,7 @@ export default function ProjectDetailsTable({ rows }: ProjectDetailsTableProps) 
 				<tfoot>
 					<tr>
 						<th>Total</th>
-						<th>-</th>
+						<th>${totalPrice.toFixed(2)}</th>
 						<th>-</th>
 						<th>{totalUsed}</th>
 					</tr>

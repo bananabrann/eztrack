@@ -25,6 +25,10 @@ type MaterialCostResponse = {
 	};
 };
 
+function calculateTotalPrice(rows: ProjectMaterialRow[]): number {
+	return rows.reduce((sum, row) => sum + row.price, 0);
+}
+
 export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 	const navigate = useNavigate();
 	const [loading, setLoading] = useState(true);
@@ -112,7 +116,10 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 			{rows.length === 0 ? (
 				<div className="text-gray-500">No materials found for this project.</div>
 			) : (
-				<ProjectDetailsTable rows={rows} />
+				<ProjectDetailsTable
+					rows={rows}
+					totalPrice={calculateTotalPrice(rows)}
+				/>
 			)}
 		</div>
 	);
