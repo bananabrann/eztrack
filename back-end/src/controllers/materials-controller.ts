@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import supabaseClient from "../config/supabase";
 import { Database } from "../types/database.types";
+import { createSupabaseUserClient } from "../config/supabase";
 
 export type Material = Database["public"]["Tables"]["materials"]["Row"];
 export type MaterialUsage =
@@ -40,6 +40,17 @@ type CreateUsageRequest = Request<
 >;
 
 /**
+ * Helper function to get the user-scoped Supabase client
+ */
+function getSupabaseClient(req: Request) {
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token) {
+		throw new Error("No authorization token provided");
+	}
+	return createSupabaseUserClient(token);
+}
+
+/**
  * Materials Controller including material usage tracking
  */
 export default class MaterialsController {
@@ -51,6 +62,9 @@ export default class MaterialsController {
 		try {
 			// Validate and extract query params
 			const { project_id } = MaterialsController._validateGetRequest(req);
+
+			// Get user-scoped Supabase client
+			const supabaseClient = getSupabaseClient(req);
 
 			// Start building the query to select all materials
 			let query = supabaseClient.from("materials").select("*");
@@ -87,6 +101,9 @@ export default class MaterialsController {
 			const validation = MaterialsController._validatePostRequest(req);
 			const { name, unit_qty, unit_cost, low_stock_threshold, project_id } =
 				validation;
+
+			// Get user-scoped Supabase client with RLS
+			const supabaseClient = getSupabaseClient(req);
 
 			// Insert new material data into the database and return the inserted record
 			const { data, error } = await supabaseClient
@@ -125,6 +142,9 @@ export default class MaterialsController {
 
 			// Validate the update input using the validation function
 			const validation = MaterialsController._validatePatchRequest(req);
+
+			// Get user-scoped Supabase client with RLS
+			const supabaseClient = getSupabaseClient(req);
 
 			// Query the database to check if the material with the given ID exists
 			const { data: existingMaterial, error: fetchError } = await supabaseClient
@@ -186,6 +206,9 @@ export default class MaterialsController {
 			// Extract the material ID from the request path parameters
 			const { id } = req.params;
 
+			// Get user-scoped Supabase client with RLS
+			const supabaseClient = getSupabaseClient(req);
+
 			// Query the database to fetch the material with the given ID
 			const { data: material, error: fetchError } = await supabaseClient
 				.from("materials")
@@ -231,6 +254,9 @@ export default class MaterialsController {
 			// Validate the usage input using the private function
 			const { quantity_used, project_id } =
 				MaterialsController._validateCreateUsageRequest(req);
+
+			// Get user-scoped Supabase client with RLS
+			const supabaseClient = getSupabaseClient(req);
 
 			// Query the database to fetch the material with the given ID
 			const { data: material, error: materialError } = await supabaseClient
@@ -309,6 +335,9 @@ export default class MaterialsController {
 	 */
 	static async getLowStock(req: Request, res: Response): Promise<void> {
 		try {
+			// Get user-scoped Supabase client with RLS
+			const supabaseClient = getSupabaseClient(req);
+
 			// Fetch all materials from the database
 			const { data, error } = await supabaseClient
 				.from("materials")
