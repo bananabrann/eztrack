@@ -130,7 +130,7 @@ export default function Signup() {
 		<div className="min-h-screen flex items-center justify-center bg-gray-100">
 			<form
 				onSubmit={handleSubmit}
-				className="bg-white p-6 rounded-lg shadow-md w-96 flex flex-col gap-4"
+				className="bg-white p-6 rounded-lg shadow-md w-85 flex flex-col gap-4"
 			>
 				{/* EZTrack logo */}
 				<img
@@ -196,9 +196,8 @@ export default function Signup() {
 					className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
 				>
 					<option value="">Select a role</option>
-					<option value="admin">Admin</option>
-					<option value="foreman">Foreman</option>
-					<option value="crew">Crew</option>
+					<option value="FOREMAN">Foreman</option>
+					<option value="CREW">Crew</option>
 				</select>
 				{roleError ? (
 					<p id="role-error" className="text-sm text-red-600">
