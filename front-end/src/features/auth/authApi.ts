@@ -24,3 +24,26 @@ export async function getAccessToken(): Promise<string | null> {
 	const { data } = await supabase.auth.getSession();
 	return data.session?.access_token ?? null;
 }
+
+/**
+ * Signup function
+ */
+export async function signUp(
+	email: string,
+	password: string,
+	name: string,
+	role: string,
+) {
+	const supabase = getSupabaseClient();
+	const result = await supabase.auth.signUp({
+		email,
+		password,
+		options: {
+			data: {
+				name,
+				role,
+			},
+		},
+	});
+	return result;
+}

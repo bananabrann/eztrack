@@ -8,6 +8,8 @@ import {
 export default [
 	// routes to login page
 	route("login", "./routes/login.tsx"),
+	// routes to signup page
+	route("signup", "./routes/signup.tsx"),
 
 	layout("./components/ProtectedLayout.tsx", [
 		// redirect "/" -> "/login" or dashboard based on role
