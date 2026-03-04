@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { apiFetch } from "../../api/api";
 import type { Materials } from "../../types/materials";
 import type { Project } from "../../types/projects";
+import ProjectCost from "./ProjectCost";
 import ProjectDetailsTable, {
 	type ProjectMaterialRow,
 } from "./ProjectDetailsTable";
@@ -130,6 +131,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 					totalPrice={calculateTotalPrice(rows)}
 				/>
 			)}
+			<ProjectCost />
 		</div>
 	);
 }
