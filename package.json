@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@supabase/supabase-js": "^2.97.0",
+    "cally": "^0.9.2",
     "lucide-react": "^0.564.0",
     "react-router-dom": "^7.13.0"
   }

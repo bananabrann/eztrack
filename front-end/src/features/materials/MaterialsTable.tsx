@@ -5,6 +5,7 @@ import { apiFetch } from "../../api/api";
 import MaterialModalForm from "./MaterialFormModal";
 import { FilterBar } from "../../components/FilterBar";
 import { Button } from "../../components/Button";
+import { TriangleAlert } from "lucide-react";
 
 export function MaterialsTable() {
 	const [projects, setProjects] = useState<Project[]>([]);
@@ -162,7 +163,14 @@ export function MaterialsTable() {
 								<tbody>
 									{materials.map(material => (
 										<tr key={material.id}>
-											<td className="font-medium">{material.name}</td>
+											<td className="font-medium">
+												<span className="flex items-center gap-2">
+													{material.name}
+													{material.unit_qty < material.low_stock_threshold && (
+														<TriangleAlert size={16} className="text-warning" />
+													)}
+												</span>
+											</td>
 											<td>{material.unit_qty}</td>
 											<td>{`$${(material.unit_cost ?? 0).toFixed(2)}`}</td>
 											<td>{material.low_stock_threshold}</td>

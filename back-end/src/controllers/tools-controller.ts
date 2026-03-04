@@ -29,6 +29,17 @@ type CheckOutToolRequest = Request<{ id: string }>;
 type ReturnToolRequest = Request<{ id: string }>;
 
 /**
+ * Helper function to get the user-scoped Supabase client
+ */
+function getSupabaseClient(req: Request) {
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token) {
+		throw new Error("No authorization token provided");
+	}
+	return createSupabaseUserClient(token);
+}
+
+/**
  * Tools Controller including the tools management
  */
 export default class ToolsController {
@@ -44,17 +55,11 @@ export default class ToolsController {
 				res.status(401).json({ error: "Unauthorized" });
 				return;
 			}
+			// Get user-scoped Supabase client
+			const supabaseClient = getSupabaseClient(req);
 
-			const supabase = createSupabaseUserClient(token);
-			let query = supabase.from("tools").select(`
-					*,
-					tool_management(
-						user_id,
-						checked_out,
-						checked_in,
-						accounts(name)
-					)
-				`);
+			// Start building the query to select all tools
+			let query = supabaseClient.from("tools").select("*");
 
 			if (status) {
 				query = query.eq("status", status);
@@ -101,8 +106,11 @@ export default class ToolsController {
 				return;
 			}
 
-			const supabase = createSupabaseUserClient(token);
-			const { data, error } = await supabase
+			// Get user-scoped Supabase client
+			const supabaseClient = getSupabaseClient(req);
+
+			// Insert new tool data into the database and return the inserted record
+			const { data, error } = await supabaseClient
 				.from("tools")
 				.insert([{ name: name.trim(), status }])
 				.select();
@@ -137,8 +145,12 @@ export default class ToolsController {
 				return;
 			}
 
-			const supabase = createSupabaseUserClient(token);
-			const { data: existingTool, error: fetchError } = await supabase
+			// Get user-scoped Supabase client
+			const supabaseClient = getSupabaseClient(req);
+
+			// Query the database to check if the tool with the given ID exists
+			const { data: existingTool, error: fetchError } = await supabaseClient
+
 				.from("tools")
 				.select("*")
 				.eq("id", id)
@@ -190,8 +202,12 @@ export default class ToolsController {
 				return;
 			}
 
-			const supabase = createSupabaseUserClient(token);
-			const { data: tool, error: fetchError } = await supabase
+			// Get user-scoped Supabase client
+			const supabaseClient = getSupabaseClient(req);
+
+			// Query the database to fetch the tool with the given ID
+			const { data: tool, error: fetchError } = await supabaseClient
+
 				.from("tools")
 				.select("*")
 				.eq("id", id)
@@ -243,8 +259,12 @@ export default class ToolsController {
 				return;
 			}
 
-			const supabase = createSupabaseUserClient(token);
-			const { data: tool, error: fetchError } = await supabase
+			// Get user-scoped Supabase client
+			const supabaseClient = getSupabaseClient(req);
+
+			// Query the database to fetch the tool with the given ID
+			const { data: tool, error: fetchError } = await supabaseClient
+
 				.from("tools")
 				.select("*")
 				.eq("id", id)
@@ -332,8 +352,12 @@ export default class ToolsController {
 				return;
 			}
 
-			const supabase = createSupabaseUserClient(token);
-			const { data: tool, error: fetchError } = await supabase
+			// Get user-scoped Supabase client
+			const supabaseClient = getSupabaseClient(req);
+
+			// Query the database to fetch the tool with the given ID
+			const { data: tool, error: fetchError } = await supabaseClient
+
 				.from("tools")
 				.select("*")
 				.eq("id", id)
