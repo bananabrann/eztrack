@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { apiFetch } from "../../api/api";
 import type { Materials } from "../../types/materials";
 import type { Project } from "../../types/projects";
+import ProjectDetailsTable, {
+	type ProjectMaterialRow,
+} from "./ProjectDetailsTable";
 
 type ProjectDetailsProps = {
 	projectId: string;
@@ -20,14 +23,6 @@ type MaterialCostResponse = {
 		total_cost: number;
 		materials: MaterialCostRow[];
 	};
-};
-
-type ProjectMaterialRow = {
-	id: string;
-	name: string;
-	price: number;
-	quantityAvailable: number;
-	quantityUsed: number;
 };
 
 export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
@@ -91,11 +86,6 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 		fetchProjectMaterials();
 	}, [navigate, projectId]);
 
-	const totalUsed = useMemo(
-		() => rows.reduce((sum, row) => sum + row.quantityUsed, 0),
-		[rows],
-	);
-
 	if (loading) {
 		return (
 			<div className="flex justify-center items-center h-screen">
@@ -122,36 +112,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 			{rows.length === 0 ? (
 				<div className="text-gray-500">No materials found for this project.</div>
 			) : (
-				<div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 w-full max-w-4xl mx-auto">
-					<table className="table table-zebra">
-						<thead>
-							<tr>
-								<th>Material</th>
-								<th>Price</th>
-								<th>Quantity Available</th>
-								<th>Quantity Used</th>
-							</tr>
-						</thead>
-						<tbody>
-							{rows.map(row => (
-								<tr key={row.id}>
-									<td>{row.name}</td>
-									<td>${row.price.toFixed(2)}</td>
-									<td>{row.quantityAvailable}</td>
-									<td>{row.quantityUsed}</td>
-								</tr>
-							))}
-						</tbody>
-						<tfoot>
-							<tr>
-								<th>Total</th>
-								<th>-</th>
-								<th>-</th>
-								<th>{totalUsed}</th>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
+				<ProjectDetailsTable rows={rows} />
 			)}
 		</div>
 	);
