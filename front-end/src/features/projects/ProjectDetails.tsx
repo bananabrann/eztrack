@@ -48,7 +48,9 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 						apiFetch<{ message: string; data: Materials[] }>(
 							`/materials?project_id=${encodeURIComponent(projectId)}`,
 						),
-						apiFetch<MaterialCostResponse>(`/projects/${projectId}/material-cost`),
+						apiFetch<MaterialCostResponse>(
+							`/projects/${projectId}/material-cost`,
+						),
 					]);
 
 				const currentProject = projectsResponse.data.find(
@@ -56,12 +58,15 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 				);
 				setProjectName(currentProject?.project_name ?? "");
 
-				const quantityUsedByMaterial = materialCostResponse.data.materials.reduce<
-					Record<string, number>
-				>((acc, item) => {
-					acc[item.material_id] = (acc[item.material_id] ?? 0) + item.quantity_used;
-					return acc;
-				}, {});
+				const quantityUsedByMaterial =
+					materialCostResponse.data.materials.reduce<Record<string, number>>(
+						(acc, item) => {
+							acc[item.material_id] =
+								(acc[item.material_id] ?? 0) + item.quantity_used;
+							return acc;
+						},
+						{},
+					);
 
 				const mappedRows = materialsResponse.data.map(material => ({
 					id: material.id,
@@ -108,13 +113,17 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 
 	return (
 		<div className="p-6">
-			<h1 className="text-2xl text-center font-bold mt-8 mb-2">Project Details</h1>
+			<h1 className="text-2xl text-center font-bold mt-8 mb-2">
+				Project Details
+			</h1>
 			<p className="text-lg text-primary text-center mb-4">
 				{projectName || projectId}
 			</p>
 
 			{rows.length === 0 ? (
-				<div className="text-gray-500">No materials found for this project.</div>
+				<div className="text-gray-500">
+					No materials found for this project.
+				</div>
 			) : (
 				<ProjectDetailsTable
 					rows={rows}
