@@ -25,8 +25,8 @@ export default function ProjectDetailsTable({
 					<tr>
 						<th className="text-tertiary text-lg">Material</th>
 						<th className="text-tertiary text-lg">Cost</th>
-						<th className="text-tertiary text-lg">Quantity Available</th>
 						<th className="text-tertiary text-lg">Quantity Used</th>
+						<th className="text-tertiary text-lg">Quantity Available</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -34,19 +34,11 @@ export default function ProjectDetailsTable({
 						<tr key={row.id}>
 							<td>{row.name}</td>
 							<td>${row.price.toFixed(2)}</td>
-							<td>{row.quantityAvailable}</td>
 							<td>{row.quantityUsed}</td>
+							<td>{row.quantityAvailable}</td>
 						</tr>
 					))}
 				</tbody>
-				<tfoot>
-					<tr>
-						<th className="text-secondary text-xl">Project Total</th>
-						<th className="text-secondary text-xl">${totalPrice.toFixed(2)}</th>
-						<th></th>
-						<th></th>
-					</tr>
-				</tfoot>
 			</table>
 		</div>
 	);

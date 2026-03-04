@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { apiFetch } from "../../api/api";
 import type { Materials } from "../../types/materials";
 import type { Project } from "../../types/projects";
+import ProjectCost from "./ProjectCost";
 import ProjectDetailsTable, {
 	type ProjectMaterialRow,
 } from "./ProjectDetailsTable";
@@ -35,6 +36,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 	const [error, setError] = useState<string | null>(null);
 	const [rows, setRows] = useState<ProjectMaterialRow[]>([]);
 	const [projectName, setProjectName] = useState("");
+	const [totalCost, setTotalCost] = useState(0);
 
 	useEffect(() => {
 		const fetchProjectMaterials = async () => {
@@ -67,6 +69,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 						},
 						{},
 					);
+				setTotalCost(Number(materialCostResponse.data.total_cost) || 0);
 
 				const mappedRows = materialsResponse.data.map(material => ({
 					id: material.id,
@@ -130,6 +133,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 					totalPrice={calculateTotalPrice(rows)}
 				/>
 			)}
+			<ProjectCost totalCost={totalCost} />
 		</div>
 	);
 }
