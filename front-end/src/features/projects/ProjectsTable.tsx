@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 type Project = {
 	id: string | number;
 	project_name: string;
@@ -22,7 +24,13 @@ export default function ProjectsTable({ projects }: ProjectsTableProps) {
 						<tr key={project.id}>
 							<td className="text-gray-500">{index + 1}</td>
 							<td className="flex items-center gap-3">
-								<span>{project.project_name}</span>
+								<Link
+									to={`/projects/${project.id}`}
+									className="link link-hover"
+									aria-label={`View details for ${project.project_name}`}
+								>
+									{project.project_name}
+								</Link>
 							</td>
 						</tr>
 					))}
