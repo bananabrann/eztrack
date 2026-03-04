@@ -1,28 +1,36 @@
 import { useEffect, useState } from "react";
-import { Toolbox } from "lucide-react";
-import { apiFetch } from "../api/api";
-
-type Project = {
-	id: string | number;
-	project_name: string;
-};
+import { SquarePlus } from "lucide-react";
+import { useNavigate } from "react-router";
+import { Button } from "../components/Button";
+import ProjectsTable from "../features/projects/ProjectsTable";
+import ProjectFormModal from "../features/projects/ProjectFormModal";
+import { createProject, getProjects } from "../api/projects-api";
+import type { CreateProjectInput, Project } from "../types/projects";
 
 export default function Projects() {
+	const navigate = useNavigate();
 	const [projects, setProjects] = useState<Project[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
+	const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
 	useEffect(() => {
 		const fetchProjects = async () => {
 			try {
 				setLoading(true);
 				setError(null);
-				const response = await apiFetch<{ data: Project[] }>("/projects", {
-					method: "GET",
-				});
+				const response = await getProjects();
 				setProjects(response.data);
 			} catch (err) {
-				setError("Failed to load projects. Please try again later.");
+				const message =
+					err instanceof Error
+						? err.message
+						: "Failed to load projects. Please try again later.";
+				if (message.toLowerCase().includes("unauthorized")) {
+					navigate("/login", { replace: true });
+					return;
+				}
+				setError(message);
 				console.error("Error fetching projects:", err);
 			} finally {
 				setLoading(false);
@@ -30,7 +38,22 @@ export default function Projects() {
 		};
 
 		fetchProjects();
-	}, []);
+	}, [navigate]);
+
+	const handleCreateProject = async (project: CreateProjectInput) => {
+		try {
+			const response = await createProject(project);
+			setProjects(prev => [response.data, ...prev]);
+		} catch (err) {
+			const message =
+				err instanceof Error ? err.message : "Failed to create project.";
+			if (message.toLowerCase().includes("unauthorized")) {
+				navigate("/login", { replace: true });
+				return;
+			}
+			throw err;
+		}
+	};
 
 	// show loading state
 	if (loading) {
@@ -53,20 +76,28 @@ export default function Projects() {
 	return (
 		<div className="flex flex-col gap-6 items-center mt-8">
 			<h1 className="text-2xl font-bold mb-8">Project Management</h1>
+
+			{/* Load projects */}
 			{projects.length === 0 ? (
 				<div className="text-gray-500">
 					No projects found. Please create a new project.
 				</div>
 			) : (
-				<ul className="list w-full max-w-md space-y-4">
-					{projects.map(project => (
-						<li key={project.id} className="list-row rounded-box shadow-md">
-							<Toolbox className="w-6 h-6 text-gray-500" />
-							<div>{project.project_name}</div>
-						</li>
-					))}
-				</ul>
+				<ProjectsTable projects={projects} />
 			)}
+
+			{/* Create New Project */}
+			<Button
+				label="Create New Project"
+				variant="orange"
+				icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
+				onClick={() => setIsProjectModalOpen(true)}
+			/>
+			<ProjectFormModal
+				isOpen={isProjectModalOpen}
+				onClose={() => setIsProjectModalOpen(false)}
+				onSave={handleCreateProject}
+			/>
 		</div>
 	);
 }
