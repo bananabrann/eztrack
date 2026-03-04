@@ -136,11 +136,11 @@ export default function Signup() {
 				<img
 					src="/eztrack-logo.png"
 					alt="eztrack logo"
-					className="max-w-sm pt-6 pb-4 mx-auto"
+					className="max-w-sm pt-6 pb-4"
 				/>
 
 				{/* Name */}
-				<label htmlFor="name">Full Name</label>
+				<label htmlFor="name">Name</label>
 				<input
 					id="name"
 					type="text"
