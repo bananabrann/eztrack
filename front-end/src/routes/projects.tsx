@@ -98,7 +98,6 @@ export default function Projects() {
 				onClose={() => setIsProjectModalOpen(false)}
 				onSave={handleCreateProject}
 			/>
-
 		</div>
 	);
 }

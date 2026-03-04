@@ -104,14 +104,14 @@ export default function ProjectFormModal({
 							<label className="label" htmlFor="project-end-date">
 								<span className="label-text">End Date</span>
 							</label>
-								<input
-									id="project-end-date"
-									type="date"
-									className="input input-bordered w-full"
-									min={startDate || undefined}
-									value={endDate}
-									onChange={event => setEndDate(event.target.value)}
-								/>
+							<input
+								id="project-end-date"
+								type="date"
+								className="input input-bordered w-full"
+								min={startDate || undefined}
+								value={endDate}
+								onChange={event => setEndDate(event.target.value)}
+							/>
 						</div>
 						<div className="mt-4 mb-4 grid grid-cols-2 gap-3 w-full">
 							<Button
