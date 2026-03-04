@@ -12,13 +12,11 @@ export interface Tool {
 
 export const toolsApi = {
 	getAll: (status?: ToolStatus) =>
-		apiFetch<{ data: Tool[] }>(
-			`/tools${status ? `?status=${status}` : ""}`
-		),
-	
+		apiFetch<{ data: Tool[] }>(`/tools${status ? `?status=${status}` : ""}`),
+
 	checkout: (toolId: string) =>
 		apiFetch(`/tools/${toolId}/checkout`, { method: "POST" }),
-	
+
 	return: (toolId: string) =>
 		apiFetch(`/tools/${toolId}/return`, { method: "POST" }),
 };
