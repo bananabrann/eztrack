@@ -43,34 +43,40 @@ export default function ProjectFormModal({
 			<div className="modal-box">
 				<h3 className="font-bold text-lg">Create New Project</h3>
 				<div className="modal-action">
-					<form method="dialog" className="ml-5">
+					<form method="dialog" className="w-full">
 						<input
 							type="text"
 							placeholder="Project Name"
-							className="input input-bordered w-full max-w-xs mb-4"
+							className="input input-bordered w-full mb-4"
 							value={newProjectName}
 							onChange={event => setNewProjectName(event.target.value)}
 						/>
-						<label className="input">
-							<span className="label">Start Date</span>
+						<div className="form-control mb-6">
+							<label className="label" htmlFor="project-start-date">
+								<span className="label-text">Start Date</span>
+							</label>
 							<input
+								id="project-start-date"
 								type="date"
-								className="input input-bordered mt-4 mb-5"
+								className="input input-bordered w-full"
 								placeholder="Start Date"
 								value={startDate}
 								onChange={event => setStartDate(event.target.value)}
 							/>
-						</label>
-						<label className="input">
-							<span className="label">End Date</span>
+						</div>
+						<div className="form-control mb-6">
+							<label className="label" htmlFor="project-end-date">
+								<span className="label-text">End Date</span>
+							</label>
 							<input
+								id="project-end-date"
 								type="date"
-								className="input input-bordered mt-4 mb-5"
+								className="input input-bordered w-full"
 								value={endDate}
 								onChange={event => setEndDate(event.target.value)}
 							/>
-						</label>
-						<div className="mt-4 mb-4 flex gap-2">
+						</div>
+						<div className="mt-4 mb-4 grid grid-cols-2 gap-3 w-full">
 							<Button label="Cancel" variant="orange" onClick={onClose} />
 							<Button
 								label="Save Project"
