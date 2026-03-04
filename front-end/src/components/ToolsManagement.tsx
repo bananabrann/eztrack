@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { toolsApi, Tool } from "../api/tools-api";
+import { Button } from "./Button";
+import ToolsFormModal from "../features/tools/ToolsFormModal";
+import { SquarePlus } from "lucide-react";
 
 interface ToolsManagementProps {
 	search?: string;
@@ -15,6 +18,9 @@ export default function ToolsManagement({
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 	const navigate = useNavigate();
+
+	// Modal state
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	useEffect(() => {
 		fetchTools();
@@ -35,6 +41,19 @@ export default function ToolsManagement({
 	const filteredTools = tools.filter(tool =>
 		tool.name.toLowerCase().includes(search.toLowerCase()),
 	);
+
+	const handleAddTool = () => {
+		setIsModalOpen(true);
+	};
+
+	const handleToolSubmit = (tool: Tool) => {
+		setTools(prev => [tool, ...prev]);
+		setIsModalOpen(false);
+	};
+
+	const handleCloseModal = () => {
+		setIsModalOpen(false);
+	};
 
 	if (loading)
 		return (
@@ -86,6 +105,21 @@ export default function ToolsManagement({
 					</div>
 				)}
 			</div>
+			<div className="mb-4 flex justify-center mt-8">
+				<div className="btn-wide">
+					<Button
+						label="Create Tool"
+						variant="blue"
+						onClick={handleAddTool}
+						icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
+					/>
+				</div>
+			</div>
+			<ToolsFormModal
+				isOpen={isModalOpen}
+				onClose={handleCloseModal}
+				onSubmit={handleToolSubmit}
+			/>
 		</section>
 	);
 }

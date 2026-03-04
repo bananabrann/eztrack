@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { toolsApi, Tool } from "../api/tools-api";
+import ToolsFormModal from "../features/tools/ToolsFormModal";
+import { Pencil } from "lucide-react";
 
 export default function ToolDetail() {
 	const { id } = useParams<{ id: string }>();
@@ -8,6 +10,7 @@ export default function ToolDetail() {
 	const [tool, setTool] = useState<Tool | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	useEffect(() => {
 		fetchTool();
@@ -28,6 +31,11 @@ export default function ToolDetail() {
 		} finally {
 			setLoading(false);
 		}
+	};
+
+	const handleToolSubmit = (updatedTool: Tool) => {
+		setTool(updatedTool);
+		setIsModalOpen(false);
 	};
 
 	if (loading)
@@ -54,9 +62,19 @@ export default function ToolDetail() {
 			</button>
 
 			<div className="bg-white rounded-lg border-2 border-[--disabled-color] p-8 shadow-md">
-				<h1 className="text-3xl font-bold text-[--primary-text-color] mb-4">
-					{tool.name}
-				</h1>
+				<div className="flex items-center justify-between mb-4">
+					<h1 className="text-3xl font-bold text-[--primary-text-color]">
+						{tool.name}
+					</h1>
+
+					<button
+						onClick={() => setIsModalOpen(true)}
+						className="p-2 rounded-md hover:bg-gray-100 transition"
+						aria-label="Edit tool"
+					>
+						<Pencil className="w-5 h-5 text-[--tertiary-color]" />
+					</button>
+				</div>
 
 				<div className="mb-6">
 					<span
@@ -84,6 +102,12 @@ export default function ToolDetail() {
 					</p>
 				</div>
 			</div>
+			<ToolsFormModal
+				isOpen={isModalOpen}
+				onClose={() => setIsModalOpen(false)}
+				onSubmit={handleToolSubmit}
+				initialData={tool}
+			/>
 		</main>
 	);
 }
