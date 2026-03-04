@@ -1,10 +1,21 @@
 import { useState } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import { Logo } from "./Logo";
 import { LogOut } from "lucide-react";
+import { logout } from "../features/auth/authApi";
 
-export default function Header() {
+interface HeaderProps {
+	role?: string | null;
+}
+
+export default function Header({ role }: HeaderProps) {
 	const [menuOpen, setMenuOpen] = useState(false);
+	const navigate = useNavigate();
+
+	const handleLogout = async () => {
+		await logout();
+		navigate("/login", { replace: true });
+	};
 
 	return (
 		<header className="navbar bg-tertiary shadow-sm px-6 text-white relative">
@@ -19,7 +30,7 @@ export default function Header() {
 				</NavLink>
 			</div>
 
-			{/* CENTER: Links for md+ */}
+			{/* CENTER: Links */}
 			<div className="navbar-center hidden md:flex">
 				<nav className="flex items-center gap-6">
 					<NavLink
@@ -36,33 +47,36 @@ export default function Header() {
 					>
 						Tools Management
 					</NavLink>
-					<NavLink
-						to="/materials"
-						className="whitespace-nowrap"
-						aria-label="Go to Materials Management"
-					>
-						Materials Management
-					</NavLink>
-					<NavLink
-						to="/projects"
-						className="whitespace-nowrap"
-						aria-label="Go to Project Management"
-					>
-						Project Management
-					</NavLink>
+					{role !== "CREW" && (
+						<>
+							<NavLink
+								to="/materials"
+								className="whitespace-nowrap"
+								aria-label="Go to Materials Management"
+							>
+								Materials Management
+							</NavLink>
+							<NavLink
+								to="/projects"
+								className="whitespace-nowrap"
+								aria-label="Go to Project Management"
+							>
+								Project Management
+							</NavLink>
+						</>
+					)}
 				</nav>
 			</div>
 
-			{/* RIGHT: Logout + Hamburger for mobile */}
+			{/* RIGHT: User Logout */}
 			<div className="navbar-end flex items-center gap-4">
-				{/* DaisyUI swap button for hamburger */}
+				{/* Mobile Hamburger */}
 				<label className="swap swap-rotate md:hidden">
 					<input
 						type="checkbox"
 						checked={menuOpen}
 						onChange={() => setMenuOpen(!menuOpen)}
 					/>
-
 					{/* Hamburger icon */}
 					<svg
 						className="swap-off w-6 h-6"
@@ -78,7 +92,6 @@ export default function Header() {
 							d="M4 6h16M4 12h16M4 18h16"
 						/>
 					</svg>
-
 					{/* Close icon */}
 					<svg
 						className="swap-on w-6 h-6"
@@ -98,10 +111,12 @@ export default function Header() {
 
 				{/* Logout button */}
 				<button
+					onClick={handleLogout}
 					className="inline-flex items-center rounded-md border border-current px-3 py-1.5 text-sm leading-none hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-current focus:ring-offset-2"
 					aria-label="Log Out"
 				>
-					<LogOut className="w-8 h-8 mr-2" />
+					<LogOut className="w-5 h-5 mr-2" />
+					<span className="hidden md:inline">Logout</span>
 				</button>
 			</div>
 
@@ -111,19 +126,23 @@ export default function Header() {
 					menuOpen ? "max-h-96 p-4" : "max-h-0 p-0"
 				}`}
 			>
-				<nav className="flex flex-col gap-4">
+				<nav className="flex flex-col items-start gap-4">
 					<NavLink to="/" onClick={() => setMenuOpen(false)}>
 						Home
 					</NavLink>
 					<NavLink to="/toolsManagement" onClick={() => setMenuOpen(false)}>
 						Tools Management
 					</NavLink>
-					<NavLink to="/materials" onClick={() => setMenuOpen(false)}>
-						Materials Management
-					</NavLink>
-					<NavLink to="/projects" onClick={() => setMenuOpen(false)}>
-						Project Management
-					</NavLink>
+					{role !== "CREW" && (
+						<>
+							<NavLink to="/materials" onClick={() => setMenuOpen(false)}>
+								Materials Management
+							</NavLink>
+							<NavLink to="/projects" onClick={() => setMenuOpen(false)}>
+								Project Management
+							</NavLink>
+						</>
+					)}
 				</nav>
 			</div>
 		</header>
