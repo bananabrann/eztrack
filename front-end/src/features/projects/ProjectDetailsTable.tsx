@@ -15,17 +15,18 @@ export default function ProjectDetailsTable({
 	rows,
 	totalPrice,
 }: ProjectDetailsTableProps) {
-	const totalUsed = rows.reduce((sum, row) => sum + row.quantityUsed, 0);
+	// totalUsed may be useful for future features, such as showing a progress bar of materials used vs available
+	// const totalUsed = rows.reduce((sum, row) => sum + row.quantityUsed, 0);
 
 	return (
 		<div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 w-full max-w-4xl mx-auto">
 			<table className="table table-zebra">
 				<thead>
 					<tr>
-						<th>Material</th>
-						<th>Price</th>
-						<th>Quantity Available</th>
-						<th>Quantity Used</th>
+						<th className="text-tertiary text-lg">Material</th>
+						<th className="text-tertiary text-lg">Cost</th>
+						<th className="text-tertiary text-lg">Quantity Available</th>
+						<th className="text-tertiary text-lg">Quantity Used</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -40,10 +41,10 @@ export default function ProjectDetailsTable({
 				</tbody>
 				<tfoot>
 					<tr>
-						<th>Total</th>
-						<th>${totalPrice.toFixed(2)}</th>
-						<th>-</th>
-						<th>{totalUsed}</th>
+						<th className="text-secondary text-xl">Project Total</th>
+						<th className="text-secondary text-xl">${totalPrice.toFixed(2)}</th>
+						<th></th>
+						<th></th>
 					</tr>
 				</tfoot>
 			</table>
