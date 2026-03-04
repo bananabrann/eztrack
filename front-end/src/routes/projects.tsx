@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { SquarePlus } from "lucide-react";
 import { apiFetch } from "../api/api";
 import { useNavigate } from "react-router";
-
 import { Button } from "../components/Button";
+import ProjectsTable from "../features/projects/ProjectsTable";
+import ProjectFormModal from "../features/projects/ProjectFormModal";
 
 type Project = {
 	id: string | number;
@@ -15,9 +16,7 @@ export default function Projects() {
 	const [projects, setProjects] = useState<Project[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
-	const [newProjectName, setNewProjectName] = useState("");
-	const [startDate, setStartDate] = useState("");
-	const [endDate, setEndDate] = useState("");
+	const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
 	useEffect(() => {
 		const fetchProjects = async () => {
@@ -75,26 +74,7 @@ export default function Projects() {
 					No projects found. Please create a new project.
 				</div>
 			) : (
-				<div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 w-full max-w-3xl mt-6 mb-6">
-					<table className="table table-zebra">
-						<thead>
-							<tr>
-								<th className="w-16">#</th>
-								<th>Project Name</th>
-							</tr>
-						</thead>
-						<tbody>
-							{projects.map((project, index) => (
-								<tr key={project.id}>
-									<td className="text-gray-500">{index + 1}</td>
-									<td className="flex items-center gap-3">
-										<span>{project.project_name}</span>
-									</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
-				</div>
+				<ProjectsTable projects={projects} />
 			)}
 
 			{/* Create New Project */}
@@ -102,64 +82,15 @@ export default function Projects() {
 				label="Create New Project"
 				variant="orange"
 				icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
-				onClick={() => {
-					const modal = document.getElementById(
-						"new_project_modal",
-					) as HTMLDialogElement | null;
-					modal?.showModal();
+				onClick={() => setIsProjectModalOpen(true)}
+			/>
+			<ProjectFormModal
+				isOpen={isProjectModalOpen}
+				onClose={() => setIsProjectModalOpen(false)}
+				onSave={project => {
+					console.log("TODO: save project", project);
 				}}
 			/>
-			<dialog id="new_project_modal" className="modal modal-bottom sm:modal-middle">
-				<div className="modal-box">
-					<h3 className="font-bold text-lg">Create New Project</h3>
-					<div className="modal-action">
-						<form method="dialog" className="ml-5">
-							{/* Project Name */}
-							<input
-								type="text"
-								placeholder="Project Name"
-								className="input input-bordered w-full max-w-xs mb-4"
-								value={newProjectName}
-								onChange={event => setNewProjectName(event.target.value)}
-							/>
-							{/* Start Date */}
-							<label className="input">
-								<span className="label">Start Date</span>
-								<input
-									type="date"
-									className="input input-bordered mt-4 mb-5"
-									placeholder="Start Date"
-									value={startDate}
-									onChange={event => setStartDate(event.target.value)}
-								/>
-							</label>
-							{/* End Date */}
-							<label className="input">
-								<span className="label">End Date</span>
-								<input
-									type="date"
-									className="input input-bordered mt-4 mb-5"
-									value={endDate}
-									onChange={event => setEndDate(event.target.value)}
-								/>
-							</label>
-							<div className="mt-4 mb-4">
-								<Button 
-									label="Cancel" 	
-									variant="orange" />
-								<Button
-									label="Save Project"
-									variant="blue"
-									type="submit"
-									onClick={() => {
-										//save form
-									}} />
-							</div>
-							<button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-						</form>
-					</div>
-				</div>
-			</dialog>
 
 		</div>
 	);
