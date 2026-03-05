@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { apiFetch } from "../../api/api";
+
 import type { Materials } from "../../types/materials";
 import type { Project } from "../../types/projects";
 import ProjectCost from "./ProjectCost";
 import ProjectDetailsTable, {
 	type ProjectMaterialRow,
 } from "./ProjectDetailsTable";
+
+import { Button } from "../../components/Button";
 
 type ProjectDetailsProps = {
 	projectId: string;
@@ -122,6 +125,14 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 			<p className="text-lg text-primary text-center mb-4">
 				{projectName || projectId}
 			</p>
+			<div className="max-w-4xl mx-auto flex justify-end mb-4">
+				<Button
+					label="Complete Project"
+					variant="orange"
+					size="sm"
+					onClick={() => navigate(`/projects/${projectId}/complete`)}
+				/>
+			</div>
 
 			{rows.length === 0 ? (
 				<div className="text-gray-500">
