@@ -55,8 +55,16 @@ export default class ToolsController {
 			// Get user-scoped Supabase client
 			const supabaseClient = getSupabaseClient(req);
 
-			// Start building the query to select all tools
-			let query = supabaseClient.from("tools").select("*");
+			// Start building the query to select all tools with checkout info
+			let query = supabaseClient.from("tools").select(`
+					*,
+					tool_management(
+						user_id,
+						checked_out,
+						checked_in,
+						accounts(name)
+					)
+				`);
 
 			// If status filter is provided, add it to the query params
 			if (status) {
@@ -71,10 +79,28 @@ export default class ToolsController {
 			// Guard for database query error
 			if (error) throw error;
 
+			// Transform data to include active checkout metadata for frontend permissions/UI
+			const checkedOutInfo = data?.map(tool => {
+				const activeCheckout = tool.tool_management?.find(
+					(tm: any) => tm.checked_in === null,
+				);
+				const account = Array.isArray(activeCheckout?.accounts)
+					? activeCheckout?.accounts[0]
+					: activeCheckout?.accounts;
+
+				return {
+					...tool,
+					checked_out_by_user_id: activeCheckout?.user_id ?? null,
+					checked_out_by: account?.name ?? null,
+					checked_out_by_me: activeCheckout?.user_id === req.authUser?.id,
+					tool_management: undefined,
+				};
+			});
+
 			// Return success
 			res.status(200).json({
 				message: "Tools retrieved successfully",
-				data: data || [],
+				data: checkedOutInfo || [],
 			});
 		} catch (error) {
 			console.error("Get tools error:", error);
@@ -300,15 +326,6 @@ export default class ToolsController {
 			// Get the current date and time in ISO format for the checkout timestamp
 			const checkedOutDate = new Date().toISOString();
 
-			// Update tool in the database with the new status
-			const { error: updateError } = await supabaseClient
-				.from("tools")
-				.update({ status: TOOL_STATUS.CHECKEDOUT })
-				.eq("id", id);
-
-			// Guard for the database error in updating the tool
-			if (updateError) throw updateError;
-
 			// Insert a new checkout record in the tool_management table to track this checkout
 			const { data: toolManagement, error: managementError } =
 				await supabaseClient
@@ -325,6 +342,25 @@ export default class ToolsController {
 
 			// Check if there was an error inserting the checkout record
 			if (managementError) throw managementError;
+			if (!toolManagement || toolManagement.length === 0) {
+				throw new Error("Failed to create checkout record");
+			}
+
+			// Update tool in the database with the new status
+			const { error: updateError } = await supabaseClient
+				.from("tools")
+				.update({ status: TOOL_STATUS.CHECKEDOUT })
+				.eq("id", id);
+
+			// Guard for the database error in updating the tool
+			if (updateError) {
+				const rollbackCheckedInDate = new Date().toISOString();
+				await supabaseClient
+					.from("tool_management")
+					.update({ checked_in: rollbackCheckedInDate })
+					.eq("id", toolManagement[0].id);
+				throw updateError;
+			}
 
 			// Return a 200 success response with checkout details
 			res.status(200).json({
@@ -412,15 +448,20 @@ export default class ToolsController {
 			// Guard for the database error in updating the tool
 			if (updateError) throw updateError;
 
-			// Update the tool in the database with AVAILABLE status and return timestamp
+			// Close the active checkout record for this user/tool.
 			const { error: managementError } = await supabaseClient
 				.from("tool_management")
 				.update({ checked_in: checkedInDate })
-				.eq("id", checkoutRecord.id)
-				.select();
+				.eq("id", checkoutRecord.id);
 
-			// Check if there was an error updating the checkout record
-			if (managementError) throw managementError;
+			// If checkout-record update fails, rollback tool status to preserve consistency.
+			if (managementError) {
+				await supabaseClient
+					.from("tools")
+					.update({ status: TOOL_STATUS.CHECKEDOUT })
+					.eq("id", id);
+				throw managementError;
+			}
 
 			// Return a 200 success response with return details
 			res.status(200).json({

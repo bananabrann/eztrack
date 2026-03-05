@@ -13,7 +13,7 @@ type Props = {
 type FormState = {
 	id?: string;
 	name: string;
-	status: ToolStatus | "";
+	status: ToolStatus;
 };
 
 const createEmptyForm = (): FormState => ({
@@ -25,17 +25,15 @@ function toFormState(tool: Tool): FormState {
 	return {
 		id: tool.id,
 		name: tool.name,
-		status: (tool.status as ToolStatus) ?? "AVAILABLE",
+		status: tool.status,
 	};
 }
 
-function toPayload(
-	form: FormState,
-): Omit<Tool, "id" | "created_at"> & { status?: ToolStatus } {
+function toPayload(form: FormState): { name: string; status: ToolStatus } {
 	return {
 		name: form.name.trim(),
-		status: (form.status || undefined) as ToolStatus | undefined,
-	} as any;
+		status: form.status,
+	};
 }
 
 export default function ToolsFormModal({
@@ -44,16 +42,14 @@ export default function ToolsFormModal({
 	onSubmit,
 	initialData,
 }: Props) {
-	/** Forms state */
 	const [form, setForm] = useState<FormState>(createEmptyForm());
-	/** Loading indicator state */
 	const [loading, setLoading] = useState(false);
-	/** Error state */
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (!isOpen) return;
 		setError(null);
+		setLoading(false);
 		if (initialData) setForm(toFormState(initialData));
 		else setForm(createEmptyForm());
 	}, [isOpen, initialData]);
@@ -68,7 +64,7 @@ export default function ToolsFormModal({
 		setError(null);
 
 		if (!form.name.trim()) {
-			setError("Name is required");
+			setError("Tool name is required.");
 			setLoading(false);
 			return;
 		}
@@ -164,7 +160,12 @@ export default function ToolsFormModal({
 						</div>
 
 						<div className="modal-action pt-4 border-t border-base-300">
-							<Button label="Cancel" variant="orange" onClick={onClose} />
+							<Button
+								label="Cancel"
+								variant="orange"
+								onClick={onClose}
+								disabled={loading}
+							/>
 							{loading ? (
 								<span className="loading loading-spinner loading-md"></span>
 							) : (
@@ -172,7 +173,7 @@ export default function ToolsFormModal({
 									label={form.id ? "Save" : "Submit"}
 									variant="blue"
 									type="submit"
-									onClick={() => {}}
+									onClick={() => undefined}
 								/>
 							)}
 						</div>

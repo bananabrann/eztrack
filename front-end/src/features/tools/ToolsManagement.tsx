@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { toolsApi, Tool } from "../api/tools-api";
-import { Button } from "./Button";
-import ToolsFormModal from "../features/tools/ToolsFormModal";
+import { toolsApi, Tool } from "../../api/tools-api";
+import { Button } from "../../components/Button";
+import ToolsFormModal from "./ToolsFormModal";
 import { SquarePlus } from "lucide-react";
 
 interface ToolsManagementProps {
