@@ -136,7 +136,7 @@ export function MaterialsTable() {
 	 * Handle usage submission
 	 */
 	const handleUsageSubmit = () => {
-    fetchMaterials();
+		fetchMaterials();
 	};
 
 	/**
