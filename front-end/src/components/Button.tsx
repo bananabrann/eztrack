@@ -26,7 +26,9 @@ export function Button({
 }: ButtonProps) {
 	let variantClasses = "";
 	const sizeClasses =
-		size === "sm" ? "max-w-[220px] px-4 py-2 text-sm" : "max-w-[420px] px-6 py-3";
+		size === "sm"
+			? "max-w-[220px] px-4 py-2 text-sm"
+			: "max-w-[420px] px-6 py-3";
 
 	if (variant === "blue") {
 		variantClasses =

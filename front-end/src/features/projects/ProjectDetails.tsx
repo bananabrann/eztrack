@@ -155,7 +155,11 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 			</p>
 			<div className="max-w-4xl mx-auto flex justify-end mb-4">
 				<Button
-					label={projectStatus === "COMPLETED" ? "Project Completed" : "Complete Project"}
+					label={
+						projectStatus === "COMPLETED"
+							? "Project Completed"
+							: "Complete Project"
+					}
 					variant="orange"
 					size="sm"
 					disabled={isCompleting || projectStatus === "COMPLETED"}
@@ -179,7 +183,9 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 				<div className="modal modal-open modal-middle">
 					<div className="modal-box max-w-2xl bg-base-100 shadow-2xl">
 						<div className="flex items-center justify-between pb-4 border-b border-base-300">
-							<h3 className="text-2xl font-bold text-primary">Complete Project</h3>
+							<h3 className="text-2xl font-bold text-primary">
+								Complete Project
+							</h3>
 							<button
 								type="button"
 								className="btn btn-sm btn-circle btn-ghost"
