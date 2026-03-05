@@ -4,6 +4,7 @@ import {
 	ProjectListResponse,
 	ProjectMutationResponse,
 	ProjectStatus,
+	UpdateProjectInput,
 } from "../types/projects";
 
 export const getProjects = async (
@@ -20,6 +21,16 @@ export const createProject = async (
 ): Promise<ProjectMutationResponse> => {
 	return await apiFetch("/projects", {
 		method: "POST",
+		body: JSON.stringify(input),
+	});
+};
+
+export const updateProject = async (
+	id: string,
+	input: UpdateProjectInput,
+): Promise<ProjectMutationResponse> => {
+	return await apiFetch(`/projects/${id}`, {
+		method: "PATCH",
 		body: JSON.stringify(input),
 	});
 };

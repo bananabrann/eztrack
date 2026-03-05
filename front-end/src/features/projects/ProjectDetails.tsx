@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { apiFetch } from "../../api/api";
+import { updateProject } from "../../api/projects-api";
 
 import type { Materials } from "../../types/materials";
 import type { Project } from "../../types/projects";
@@ -39,7 +40,11 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 	const [error, setError] = useState<string | null>(null);
 	const [rows, setRows] = useState<ProjectMaterialRow[]>([]);
 	const [projectName, setProjectName] = useState("");
+	const [projectStatus, setProjectStatus] = useState<Project["status"] | null>(
+		null,
+	);
 	const [totalCost, setTotalCost] = useState(0);
+	const [isCompleting, setIsCompleting] = useState(false);
 
 	useEffect(() => {
 		const fetchProjectMaterials = async () => {
@@ -62,6 +67,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 					project => project.id === projectId,
 				);
 				setProjectName(currentProject?.project_name ?? "");
+				setProjectStatus(currentProject?.status ?? null);
 
 				const quantityUsedByMaterial =
 					materialCostResponse.data.materials.reduce<Record<string, number>>(
@@ -101,6 +107,26 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 		fetchProjectMaterials();
 	}, [navigate, projectId]);
 
+	const handleCompleteProject = async () => {
+		try {
+			setIsCompleting(true);
+			setError(null);
+			await updateProject(projectId, { status: "COMPLETED" });
+			setProjectStatus("COMPLETED");
+			navigate("/projects");
+		} catch (err) {
+			const message =
+				err instanceof Error ? err.message : "Failed to complete project.";
+			if (message.toLowerCase().includes("unauthorized")) {
+				navigate("/login", { replace: true });
+				return;
+			}
+			setError(message);
+		} finally {
+			setIsCompleting(false);
+		}
+	};
+
 	if (loading) {
 		return (
 			<div className="flex justify-center items-center h-screen">
@@ -127,10 +153,17 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 			</p>
 			<div className="max-w-4xl mx-auto flex justify-end mb-4">
 				<Button
-					label="Complete Project"
+					label={
+						projectStatus === "COMPLETED"
+							? "Project Completed"
+							: isCompleting
+								? "Completing..."
+								: "Complete Project"
+					}
 					variant="orange"
 					size="sm"
-					onClick={() => navigate(`/projects/${projectId}/complete`)}
+					disabled={isCompleting || projectStatus === "COMPLETED"}
+					onClick={handleCompleteProject}
 				/>
 			</div>
 
