@@ -45,6 +45,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 	);
 	const [totalCost, setTotalCost] = useState(0);
 	const [isCompleting, setIsCompleting] = useState(false);
+	const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
 	useEffect(() => {
 		const fetchProjectMaterials = async () => {
@@ -113,6 +114,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 			setError(null);
 			await updateProject(projectId, { status: "COMPLETED" });
 			setProjectStatus("COMPLETED");
+			setIsConfirmModalOpen(false);
 			navigate("/projects");
 		} catch (err) {
 			const message =
@@ -153,17 +155,11 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 			</p>
 			<div className="max-w-4xl mx-auto flex justify-end mb-4">
 				<Button
-					label={
-						projectStatus === "COMPLETED"
-							? "Project Completed"
-							: isCompleting
-								? "Completing..."
-								: "Complete Project"
-					}
+					label={projectStatus === "COMPLETED" ? "Project Completed" : "Complete Project"}
 					variant="orange"
 					size="sm"
 					disabled={isCompleting || projectStatus === "COMPLETED"}
-					onClick={handleCompleteProject}
+					onClick={() => setIsConfirmModalOpen(true)}
 				/>
 			</div>
 
@@ -178,6 +174,46 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 				/>
 			)}
 			<ProjectCost totalCost={totalCost} />
+
+			{isConfirmModalOpen && (
+				<div className="modal modal-open modal-middle">
+					<div className="modal-box max-w-2xl bg-base-100 shadow-2xl">
+						<div className="flex items-center justify-between pb-4 border-b border-base-300">
+							<h3 className="text-2xl font-bold text-primary">Complete Project</h3>
+							<button
+								type="button"
+								className="btn btn-sm btn-circle btn-ghost"
+								onClick={() => setIsConfirmModalOpen(false)}
+							>
+								✕
+							</button>
+						</div>
+
+						<div className="py-6">
+							<p className="text-base text-base-content">
+								Are you sure you want to mark this project as completed?
+							</p>
+							<div className="modal-action pt-4 border-t border-base-300">
+								<Button
+									label="Cancel"
+									variant="orange"
+									onClick={() => setIsConfirmModalOpen(false)}
+								/>
+								<Button
+									label={isCompleting ? "Saving..." : "Save"}
+									variant="blue"
+									disabled={isCompleting}
+									onClick={handleCompleteProject}
+								/>
+							</div>
+						</div>
+					</div>
+
+					<form method="dialog" className="modal-backdrop">
+						<button onClick={() => setIsConfirmModalOpen(false)}>close</button>
+					</form>
+				</div>
+			)}
 		</div>
 	);
 }
