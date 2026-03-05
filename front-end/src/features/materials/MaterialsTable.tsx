@@ -6,6 +6,7 @@ import MaterialModalForm from "./MaterialFormModal";
 import { FilterBar } from "../../components/FilterBar";
 import { Button } from "../../components/Button";
 import { TriangleAlert } from "lucide-react";
+import RecordUsageModal from "./RecordUsageModal";
 
 export function MaterialsTable() {
 	const [projects, setProjects] = useState<Project[]>([]);
@@ -18,7 +19,9 @@ export function MaterialsTable() {
 	const [editingMaterial, setEditingMaterial] = useState<Materials | null>(
 		null,
 	);
-
+	// Usage Modal state
+	const [isUsageModalOpen, setIsUsageModalOpen] = useState(false);
+	const [usageMaterial, setUsageMaterial] = useState<Materials | null>(null);
 	/**
 	 * Fetch projects
 	 */
@@ -121,6 +124,29 @@ export function MaterialsTable() {
 		setEditingMaterial(null);
 	};
 
+	/**
+	 * Handle opening usage modal
+	 */
+	const handleRecordUsage = (material: Materials) => {
+		setUsageMaterial(material);
+		setIsUsageModalOpen(true);
+	};
+
+	/**
+	 * Handle usage submission
+	 */
+	const handleUsageSubmit = () => {
+    fetchMaterials();
+	};
+
+	/**
+	 * Handle closing usage modal
+	 */
+	const handleCloseUsageModal = () => {
+		setIsUsageModalOpen(false);
+		setUsageMaterial(null);
+	};
+
 	const projectOptions = projects.map(project => ({
 		value: project.id,
 		label: project.project_name,
@@ -181,6 +207,12 @@ export function MaterialsTable() {
 												>
 													Edit
 												</button>
+												<button
+													onClick={() => handleRecordUsage(material)}
+													className="btn btn-sm btn-outline ml-2"
+												>
+													Use
+												</button>
 											</td>
 										</tr>
 									))}
@@ -214,6 +246,15 @@ export function MaterialsTable() {
 				onClose={handleCloseModal}
 				onSubmit={handleMaterialSubmit}
 				initialData={editingMaterial}
+				projectId={selectedProjectId}
+			/>
+
+			{/* Record Usage Modal */}
+			<RecordUsageModal
+				isOpen={isUsageModalOpen}
+				onClose={handleCloseUsageModal}
+				onSubmit={handleUsageSubmit}
+				material={usageMaterial}
 				projectId={selectedProjectId}
 			/>
 		</div>
