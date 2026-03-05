@@ -47,8 +47,8 @@ export default class ToolsController {
 	 * GET /api/tools
 	 * Get all tools with optional status filtering
 	 */
-	static async get(req: GetToolsRequest, res: Response): Promise<void> {
-		try {
+		static async get(req: GetToolsRequest, res: Response): Promise<void> {
+			try {
 			// Validates and extract status filter from the query
 			const { status } = ToolsController._validateGetRequest(req);
 
@@ -81,17 +81,23 @@ export default class ToolsController {
 			// Guard for database query error
 			if (error) throw error;
 
-			// Transform data to include checked_out_by info
-			const checkedOutInfo = data?.map(tool => {
-				const activeCheckout = tool.tool_management?.find(
-					(tm: any) => tm.checked_in === null,
-				);
-				return {
-					...tool,
-					checked_out_by: activeCheckout?.accounts?.name || null,
-					tool_management: undefined,
-				};
-			});
+				// Transform data to include active checkout metadata for frontend permissions/UI
+				const checkedOutInfo = data?.map(tool => {
+					const activeCheckout = tool.tool_management?.find(
+						(tm: any) => tm.checked_in === null,
+					);
+					const account = Array.isArray(activeCheckout?.accounts)
+						? activeCheckout?.accounts[0]
+						: activeCheckout?.accounts;
+
+					return {
+						...tool,
+						checked_out_by_user_id: activeCheckout?.user_id ?? null,
+						checked_out_by: account?.name ?? null,
+						checked_out_by_me: activeCheckout?.user_id === req.authUser?.id,
+						tool_management: undefined,
+					};
+				});
 
 			// Return success
 			res.status(200).json({
@@ -322,15 +328,6 @@ export default class ToolsController {
 			// Get the current date and time in ISO format for the checkout timestamp
 			const checkedOutDate = new Date().toISOString();
 
-			// Update tool in the database with the new status
-			const { error: updateError } = await supabaseClient
-				.from("tools")
-				.update({ status: TOOL_STATUS.CHECKEDOUT })
-				.eq("id", id);
-
-			// Guard for the database error in updating the tool
-			if (updateError) throw updateError;
-
 			// Insert a new checkout record in the tool_management table to track this checkout
 			const { data: toolManagement, error: managementError } =
 				await supabaseClient
@@ -347,6 +344,25 @@ export default class ToolsController {
 
 			// Check if there was an error inserting the checkout record
 			if (managementError) throw managementError;
+			if (!toolManagement || toolManagement.length === 0) {
+				throw new Error("Failed to create checkout record");
+			}
+
+			// Update tool in the database with the new status
+			const { error: updateError } = await supabaseClient
+				.from("tools")
+				.update({ status: TOOL_STATUS.CHECKEDOUT })
+				.eq("id", id);
+
+			// Guard for the database error in updating the tool
+			if (updateError) {
+				const rollbackCheckedInDate = new Date().toISOString();
+				await supabaseClient
+					.from("tool_management")
+					.update({ checked_in: rollbackCheckedInDate })
+					.eq("id", toolManagement[0].id);
+				throw updateError;
+			}
 
 			// Return a 200 success response with checkout details
 			res.status(200).json({

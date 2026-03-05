@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FilterBar } from "../components/FilterBar";
 import { SearchBar } from "../components/SearchBar";
-import ToolsManagement from "../components/ToolsManagement";
+import ToolsManagement from "../features/tools/ToolsManagement";
 
 export default function ToolsManagementRoute() {
 	const TOOL_FILTERS = [
