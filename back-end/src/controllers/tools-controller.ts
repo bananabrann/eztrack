@@ -55,8 +55,18 @@ export default class ToolsController {
 			// Get user-scoped Supabase client
 			const supabaseClient = getSupabaseClient(req);
 
-			// Start building the query to select all tools
-			let query = supabaseClient.from("tools").select("*");
+			// Start building the query to select all tools with checkout info
+			let query = supabaseClient
+				.from("tools")
+				.select(`
+					*,
+					tool_management(
+						user_id,
+						checked_out,
+						checked_in,
+						accounts(name)
+					)
+				`);
 
 			// If status filter is provided, add it to the query params
 			if (status) {
@@ -71,10 +81,22 @@ export default class ToolsController {
 			// Guard for database query error
 			if (error) throw error;
 
+			// Transform data to include checked_out_by info
+			const checkedOutInfo = data?.map(tool => {
+				const activeCheckout = tool.tool_management?.find(
+					(tm: any) => tm.checked_in === null,
+				);
+				return {
+					...tool,
+					checked_out_by: activeCheckout?.accounts?.name || null,
+					tool_management: undefined,
+				};
+			});
+
 			// Return success
 			res.status(200).json({
 				message: "Tools retrieved successfully",
-				data: data || [],
+				data: checkedOutInfo || [],
 			});
 		} catch (error) {
 			console.error("Get tools error:", error);
