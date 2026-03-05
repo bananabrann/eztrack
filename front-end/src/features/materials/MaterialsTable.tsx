@@ -166,7 +166,7 @@ export function MaterialsTable() {
 											<td className="font-medium">
 												<span className="flex items-center gap-2">
 													{material.name}
-													{material.unit_qty < material.low_stock_threshold && (
+													{material.isLowStock && (
 														<TriangleAlert size={16} className="text-warning" />
 													)}
 												</span>
