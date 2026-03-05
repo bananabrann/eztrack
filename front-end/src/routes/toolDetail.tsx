@@ -98,12 +98,12 @@ export default function ToolDetail() {
 	return (
 		<main className="min-h-screen bg-background px-6 py-10">
 			<div className="mx-auto w-full max-w-2xl">
-					<button
-						onClick={() => navigate("/toolsManagement")}
-						className="mb-6 text-tertiary hover:text-secondary transition-colors"
-					>
-						{"<- Back to Tools"}
-					</button>
+				<button
+					onClick={() => navigate("/toolsManagement")}
+					className="mb-6 text-tertiary hover:text-secondary transition-colors"
+				>
+					{"<- Back to Tools"}
+				</button>
 
 				<div className="card bg-base-100 border border-outline shadow-md">
 					<div className="card-body items-center gap-8 text-center py-10">

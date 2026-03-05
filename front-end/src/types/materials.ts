@@ -8,6 +8,7 @@ export interface Materials {
 	unit_cost: number;
 	low_stock_threshold: number;
 	project_id: string;
+	isLowStock?: boolean;
 }
 
 /**
