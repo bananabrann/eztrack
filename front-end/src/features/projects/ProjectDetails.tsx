@@ -201,12 +201,12 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 							</p>
 							<div className="modal-action pt-4 border-t border-base-300">
 								<Button
-									label="Cancel"
+									label="No, Keep Editing"
 									variant="orange"
 									onClick={() => setIsConfirmModalOpen(false)}
 								/>
 								<Button
-									label={isCompleting ? "Saving..." : "Save"}
+									label={isCompleting ? "Saving..." : "Yes, Complete Project"}
 									variant="blue"
 									disabled={isCompleting}
 									onClick={handleCompleteProject}
