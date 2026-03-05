@@ -74,30 +74,34 @@ export default function Projects() {
 	}
 
 	return (
-		<div className="flex flex-col gap-6 items-center mt-8">
-			<h1 className="text-2xl font-bold mb-8">Project Management</h1>
+		<main className="min-h-screen max-w-7xl mx-auto px-6 py-16">
+			<div className="flex flex-col gap-6 items-center">
+				<h1 className="text-[--tertiary-color] text-3xl font-bold mb-6 flex items-center justify-center">
+					Project Management
+				</h1>
 
-			{/* Load projects */}
-			{projects.length === 0 ? (
-				<div className="text-gray-500">
-					No projects found. Please create a new project.
-				</div>
-			) : (
-				<ProjectsTable projects={projects} />
-			)}
+				{/* Load projects */}
+				{projects.length === 0 ? (
+					<div className="text-gray-500">
+						No projects found. Please create a new project.
+					</div>
+				) : (
+					<ProjectsTable projects={projects} />
+				)}
 
-			{/* Create New Project */}
-			<Button
-				label="Create New Project"
-				variant="orange"
-				icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
-				onClick={() => setIsProjectModalOpen(true)}
-			/>
-			<ProjectFormModal
-				isOpen={isProjectModalOpen}
-				onClose={() => setIsProjectModalOpen(false)}
-				onSave={handleCreateProject}
-			/>
-		</div>
+				{/* Create New Project */}
+				<Button
+					label="Create New Project"
+					variant="orange"
+					icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
+					onClick={() => setIsProjectModalOpen(true)}
+				/>
+				<ProjectFormModal
+					isOpen={isProjectModalOpen}
+					onClose={() => setIsProjectModalOpen(false)}
+					onSave={handleCreateProject}
+				/>
+			</div>
+		</main>
 	);
 }

@@ -1,9 +1,9 @@
 import { Link } from "react-router";
+import type { Project } from "../../types/projects";
 
-type Project = {
-	id: string | number;
-	project_name: string;
-};
+function formatProjectStatus(status: Project["status"]): string {
+	return status.charAt(0) + status.slice(1).toLowerCase();
+}
 
 type ProjectsTableProps = {
 	projects: Project[];
@@ -15,8 +15,9 @@ export default function ProjectsTable({ projects }: ProjectsTableProps) {
 			<table className="table table-zebra">
 				<thead>
 					<tr>
-						<th className="w-16">#</th>
+						<th className="w-16"></th>
 						<th>Project Name</th>
+						<th>Project Status</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -31,6 +32,9 @@ export default function ProjectsTable({ projects }: ProjectsTableProps) {
 								>
 									{project.project_name}
 								</Link>
+							</td>
+							<td className="text-gray-500">
+								{formatProjectStatus(project.status)}
 							</td>
 						</tr>
 					))}
