@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 type Variant = "blue" | "orange";
+type Size = "sm" | "md";
 
 type ButtonProps = {
 	label: string;
@@ -10,6 +11,7 @@ type ButtonProps = {
 	ariaLabel?: string;
 	disabled?: boolean;
 	type?: "button" | "submit" | "reset";
+	size?: Size;
 };
 
 export function Button({
@@ -20,8 +22,11 @@ export function Button({
 	ariaLabel,
 	disabled = false,
 	type = "button",
+	size = "md",
 }: ButtonProps) {
 	let variantClasses = "";
+	const sizeClasses =
+		size === "sm" ? "max-w-[220px] px-4 py-2 text-sm" : "max-w-[420px] px-6 py-3";
 
 	if (variant === "blue") {
 		variantClasses =
@@ -38,10 +43,11 @@ export function Button({
 			aria-label={ariaLabel ?? label}
 			disabled={disabled}
 			className={[
-				"w-full max-w-[420px]",
-				"rounded-md px-6 py-3",
+				"w-full",
+				"rounded-md",
 				"inline-flex items-center justify-center gap-2",
 				"text-white font-semibold",
+				sizeClasses,
 				"transition-colors",
 				"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
 				disabled
