@@ -1,4 +1,4 @@
-import { Links, Outlet, Scripts } from "react-router";
+import { Links, Outlet, Scripts, useLocation } from "react-router";
 import type { Route } from "./+types/root";
 import stylesheet from "./styles.css?url";
 import Footer from "./components/Footer";
@@ -8,6 +8,9 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export default function App() {
+	const location = useLocation();
+	const hideFooter = location.pathname === "/login";
+
 	return (
 		<html lang="en" data-theme="light">
 			<head>
@@ -17,8 +20,8 @@ export default function App() {
 			</head>
 			<body>
 				<Outlet />
+				{!hideFooter && <Footer />}
 				<Scripts />
-				<Footer />
 			</body>
 		</html>
 	);
