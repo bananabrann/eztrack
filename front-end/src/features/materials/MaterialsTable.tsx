@@ -6,6 +6,7 @@ import MaterialModalForm from "./MaterialFormModal";
 import { FilterBar } from "../../components/FilterBar";
 import { Button } from "../../components/Button";
 import { TriangleAlert } from "lucide-react";
+import RecordUsageModal from "./RecordUsageModal";
 
 export function MaterialsTable() {
 	const [projects, setProjects] = useState<Project[]>([]);
@@ -18,7 +19,9 @@ export function MaterialsTable() {
 	const [editingMaterial, setEditingMaterial] = useState<Materials | null>(
 		null,
 	);
-
+	// Usage Modal state
+	const [isUsageModalOpen, setIsUsageModalOpen] = useState(false);
+	const [usageMaterial, setUsageMaterial] = useState<Materials | null>(null);
 	/**
 	 * Fetch projects
 	 */
@@ -121,6 +124,29 @@ export function MaterialsTable() {
 		setEditingMaterial(null);
 	};
 
+	/**
+	 * Handle opening usage modal
+	 */
+	const handleRecordUsage = (material: Materials) => {
+		setUsageMaterial(material);
+		setIsUsageModalOpen(true);
+	};
+
+	/**
+	 * Handle usage submission
+	 */
+	const handleUsageSubmit = () => {
+		fetchMaterials();
+	};
+
+	/**
+	 * Handle closing usage modal
+	 */
+	const handleCloseUsageModal = () => {
+		setIsUsageModalOpen(false);
+		setUsageMaterial(null);
+	};
+
 	const projectOptions = projects.map(project => ({
 		value: project.id,
 		label: project.project_name,
@@ -141,7 +167,9 @@ export function MaterialsTable() {
 				<>
 					{/* Loading indicator */}
 					{loading && (
-						<div className="loading loading-spinner loading-md"></div>
+						<div className="flex justify-center">
+							<div className="loading loading-spinner loading-md"></div>
+						</div>
 					)}
 
 					{/* Error indicator */}
@@ -166,7 +194,7 @@ export function MaterialsTable() {
 											<td className="font-medium">
 												<span className="flex items-center gap-2">
 													{material.name}
-													{material.unit_qty < material.low_stock_threshold && (
+													{material.isLowStock && (
 														<TriangleAlert size={16} className="text-warning" />
 													)}
 												</span>
@@ -181,6 +209,12 @@ export function MaterialsTable() {
 												>
 													Edit
 												</button>
+												<button
+													onClick={() => handleRecordUsage(material)}
+													className="btn btn-sm btn-outline ml-2"
+												>
+													Use
+												</button>
 											</td>
 										</tr>
 									))}
@@ -190,7 +224,7 @@ export function MaterialsTable() {
 					)}
 				</>
 			) : (
-				<div className="alert alert-warning">
+				<div className="alert alert-info w-fit mx-auto text-center">
 					Please select a project to view and manage materials.
 				</div>
 			)}
@@ -214,6 +248,15 @@ export function MaterialsTable() {
 				onClose={handleCloseModal}
 				onSubmit={handleMaterialSubmit}
 				initialData={editingMaterial}
+				projectId={selectedProjectId}
+			/>
+
+			{/* Record Usage Modal */}
+			<RecordUsageModal
+				isOpen={isUsageModalOpen}
+				onClose={handleCloseUsageModal}
+				onSubmit={handleUsageSubmit}
+				material={usageMaterial}
 				projectId={selectedProjectId}
 			/>
 		</div>

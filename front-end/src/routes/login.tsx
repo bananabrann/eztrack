@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { login } from "../features/auth/authApi";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { Button } from "../components/Button";
 
 export default function Login() {
@@ -137,7 +137,7 @@ export default function Login() {
 					<button
 						type="button"
 						onClick={() => setShowPassword(s => !s)}
-						aria-pressed={showPassword}
+						aria-pressed={showPassword ? "true" : "false"}
 						aria-label={showPassword ? "Hide password" : "Show password"}
 						className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
 					>
@@ -169,6 +169,15 @@ export default function Login() {
 						onClick={() => {}}
 						disabled={isSubmitting}
 					/>
+				</div>
+				{/* Link to Signup */}
+				<div className="text-center mt-4">
+					<p className="text-sm text-gray-600">
+						Don't have an account?{" "}
+						<Link to="/signup" className="text-blue-600 hover:underline">
+							Sign up here
+						</Link>
+					</p>
 				</div>
 			</form>
 		</div>

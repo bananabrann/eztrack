@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { FilterBar } from "../components/FilterBar";
 import { SearchBar } from "../components/SearchBar";
-import ToolsManagement from "../components/ToolsManagement";
+import ToolsManagement from "../features/tools/ToolsManagement";
 
 export default function ToolsManagementRoute() {
 	const TOOL_FILTERS = [
+		{ value: "", label: "All" },
 		{ value: "AVAILABLE", label: "Available" },
-		{ value: "CHECKEDOUT", label: "Checkedout" },
+		{ value: "CHECKEDOUT", label: "Checked Out" },
 		{ value: "ARCHIVE", label: "Archive" },
 	];
 
@@ -25,7 +26,7 @@ export default function ToolsManagementRoute() {
 					placeholder="Search Tool..."
 				/>
 				<FilterBar value={filter} onChange={setFilter} options={TOOL_FILTERS} />
-				<ToolsManagement />
+				<ToolsManagement search={search} filter={filter} />
 			</main>
 		</>
 	);

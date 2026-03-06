@@ -17,12 +17,21 @@ export const TOOL_STATUS = {
 export const TOOL_STATUS_VALUES = Constants.public.Enums.tool_status;
 
 // Request type definitions
-type GetToolsRequest = Request<{}, {}, {}, { status?: string }>;
-type CreateToolRequest = Request<{}, {}, { name: string; status?: ToolStatus }>;
+type GetToolsRequest = Request<
+	{},
+	{},
+	{},
+	{ status?: string; project_id?: string }
+>;
+type CreateToolRequest = Request<
+	{},
+	{},
+	{ name: string; project_id: string; status?: ToolStatus }
+>;
 type UpdateToolRequest = Request<
 	{ id: string },
 	{},
-	{ name?: string; status?: ToolStatus }
+	{ name?: string; project_id?: string; status?: ToolStatus }
 >;
 type DeleteToolRequest = Request<{ id: string }>;
 type CheckOutToolRequest = Request<{ id: string }>;
@@ -50,17 +59,30 @@ export default class ToolsController {
 	static async get(req: GetToolsRequest, res: Response): Promise<void> {
 		try {
 			// Validates and extract status filter from the query
-			const { status } = ToolsController._validateGetRequest(req);
+			const { status, project_id } = ToolsController._validateGetRequest(req);
 
 			// Get user-scoped Supabase client
 			const supabaseClient = getSupabaseClient(req);
 
-			// Start building the query to select all tools
-			let query = supabaseClient.from("tools").select("*");
+			// Start building the query to select all tools with checkout info
+			let query = supabaseClient.from("tools").select(`
+					*,
+					tool_management(
+						user_id,
+						checked_out,
+						checked_in,
+						accounts(name)
+					)
+				`);
 
 			// If status filter is provided, add it to the query params
 			if (status) {
 				query = query.eq("status", status);
+			}
+
+			// If project_id filter is provided, add it to the query params
+			if (project_id) {
+				query = query.eq("project_id", project_id);
 			}
 
 			// Fetch the tool data by sorting it from newest created tool
@@ -71,10 +93,28 @@ export default class ToolsController {
 			// Guard for database query error
 			if (error) throw error;
 
+			// Transform data to include active checkout metadata for frontend permissions/UI
+			const checkedOutInfo = data?.map(tool => {
+				const activeCheckout = tool.tool_management?.find(
+					(tm: any) => tm.checked_in === null,
+				);
+				const account = Array.isArray(activeCheckout?.accounts)
+					? activeCheckout?.accounts[0]
+					: activeCheckout?.accounts;
+
+				return {
+					...tool,
+					checked_out_by_user_id: activeCheckout?.user_id ?? null,
+					checked_out_by: account?.name ?? null,
+					checked_out_by_me: activeCheckout?.user_id === req.authUser?.id,
+					tool_management: undefined,
+				};
+			});
+
 			// Return success
 			res.status(200).json({
 				message: "Tools retrieved successfully",
-				data: data || [],
+				data: checkedOutInfo || [],
 			});
 		} catch (error) {
 			console.error("Get tools error:", error);
@@ -89,7 +129,7 @@ export default class ToolsController {
 		try {
 			// Validate the tools input using the private function
 			const validation = ToolsController._validatePostRequest(req);
-			const { name, status } = validation;
+			const { name, project_id, status } = validation;
 
 			// Get user-scoped Supabase client
 			const supabaseClient = getSupabaseClient(req);
@@ -97,7 +137,7 @@ export default class ToolsController {
 			// Insert new tool data into the database and return the inserted record
 			const { data, error } = await supabaseClient
 				.from("tools")
-				.insert([{ name: name.trim(), status }])
+				.insert([{ name: name.trim(), project_id, status }])
 				.select();
 
 			// Guard error for database
@@ -149,6 +189,8 @@ export default class ToolsController {
 			// Initialize an empty object to hold the fields to update
 			const updateData: Partial<Tool> = {};
 			if (validation.name !== undefined) updateData.name = validation.name;
+			if (validation.project_id !== undefined)
+				updateData.project_id = validation.project_id;
 			if (validation.status !== undefined)
 				updateData.status = validation.status;
 
@@ -300,15 +342,6 @@ export default class ToolsController {
 			// Get the current date and time in ISO format for the checkout timestamp
 			const checkedOutDate = new Date().toISOString();
 
-			// Update tool in the database with the new status
-			const { error: updateError } = await supabaseClient
-				.from("tools")
-				.update({ status: TOOL_STATUS.CHECKEDOUT })
-				.eq("id", id);
-
-			// Guard for the database error in updating the tool
-			if (updateError) throw updateError;
-
 			// Insert a new checkout record in the tool_management table to track this checkout
 			const { data: toolManagement, error: managementError } =
 				await supabaseClient
@@ -325,6 +358,32 @@ export default class ToolsController {
 
 			// Check if there was an error inserting the checkout record
 			if (managementError) throw managementError;
+			if (!toolManagement || toolManagement.length === 0) {
+				throw new Error("Failed to create checkout record");
+			}
+
+			// Update tool status and require one affected row.
+			const { data: updatedToolRows, error: updateError } = await supabaseClient
+				.from("tools")
+				.update({ status: TOOL_STATUS.CHECKEDOUT })
+				.eq("id", id)
+				.select("id");
+
+			// Guard for database error and partial/no-op updates.
+			if (updateError || !updatedToolRows || updatedToolRows.length === 0) {
+				const rollbackCheckedInDate = new Date().toISOString();
+				await supabaseClient
+					.from("tool_management")
+					.update({ checked_in: rollbackCheckedInDate })
+					.eq("id", toolManagement[0].id);
+				if (!updateError) {
+					res.status(409).json({
+						error: "Tool checkout state conflict.",
+					});
+					return;
+				}
+				throw updateError;
+			}
 
 			// Return a 200 success response with checkout details
 			res.status(200).json({
@@ -403,24 +462,36 @@ export default class ToolsController {
 			// Get the current date and time in ISO format for the return timestamp
 			const checkedInDate = new Date().toISOString();
 
-			// Update tool status back to AVAILABLE
-			const { error: updateError } = await supabaseClient
+			// Update tool status and require one affected row.
+			const { data: updatedToolRows, error: updateError } = await supabaseClient
 				.from("tools")
 				.update({ status: TOOL_STATUS.AVAILABLE })
-				.eq("id", id);
+				.eq("id", id)
+				.select("id");
 
-			// Guard for the database error in updating the tool
+			// If no rows were updated, do not close checkout record and return non-200.
 			if (updateError) throw updateError;
+			if (!updatedToolRows || updatedToolRows.length === 0) {
+				res.status(403).json({
+					error: "Unable to update tool status for return",
+				});
+				return;
+			}
 
-			// Update the tool in the database with AVAILABLE status and return timestamp
+			// Close the active checkout record for this user/tool.
 			const { error: managementError } = await supabaseClient
 				.from("tool_management")
 				.update({ checked_in: checkedInDate })
-				.eq("id", checkoutRecord.id)
-				.select();
+				.eq("id", checkoutRecord.id);
 
-			// Check if there was an error updating the checkout record
-			if (managementError) throw managementError;
+			// If checkout-record update fails, rollback tool status to preserve consistency.
+			if (managementError) {
+				await supabaseClient
+					.from("tools")
+					.update({ status: TOOL_STATUS.CHECKEDOUT })
+					.eq("id", id);
+				throw managementError;
+			}
 
 			// Return a 200 success response with return details
 			res.status(200).json({
@@ -440,7 +511,7 @@ export default class ToolsController {
 	 * Validation for GET method
 	 */
 	private static _validateGetRequest(req: GetToolsRequest) {
-		const { status } = req.query;
+		const { status, project_id } = req.query;
 
 		if (status && !TOOL_STATUS_VALUES.includes(status as ToolStatus)) {
 			throw new Error(
@@ -448,18 +519,35 @@ export default class ToolsController {
 			);
 		}
 
-		return { status: status as string | undefined };
+		if (project_id && typeof project_id !== "string") {
+			throw new Error("Validation: project_id must be a string");
+		}
+
+		return {
+			status: status as string | undefined,
+			project_id: project_id as string | undefined,
+		};
 	}
 
 	/**
 	 * Validation for POST method
 	 */
 	private static _validatePostRequest(req: CreateToolRequest) {
-		const { name, status = TOOL_STATUS.AVAILABLE } = req.body;
+		const { name, project_id, status = TOOL_STATUS.AVAILABLE } = req.body;
 
 		if (!name || typeof name !== "string" || name.trim() === "") {
 			throw new Error(
 				"Validation: Name is required and must be a non-empty string",
+			);
+		}
+
+		if (
+			!project_id ||
+			typeof project_id !== "string" ||
+			project_id.trim() === ""
+		) {
+			throw new Error(
+				"Validation: project_id is required and must be a non-empty string",
 			);
 		}
 
@@ -469,18 +557,24 @@ export default class ToolsController {
 			);
 		}
 
-		return { name: name.trim(), status };
+		return { name: name.trim(), project_id: project_id.trim(), status };
 	}
 
 	/**
 	 * Validation for PATCH
 	 */
 	private static _validatePatchRequest(req: UpdateToolRequest) {
-		const { name, status } = req.body;
+		const { name, project_id, status } = req.body;
 
 		if (name !== undefined) {
 			if (typeof name !== "string" || name.trim() === "") {
 				throw new Error("Validation: Name must be a non-empty string");
+			}
+		}
+
+		if (project_id !== undefined) {
+			if (typeof project_id !== "string" || project_id.trim() === "") {
+				throw new Error("Validation: project_id must be a non-empty string");
 			}
 		}
 
@@ -492,6 +586,6 @@ export default class ToolsController {
 			}
 		}
 
-		return { name, status };
+		return { name, project_id, status };
 	}
 }

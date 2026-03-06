@@ -83,7 +83,10 @@ export default class MaterialsController {
 			// Return success
 			res.status(200).json({
 				message: "Materials retrieved successfully",
-				data: data || [],
+				data: (data || []).map(material => ({
+					...material,
+					isLowStock: material.unit_qty <= material.low_stock_threshold,
+				})),
 			});
 		} catch (error) {
 			console.error("Get materials error:", error);

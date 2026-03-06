@@ -23,22 +23,26 @@ export default function ProtectedLayout() {
 				return;
 			}
 
-			const { user } = session;
+			// Fetch user role from backend auth endpoint
+			const response = await fetch("/api/auth/me", {
+				headers: {
+					Authorization: `Bearer ${session.access_token}`,
+				},
+			});
 
-			// Fetch user role from accounts table
-			const { data: accountData, error } = await supabase
-				.from("accounts")
-				.select("role")
-				.eq("id", user.id)
-				.single();
+			if (response.status === 401) {
+				setIsLoading(false);
+				navigate("/login", { replace: true });
+				return;
+			}
 
 			let role = null;
-			if (!error && accountData) {
-				role = accountData.role?.toUpperCase() || null;
+			if (response.ok) {
+				const me = await response.json();
+				role = me.role?.toUpperCase() || null;
 				setUserRole(role);
 			} else {
-				// Handle no role / error gracefully; could default to a safe dashboard or show error
-				console.error("Failed to fetch user role", error);
+				console.error("Failed to fetch user role from /api/auth/me");
 			}
 
 			// Granular route protection
