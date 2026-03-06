@@ -146,7 +146,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 	}
 
 	return (
-		<div className="p-6">
+		<div className="p-6 min-h-screen">
 			<h1 className="text-2xl text-center font-bold mt-8 mb-2">
 				Project Details
 			</h1>
