@@ -18,7 +18,7 @@ export default function App() {
 				<meta name="viewport" content="width=device-width,initial-scale=1" />
 				<Links />
 			</head>
-			<body>
+			<body className="min-h-screen flex flex-col">
 				<Outlet />
 				{!hideFooter && <Footer />}
 				<Scripts />

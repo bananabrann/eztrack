@@ -12,5 +12,9 @@ export default function ProjectDetailsRoute() {
 		);
 	}
 
-	return <ProjectDetails projectId={projectId} />;
+	return (
+		<main className="flex-1 max-w-7xl mx-auto px-6 py-16">
+			<ProjectDetails projectId={projectId} />
+		</main>
+	);
 }

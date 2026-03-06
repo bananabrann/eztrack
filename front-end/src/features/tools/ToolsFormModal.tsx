@@ -136,7 +136,7 @@ export default function ToolsFormModal({
 								value={form.name}
 								onChange={e => update("name", e.target.value)}
 								aria-invalid={!form.name.trim()}
-								className="input input-bordered input-lg w-full"
+								className="input input-bordered border border-gray-300 input-lg w-full"
 								required
 							/>
 						</div>
@@ -151,7 +151,7 @@ export default function ToolsFormModal({
 								id="tool-status"
 								value={form.status}
 								onChange={e => update("status", e.target.value as ToolStatus)}
-								className="select select-bordered select-lg w-full"
+								className="select select-bordered border border-gray-300 select-lg w-full"
 							>
 								<option value="AVAILABLE">AVAILABLE</option>
 								<option value="CHECKEDOUT">CHECKEDOUT</option>
