@@ -160,6 +160,7 @@ export function MaterialsTable() {
 				onChange={value => setSelectedProjectId(value)}
 				options={projectOptions}
 				label="Select Project"
+				containerClassName="w-80"
 			/>
 
 			{/* Show materials only if project is selected */}
