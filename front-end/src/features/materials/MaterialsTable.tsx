@@ -167,7 +167,9 @@ export function MaterialsTable() {
 				<>
 					{/* Loading indicator */}
 					{loading && (
-						<div className="loading loading-spinner loading-md"></div>
+						<div className="flex justify-center">
+							<div className="loading loading-spinner loading-md"></div>
+						</div>
 					)}
 
 					{/* Error indicator */}
@@ -222,7 +224,7 @@ export function MaterialsTable() {
 					)}
 				</>
 			) : (
-				<div className="alert alert-warning">
+				<div className="alert alert-info w-fit mx-auto text-center">
 					Please select a project to view and manage materials.
 				</div>
 			)}
