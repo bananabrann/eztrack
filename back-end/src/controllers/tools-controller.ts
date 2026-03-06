@@ -346,19 +346,26 @@ export default class ToolsController {
 				throw new Error("Failed to create checkout record");
 			}
 
-			// Update tool in the database with the new status
-			const { error: updateError } = await supabaseClient
+			// Update tool status and require one affected row.
+			const { data: updatedToolRows, error: updateError } = await supabaseClient
 				.from("tools")
 				.update({ status: TOOL_STATUS.CHECKEDOUT })
-				.eq("id", id);
+				.eq("id", id)
+				.select("id");
 
-			// Guard for the database error in updating the tool
-			if (updateError) {
+			// Guard for database error and partial/no-op updates.
+			if (updateError || !updatedToolRows || updatedToolRows.length === 0) {
 				const rollbackCheckedInDate = new Date().toISOString();
 				await supabaseClient
 					.from("tool_management")
 					.update({ checked_in: rollbackCheckedInDate })
 					.eq("id", toolManagement[0].id);
+				if (!updateError) {
+					res.status(409).json({
+						error: "Tool checkout state conflict.",
+					});
+					return;
+				}
 				throw updateError;
 			}
 
@@ -439,14 +446,21 @@ export default class ToolsController {
 			// Get the current date and time in ISO format for the return timestamp
 			const checkedInDate = new Date().toISOString();
 
-			// Update tool status back to AVAILABLE
-			const { error: updateError } = await supabaseClient
+			// Update tool status and require one affected row.
+			const { data: updatedToolRows, error: updateError } = await supabaseClient
 				.from("tools")
 				.update({ status: TOOL_STATUS.AVAILABLE })
-				.eq("id", id);
+				.eq("id", id)
+				.select("id");
 
-			// Guard for the database error in updating the tool
+			// If no rows were updated, do not close checkout record and return non-200.
 			if (updateError) throw updateError;
+			if (!updatedToolRows || updatedToolRows.length === 0) {
+				res.status(403).json({
+					error: "Unable to update tool status for return",
+				});
+				return;
+			}
 
 			// Close the active checkout record for this user/tool.
 			const { error: managementError } = await supabaseClient
