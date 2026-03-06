@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { createSupabaseUserClient } from "../config/supabase";
 import { Database, Constants } from "../types/database.types";
+import { TOOL_STATUS } from "./tools-controller";
 
 export type Project = Database["public"]["Tables"]["projects"]["Row"];
 export type MaterialUsage =
@@ -174,9 +175,30 @@ export default class ProjectsController {
 			// Guard error of the database
 			if (error) throw error;
 
+			// If the project was marked COMPLETED, archive all associated tools
+
+			let toolsArchived = false;
+
+			if (
+				updateData.status === PROJECT_STATUS.COMPLETED &&
+				existingProject.status !== PROJECT_STATUS.COMPLETED
+			) {
+				const { error: archiveError } = await supabaseClient
+					.from("tools")
+					.update({ status: TOOL_STATUS.ARCHIVE })
+					.eq("project_id", id);
+
+				if (archiveError) throw archiveError;
+
+				toolsArchived = true;
+			}
+
 			// Return success response with updated project
 			res.status(200).json({
 				message: "Project updated successfully",
+				details: toolsArchived
+					? "All associated tools have been archived successfully"
+					: undefined,
 				data: data[0],
 			});
 		} catch (error: any) {

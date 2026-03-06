@@ -17,12 +17,21 @@ export const TOOL_STATUS = {
 export const TOOL_STATUS_VALUES = Constants.public.Enums.tool_status;
 
 // Request type definitions
-type GetToolsRequest = Request<{}, {}, {}, { status?: string }>;
-type CreateToolRequest = Request<{}, {}, { name: string; status?: ToolStatus }>;
+type GetToolsRequest = Request<
+	{},
+	{},
+	{},
+	{ status?: string; project_id?: string }
+>;
+type CreateToolRequest = Request<
+	{},
+	{},
+	{ name: string; project_id: string; status?: ToolStatus }
+>;
 type UpdateToolRequest = Request<
 	{ id: string },
 	{},
-	{ name?: string; status?: ToolStatus }
+	{ name?: string; project_id?: string; status?: ToolStatus }
 >;
 type DeleteToolRequest = Request<{ id: string }>;
 type CheckOutToolRequest = Request<{ id: string }>;
@@ -50,7 +59,7 @@ export default class ToolsController {
 	static async get(req: GetToolsRequest, res: Response): Promise<void> {
 		try {
 			// Validates and extract status filter from the query
-			const { status } = ToolsController._validateGetRequest(req);
+			const { status, project_id } = ToolsController._validateGetRequest(req);
 
 			// Get user-scoped Supabase client
 			const supabaseClient = getSupabaseClient(req);
@@ -69,6 +78,11 @@ export default class ToolsController {
 			// If status filter is provided, add it to the query params
 			if (status) {
 				query = query.eq("status", status);
+			}
+
+			// If project_id filter is provided, add it to the query params
+			if (project_id) {
+				query = query.eq("project_id", project_id);
 			}
 
 			// Fetch the tool data by sorting it from newest created tool
@@ -115,7 +129,7 @@ export default class ToolsController {
 		try {
 			// Validate the tools input using the private function
 			const validation = ToolsController._validatePostRequest(req);
-			const { name, status } = validation;
+			const { name, project_id, status } = validation;
 
 			// Get user-scoped Supabase client
 			const supabaseClient = getSupabaseClient(req);
@@ -123,7 +137,7 @@ export default class ToolsController {
 			// Insert new tool data into the database and return the inserted record
 			const { data, error } = await supabaseClient
 				.from("tools")
-				.insert([{ name: name.trim(), status }])
+				.insert([{ name: name.trim(), project_id, status }])
 				.select();
 
 			// Guard error for database
@@ -175,6 +189,8 @@ export default class ToolsController {
 			// Initialize an empty object to hold the fields to update
 			const updateData: Partial<Tool> = {};
 			if (validation.name !== undefined) updateData.name = validation.name;
+			if (validation.project_id !== undefined)
+				updateData.project_id = validation.project_id;
 			if (validation.status !== undefined)
 				updateData.status = validation.status;
 
@@ -495,7 +511,7 @@ export default class ToolsController {
 	 * Validation for GET method
 	 */
 	private static _validateGetRequest(req: GetToolsRequest) {
-		const { status } = req.query;
+		const { status, project_id } = req.query;
 
 		if (status && !TOOL_STATUS_VALUES.includes(status as ToolStatus)) {
 			throw new Error(
@@ -503,18 +519,35 @@ export default class ToolsController {
 			);
 		}
 
-		return { status: status as string | undefined };
+		if (project_id && typeof project_id !== "string") {
+			throw new Error("Validation: project_id must be a string");
+		}
+
+		return {
+			status: status as string | undefined,
+			project_id: project_id as string | undefined,
+		};
 	}
 
 	/**
 	 * Validation for POST method
 	 */
 	private static _validatePostRequest(req: CreateToolRequest) {
-		const { name, status = TOOL_STATUS.AVAILABLE } = req.body;
+		const { name, project_id, status = TOOL_STATUS.AVAILABLE } = req.body;
 
 		if (!name || typeof name !== "string" || name.trim() === "") {
 			throw new Error(
 				"Validation: Name is required and must be a non-empty string",
+			);
+		}
+
+		if (
+			!project_id ||
+			typeof project_id !== "string" ||
+			project_id.trim() === ""
+		) {
+			throw new Error(
+				"Validation: project_id is required and must be a non-empty string",
 			);
 		}
 
@@ -524,18 +557,24 @@ export default class ToolsController {
 			);
 		}
 
-		return { name: name.trim(), status };
+		return { name: name.trim(), project_id: project_id.trim(), status };
 	}
 
 	/**
 	 * Validation for PATCH
 	 */
 	private static _validatePatchRequest(req: UpdateToolRequest) {
-		const { name, status } = req.body;
+		const { name, project_id, status } = req.body;
 
 		if (name !== undefined) {
 			if (typeof name !== "string" || name.trim() === "") {
 				throw new Error("Validation: Name must be a non-empty string");
+			}
+		}
+
+		if (project_id !== undefined) {
+			if (typeof project_id !== "string" || project_id.trim() === "") {
+				throw new Error("Validation: project_id must be a non-empty string");
 			}
 		}
 
@@ -547,6 +586,6 @@ export default class ToolsController {
 			}
 		}
 
-		return { name, status };
+		return { name, project_id, status };
 	}
 }
