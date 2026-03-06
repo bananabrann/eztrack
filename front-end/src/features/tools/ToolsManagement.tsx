@@ -21,6 +21,7 @@ export default function ToolsManagement({
 
 	// Modal state
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [successMessage, setSuccessMessage] = useState("");
 
 	useEffect(() => {
 		fetchTools();
@@ -49,6 +50,8 @@ export default function ToolsManagement({
 	const handleToolSubmit = (tool: Tool) => {
 		setTools(prev => [tool, ...prev]);
 		setIsModalOpen(false);
+		setSuccessMessage("Tool saved successfully!");
+		setTimeout(() => setSuccessMessage(""), 3000);
 	};
 
 	const handleCloseModal = () => {
@@ -68,6 +71,24 @@ export default function ToolsManagement({
 
 	return (
 		<section className="w-10/12 md:w-3/4 max-w-7xl min-w-0 mx-auto">
+			{successMessage && (
+				<div className="alert alert-success mb-6 shadow-lg">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						className="stroke-current shrink-0 h-6 w-6"
+						fill="none"
+						viewBox="0 0 24 24"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth="2"
+							d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+					<span>{successMessage}</span>
+				</div>
+			)}
 			<div className="border-tertiary border rounded p-10">
 				{filteredTools.length === 0 ? (
 					<div className="text-center text-gray-500">No tools found</div>

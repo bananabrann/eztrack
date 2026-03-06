@@ -186,18 +186,21 @@ export type Database = {
 					created_at: string;
 					id: string;
 					name: string;
+					project_id: string;
 					status: Database["public"]["Enums"]["tool_status"];
 				};
 				Insert: {
 					created_at?: string;
 					id?: string;
 					name: string;
+					project_id: string;
 					status?: Database["public"]["Enums"]["tool_status"];
 				};
 				Update: {
 					created_at?: string;
 					id?: string;
 					name?: string;
+					project_id?: string;
 					status?: Database["public"]["Enums"]["tool_status"];
 				};
 				Relationships: [];
