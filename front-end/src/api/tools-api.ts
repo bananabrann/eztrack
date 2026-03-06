@@ -10,6 +10,7 @@ export interface Tool {
 	checked_out_by?: string | null;
 	checked_out_by_user_id?: string | null;
 	checked_out_by_me?: boolean;
+	project_id?: string;
 }
 
 export const toolsApi = {
