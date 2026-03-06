@@ -29,11 +29,14 @@ function toFormState(tool: Tool): FormState {
 	};
 }
 
-function toPayload(form: FormState): { name: string; status: ToolStatus } {
-	return {
+function toPayload(form: FormState): { name: string; status?: ToolStatus } {
+	const payload: { name: string; status?: ToolStatus } = {
 		name: form.name.trim(),
-		status: form.status,
 	};
+	if (!form.id) {
+		payload.status = form.status;
+	}
+	return payload;
 }
 
 export default function ToolsFormModal({
@@ -140,25 +143,25 @@ export default function ToolsFormModal({
 								required
 							/>
 						</div>
-
-						<div>
-							<label className="label" htmlFor="tool-status">
-								<span className="label-text text-base font-semibold">
-									Status
-								</span>
-							</label>
-							<select
-								id="tool-status"
-								value={form.status}
-								onChange={e => update("status", e.target.value as ToolStatus)}
-								className="select select-bordered select-lg w-full"
-							>
-								<option value="AVAILABLE">AVAILABLE</option>
-								<option value="CHECKEDOUT">CHECKEDOUT</option>
-								<option value="ARCHIVE">ARCHIVE</option>
-							</select>
-						</div>
-
+						{!form.id && (
+							<div>
+								<label className="label" htmlFor="tool-status">
+									<span className="label-text text-base font-semibold">
+										Status
+									</span>
+								</label>
+								<select
+									id="tool-status"
+									value={form.status}
+									onChange={e => update("status", e.target.value as ToolStatus)}
+									className="select select-bordered select-lg w-full"
+								>
+									<option value="AVAILABLE">AVAILABLE</option>
+									<option value="CHECKEDOUT">CHECKEDOUT</option>
+									<option value="ARCHIVE">ARCHIVE</option>
+								</select>
+							</div>
+						)}
 						<div className="modal-action pt-4 border-t border-base-300">
 							<Button
 								label="Cancel"
