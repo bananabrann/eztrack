@@ -44,6 +44,10 @@ function toPayload(form: FormState): {
 		status: form.status,
 		project_id: form.project_id,
 	};
+	if (!form.id) {
+		payload.status = form.status;
+	}
+	return payload;
 }
 
 export default function ToolsFormModal({
