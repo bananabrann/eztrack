@@ -34,13 +34,6 @@ export default function Header({ role }: HeaderProps) {
 			<div className="navbar-center hidden md:flex">
 				<nav className="flex items-center gap-6">
 					<NavLink
-						to="/"
-						className="whitespace-nowrap"
-						aria-label="Go to Home Page"
-					>
-						Home
-					</NavLink>
-					<NavLink
 						to="/toolsManagement"
 						className="whitespace-nowrap"
 						aria-label="Go to Tools Management"
@@ -127,9 +120,6 @@ export default function Header({ role }: HeaderProps) {
 				}`}
 			>
 				<nav className="flex flex-col items-start gap-4">
-					<NavLink to="/" onClick={() => setMenuOpen(false)}>
-						Home
-					</NavLink>
 					<NavLink to="/toolsManagement" onClick={() => setMenuOpen(false)}>
 						Tools Management
 					</NavLink>
