@@ -5,7 +5,7 @@ import { apiFetch } from "../../api/api";
 import MaterialModalForm from "./MaterialFormModal";
 import { FilterBar } from "../../components/FilterBar";
 import { Button } from "../../components/Button";
-import { TriangleAlert } from "lucide-react";
+import { TriangleAlert, Package, Building } from "lucide-react";
 import RecordUsageModal from "./RecordUsageModal";
 
 export function MaterialsTable() {
@@ -160,6 +160,7 @@ export function MaterialsTable() {
 				onChange={value => setSelectedProjectId(value)}
 				options={projectOptions}
 				label="Select Project"
+				containerClassName="w-80"
 			/>
 
 			{/* Show materials only if project is selected */}
@@ -176,7 +177,7 @@ export function MaterialsTable() {
 					{error && <div className="alert alert-error">{error}</div>}
 
 					{/* Materials Table */}
-					{!loading && !error && (
+					{!loading && !error && materials.length > 0 && (
 						<div className="overflow-x-auto">
 							<table className="table table-zebra">
 								<thead>
@@ -222,10 +223,44 @@ export function MaterialsTable() {
 							</table>
 						</div>
 					)}
+
+					{/* Empty State Message - No Materials */}
+					{!loading && !error && materials.length === 0 && (
+						<div className="flex justify-center mt-16">
+							<div className="card bg-base-100 w-full max-w-sm shadow-sm p-8">
+								<div className="text-center">
+									<Package
+										size={64}
+										className="mx-auto mb-4 text-tertiary opacity-50"
+									/>
+									<h3 className="text-lg font-semibold text-primary mb-2">
+										No materials yet
+									</h3>
+									<p className="text-tertiary mb-6">
+										Add a material to this project to get started.
+									</p>
+								</div>
+							</div>
+						</div>
+					)}
 				</>
 			) : (
-				<div className="alert alert-info w-fit mx-auto text-center">
-					Please select a project to view and manage materials.
+				<div className="flex justify-center mt-16">
+					<div className="card bg-base-100 w-full max-w-sm shadow-sm p-8">
+						<div className="text-center">
+							<Building
+								size={64}
+								className="mx-auto mb-4 text-tertiary opacity-50"
+							/>
+							<h3 className="text-lg font-semibold text-primary mb-2">
+								Select a Project
+							</h3>
+							<p className="text-tertiary mb-6">
+								Choose a project from the dropdown above to view and manage its
+								materials.
+							</p>
+						</div>
+					</div>
 				</div>
 			)}
 

@@ -8,6 +8,7 @@ interface FilterBarProps {
 	onChange: (value: string) => void;
 	options: FilterOption[];
 	label?: string;
+	containerClassName?: string;
 }
 
 export function FilterBar({
@@ -15,9 +16,12 @@ export function FilterBar({
 	onChange,
 	options,
 	label = "Filter by",
+	containerClassName = "w-48 max-w-md",
 }: FilterBarProps) {
 	return (
-		<div className=" w-48 max-w-md mx-auto mb-6 flex items-center justify-center">
+		<div
+			className={`${containerClassName} mx-auto mb-6 flex items-center justify-center`}
+		>
 			<select
 				value={value}
 				onChange={e => onChange(e.target.value)}
