@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "../../api/api";
 import type { Tool, ToolStatus } from "../../api/tools-api";
 import { Button } from "../../components/Button";
+import { getProjects } from "../../api/projects-api";
+import type { Project } from "../../types/projects";
 
 type Props = {
 	isOpen: boolean;
@@ -14,11 +16,13 @@ type FormState = {
 	id?: string;
 	name: string;
 	status: ToolStatus;
+	project_id: string;
 };
 
 const createEmptyForm = (): FormState => ({
 	name: "",
 	status: "AVAILABLE",
+	project_id: "",
 });
 
 function toFormState(tool: Tool): FormState {
@@ -26,12 +30,19 @@ function toFormState(tool: Tool): FormState {
 		id: tool.id,
 		name: tool.name,
 		status: tool.status,
+		project_id: tool.project_id || "",
 	};
 }
 
-function toPayload(form: FormState): { name: string; status?: ToolStatus } {
-	const payload: { name: string; status?: ToolStatus } = {
+function toPayload(form: FormState): {
+	name: string;
+	status: ToolStatus;
+	project_id: string;
+} {
+	return {
 		name: form.name.trim(),
+		status: form.status,
+		project_id: form.project_id,
 	};
 	if (!form.id) {
 		payload.status = form.status;
@@ -48,6 +59,7 @@ export default function ToolsFormModal({
 	const [form, setForm] = useState<FormState>(createEmptyForm());
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [projects, setProjects] = useState<Project[]>([]);
 
 	useEffect(() => {
 		if (!isOpen) return;
@@ -55,6 +67,10 @@ export default function ToolsFormModal({
 		setLoading(false);
 		if (initialData) setForm(toFormState(initialData));
 		else setForm(createEmptyForm());
+
+		getProjects("ACTIVE")
+			.then(res => setProjects(res.data))
+			.catch(err => console.error("Failed to fetch projects", err));
 	}, [isOpen, initialData]);
 
 	function update<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -68,6 +84,12 @@ export default function ToolsFormModal({
 
 		if (!form.name.trim()) {
 			setError("Tool name is required.");
+			setLoading(false);
+			return;
+		}
+
+		if (!form.project_id) {
+			setError("Project selection is required.");
 			setLoading(false);
 			return;
 		}
@@ -126,7 +148,7 @@ export default function ToolsFormModal({
 						</div>
 					)}
 
-					<form onSubmit={handleSubmit} className="space-y-4">
+					<form onSubmit={handleSubmit} className="space-y-6">
 						<div>
 							<label className="label" htmlFor="tool-name">
 								<span className="label-text text-base font-semibold">
@@ -139,29 +161,53 @@ export default function ToolsFormModal({
 								value={form.name}
 								onChange={e => update("name", e.target.value)}
 								aria-invalid={!form.name.trim()}
-								className="input input-bordered input-lg w-full"
+								className="input input-bordered w-full px-4 border-2 bg-base-50 focus:bg-base-100 focus:border-primary focus:outline-none transition-all"
+								placeholder="Enter tool name..."
 								required
 							/>
 						</div>
-						{!form.id && (
-							<div>
-								<label className="label" htmlFor="tool-status">
-									<span className="label-text text-base font-semibold">
-										Status
-									</span>
-								</label>
-								<select
-									id="tool-status"
-									value={form.status}
-									onChange={e => update("status", e.target.value as ToolStatus)}
-									className="select select-bordered select-lg w-full"
-								>
-									<option value="AVAILABLE">AVAILABLE</option>
-									<option value="CHECKEDOUT">CHECKEDOUT</option>
-									<option value="ARCHIVE">ARCHIVE</option>
-								</select>
-							</div>
-						)}
+
+						<div>
+							<label className="label" htmlFor="tool-status">
+								<span className="label-text text-base font-semibold">
+									Status
+								</span>
+							</label>
+							<select
+								id="tool-status"
+								value={form.status}
+								onChange={e => update("status", e.target.value as ToolStatus)}
+								className="select select-bordered w-full px-4 border-2 bg-base-50 focus:bg-base-100 focus:border-primary focus:outline-none transition-all font-medium"
+							>
+								<option value="AVAILABLE">AVAILABLE</option>
+								<option value="CHECKEDOUT">CHECKEDOUT</option>
+								<option value="ARCHIVE">ARCHIVE</option>
+							</select>
+						</div>
+
+						<div>
+							<label className="label" htmlFor="tool-project">
+								<span className="label-text text-base font-semibold">
+									Project
+								</span>
+							</label>
+							<select
+								id="tool-project"
+								value={form.project_id}
+								onChange={e => update("project_id", e.target.value)}
+								className="select select-bordered w-full px-4 border-2 bg-base-50 focus:bg-base-100 focus:border-primary focus:outline-none transition-all font-medium"
+							>
+								<option value="" disabled>
+									Select a project
+								</option>
+								{projects.map(project => (
+									<option key={project.id} value={project.id}>
+										{project.project_name}
+									</option>
+								))}
+							</select>
+						</div>
+
 						<div className="modal-action pt-4 border-t border-base-300">
 							<Button
 								label="Cancel"
