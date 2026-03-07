@@ -18,6 +18,12 @@ export default function ProjectDetailsTable({
 	// totalUsed may be useful for future features, such as showing a progress bar of materials used vs available
 	// const totalUsed = rows.reduce((sum, row) => sum + row.quantityUsed, 0);
 
+	const formatCurrency = (value: number) =>
+		new Intl.NumberFormat("en-US", {
+			style: "currency",
+			currency: "USD",
+		}).format(value);
+
 	return (
 		<div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 w-full max-w-4xl mx-auto">
 			<table className="table table-zebra">
@@ -33,7 +39,7 @@ export default function ProjectDetailsTable({
 					{rows.map(row => (
 						<tr key={row.id}>
 							<td>{row.name}</td>
-							<td>${row.price.toFixed(2)}</td>
+							<td>{formatCurrency(row.price)}</td>
 							<td>{row.quantityUsed}</td>
 							<td>{row.quantityAvailable}</td>
 						</tr>

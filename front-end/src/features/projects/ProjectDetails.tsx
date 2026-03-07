@@ -12,7 +12,7 @@ import ProjectDetailsTable, {
 } from "./ProjectDetailsTable";
 import { Button } from "../../components/Button";
 import { FilterBar } from "../../components/FilterBar";
-import { Building, Building2, Hammer, Package, Wrench } from "lucide-react";
+import { Building2, Hammer, Package } from "lucide-react";
 import ProjectToolsTable from "./ProjectToolsTable";
 
 type ProjectDetailsProps = {
@@ -51,6 +51,8 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 	const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 	const [tools, setTools] = useState<Tool[]>([]);
 	const [viewType, setViewType] = useState<"" | "materials" | "tools">("");
+	const [showCheckoutErrorModal, setShowCheckoutErrorModal] = useState(false);
+	const [showCheckoutMessageModal, setShowCheckoutMessageModal] = useState("");
 
 	useEffect(() => {
 		const fetchProjectMaterials = async () => {
@@ -121,6 +123,22 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 		fetchProjectMaterials();
 	}, [navigate, projectId]);
 
+	/**
+	 * Handle the button click for complete project
+	 */
+	const handleCompleteClick = () => {
+		const checkedOut = tools.filter(t => t.status === "CHECKEDOUT");
+		if (checkedOut.length > 0) {
+			const toolNames = checkedOut.map(t => t.name).join(", ");
+			setShowCheckoutMessageModal(
+				`Cannot complete project. The following tools are still checked out: ${toolNames}. Please return them first.`,
+			);
+			setShowCheckoutErrorModal(true);
+			return;
+		}
+		setIsConfirmModalOpen(true);
+	};
+
 	const handleCompleteProject = async () => {
 		try {
 			setIsCompleting(true);
@@ -187,7 +205,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 						variant="orange"
 						size="sm"
 						disabled={isCompleting || projectStatus === "COMPLETED"}
-						onClick={() => setIsConfirmModalOpen(true)}
+						onClick={handleCompleteClick}
 						aria-disabled={isCompleting || projectStatus === "COMPLETED"}
 						aria-label="Mark project as completed"
 					/>
@@ -276,6 +294,47 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 					)}
 				</>
 			)}
+
+			{/* Checkout Error Modal */}
+			{showCheckoutErrorModal && (
+				<div className="modal modal-open modal-middle">
+					<div className="modal-box max-w-2xl bg-base-100 shadow-2xl">
+						<div className="flex items-center justify-between pb-4 border-b border-base-300">
+							<h3 className="text-2xl font-bold text-primary">
+								Cannot Complete Project
+							</h3>
+							<button
+								type="button"
+								className="btn btn-sm btn-circle btn-ghost"
+								onClick={() => setShowCheckoutErrorModal(false)}
+							>
+								✕
+							</button>
+						</div>
+
+						<div className="py-6">
+							<p className="text-base text-base-content">
+								{showCheckoutMessageModal}
+							</p>
+							<div className="modal-action pt-6 border-t border-base-300">
+								<Button
+									label="OK"
+									variant="blue"
+									size="sm"
+									onClick={() => setShowCheckoutErrorModal(false)}
+								/>
+							</div>
+						</div>
+					</div>
+
+					<form method="dialog" className="modal-backdrop">
+						<button onClick={() => setShowCheckoutErrorModal(false)}>
+							close
+						</button>
+					</form>
+				</div>
+			)}
+
 			{isConfirmModalOpen && (
 				<div className="modal modal-open modal-middle">
 					<div className="modal-box max-w-2xl bg-base-100 shadow-2xl">
