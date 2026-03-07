@@ -5,7 +5,14 @@ import { apiFetch } from "../../api/api";
 import MaterialModalForm from "./MaterialFormModal";
 import { FilterBar } from "../../components/FilterBar";
 import { Button } from "../../components/Button";
-import { TriangleAlert, Package, Building, SquarePlus } from "lucide-react";
+import {
+	TriangleAlert,
+	Package,
+	Building,
+	SquarePlus,
+	Pencil,
+	MinusCircle,
+} from "lucide-react";
 import RecordUsageModal from "./RecordUsageModal";
 
 export function MaterialsTable() {
@@ -152,6 +159,12 @@ export function MaterialsTable() {
 		label: project.project_name,
 	}));
 
+	const formatCurrency = (value: number) =>
+		new Intl.NumberFormat("en-US", {
+			style: "currency",
+			currency: "USD",
+		}).format(value);
+
 	return (
 		<div>
 			{/* Project Selection using FilterBar */}
@@ -178,15 +191,17 @@ export function MaterialsTable() {
 
 					{/* Materials Table */}
 					{!loading && !error && materials.length > 0 && (
-						<div className="overflow-x-auto">
+						<div className="overflow-x-auto overflow-y-auto max-h-[500px] rounded-box border border-base-content/5 bg-base-100 w-full max-w-full md:max-w-3xl mx-auto">
 							<table className="table table-zebra">
 								<thead>
 									<tr>
-										<th>Name</th>
-										<th>Quantity</th>
-										<th>Unit Cost</th>
-										<th>Low Stock Threshold</th>
-										<th>Actions</th>
+										<th className="text-tertiary text-lg">Name</th>
+										<th className="text-tertiary text-lg">Quantity</th>
+										<th className="text-tertiary text-lg">Unit Cost</th>
+										<th className="text-tertiary text-lg">
+											Low Stock Threshold
+										</th>
+										<th className="text-tertiary text-lg">Actions</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -201,20 +216,24 @@ export function MaterialsTable() {
 												</span>
 											</td>
 											<td>{material.unit_qty}</td>
-											<td>{`$${(material.unit_cost ?? 0).toFixed(2)}`}</td>
+											<td>{formatCurrency(material.unit_cost ?? 0)}</td>
 											<td>{material.low_stock_threshold}</td>
-											<td>
+											<td className="flex gap-2">
 												<button
 													onClick={() => handleEditMaterial(material)}
-													className="btn btn-sm btn-outline"
+													className="p-2 text-tertiary hover:text-secondary hover:bg-secondary/10 rounded transition"
+													aria-label="Edit material"
+													title="Edit"
 												>
-													Edit
+													<Pencil size={18} />
 												</button>
 												<button
 													onClick={() => handleRecordUsage(material)}
-													className="btn btn-sm btn-outline ml-2"
+													className="p-2 text-tertiary hover:text-secondary hover:bg-secondary/10 rounded transition"
+													aria-label="Record usage"
+													title="Record Usage"
 												>
-													Use
+													<MinusCircle size={18} />
 												</button>
 											</td>
 										</tr>
