@@ -112,10 +112,10 @@ export default function ToolDetail() {
 							{isForeman ? (
 								<button
 									onClick={() => setIsModalOpen(true)}
-									className="rounded-md p-2 transition hover:bg-base-200"
+									className="btn btn-sm btn-outline btn-ghost rounded-md p-2 transition hover:bg-secondary/20 hover:text-secondary"
 									aria-label="Edit tool"
 								>
-									<Pencil className="h-5 w-5 text-tertiary" />
+									<Pencil className="h-5 w-5" />
 								</button>
 							) : (
 								<span className="h-9 w-9" aria-hidden="true" />

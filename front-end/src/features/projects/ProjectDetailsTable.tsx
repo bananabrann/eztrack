@@ -25,7 +25,7 @@ export default function ProjectDetailsTable({
 		}).format(value);
 
 	return (
-		<div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 w-full max-w-4xl mx-auto">
+		<div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 w-full max-w-full md:max-w-3xl mt-6 mb-6">
 			<table className="table table-zebra">
 				<thead>
 					<tr>
