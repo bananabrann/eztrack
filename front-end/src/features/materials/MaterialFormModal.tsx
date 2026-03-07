@@ -232,14 +232,14 @@ export default function MaterialModalForm({
 
 						{/* Actions */}
 						<div className="modal-action pt-4 border-t border-base-300">
-							<Button label="Cancel" variant="orange" onClick={onClose} />
+							<Button label="Cancel" variant="blue" onClick={onClose} />
 
 							{loading ? (
 								<span className="loading loading-spinner loading-md"></span>
 							) : (
 								<Button
 									label="Save"
-									variant="blue"
+									variant="orange"
 									type="submit"
 									onClick={() => undefined}
 								/>

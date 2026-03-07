@@ -319,7 +319,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 							<div className="modal-action pt-6 border-t border-base-300">
 								<Button
 									label="OK"
-									variant="blue"
+									variant="orange"
 									size="sm"
 									onClick={() => setShowCheckoutErrorModal(false)}
 								/>
@@ -358,12 +358,12 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 							<div className="modal-action pt-4 border-t border-base-300">
 								<Button
 									label="No, Keep Editing"
-									variant="orange"
+									variant="blue"
 									onClick={() => setIsConfirmModalOpen(false)}
 								/>
 								<Button
 									label={isCompleting ? "Saving..." : "Yes, Complete Project"}
-									variant="blue"
+									variant="orange"
 									disabled={isCompleting}
 									onClick={handleCompleteProject}
 								/>
