@@ -5,12 +5,15 @@ import { updateProject } from "../../api/projects-api";
 
 import type { Materials } from "../../types/materials";
 import type { Project } from "../../types/projects";
+import type { Tool } from "../../api/tools-api";
 import ProjectCost from "./ProjectCost";
 import ProjectDetailsTable, {
 	type ProjectMaterialRow,
 } from "./ProjectDetailsTable";
-
 import { Button } from "../../components/Button";
+import { FilterBar } from "../../components/FilterBar";
+import { Building } from "lucide-react";
+import ProjectToolsTable from "./ProjectToolsTable";
 
 type ProjectDetailsProps = {
 	projectId: string;
@@ -46,6 +49,8 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 	const [totalCost, setTotalCost] = useState(0);
 	const [isCompleting, setIsCompleting] = useState(false);
 	const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+	const [tools, setTools] = useState<Tool[]>([]);
+	const [viewType, setViewType] = useState<"" | "materials" | "tools">("");
 
 	useEffect(() => {
 		const fetchProjectMaterials = async () => {
@@ -53,16 +58,23 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 				setLoading(true);
 				setError(null);
 
-				const [projectsResponse, materialsResponse, materialCostResponse] =
-					await Promise.all([
-						apiFetch<{ message: string; data: Project[] }>("/projects"),
-						apiFetch<{ message: string; data: Materials[] }>(
-							`/materials?project_id=${encodeURIComponent(projectId)}`,
-						),
-						apiFetch<MaterialCostResponse>(
-							`/projects/${projectId}/material-cost`,
-						),
-					]);
+				const [
+					projectsResponse,
+					materialsResponse,
+					materialCostResponse,
+					toolsResponse,
+				] = await Promise.all([
+					apiFetch<{ message: string; data: Project[] }>("/projects"),
+					apiFetch<{ message: string; data: Materials[] }>(
+						`/materials?project_id=${encodeURIComponent(projectId)}`,
+					),
+					apiFetch<MaterialCostResponse>(
+						`/projects/${projectId}/material-cost`,
+					),
+					apiFetch<{ message: string; data: Tool[] }>(
+						`/tools?project_id=${encodeURIComponent(projectId)}`,
+					),
+				]);
 
 				const currentProject = projectsResponse.data.find(
 					project => project.id === projectId,
@@ -90,6 +102,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 				}));
 
 				setRows(mappedRows);
+				setTools(toolsResponse.data);
 			} catch (err) {
 				const message =
 					err instanceof Error
@@ -129,6 +142,11 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 		}
 	};
 
+	const viewOptions = [
+		{ value: "materials", label: "Materials" },
+		{ value: "tools", label: "Tools" },
+	];
+
 	if (loading) {
 		return (
 			<div className="flex justify-center items-center h-screen">
@@ -147,13 +165,45 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 
 	return (
 		<div className="p-6 min-h-screen">
-			<h1 className="text-2xl text-center font-bold mt-8 mb-2">
-				Project Details
-			</h1>
-			<p className="text-lg text-primary text-center mb-4">
-				{projectName || projectId}
-			</p>
-			<div className="max-w-4xl mx-auto flex justify-end mb-4">
+			<div className="max-w-4xl mx-auto flex items-center justify-between mt-8 mb-4">
+				<div>
+					<h1 className="text-2xl font-bold">Project Details</h1>
+					<p className="text-lg text-primary">{projectName || projectId}</p>
+				</div>
+
+				<div className="flex items-center gap-3">
+					<span
+						className={`px-2 py-1 rounded text-sm font-medium ${projectStatus === "COMPLETED" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}
+					>
+						{projectStatus ?? "Unknown"}
+					</span>
+
+					<Button
+						label={
+							projectStatus === "COMPLETED"
+								? "Project Completed"
+								: "Complete Project"
+						}
+						variant="orange"
+						size="sm"
+						disabled={isCompleting || projectStatus === "COMPLETED"}
+						onClick={() => setIsConfirmModalOpen(true)}
+						aria-disabled={isCompleting || projectStatus === "COMPLETED"}
+						aria-label="Mark project as completed"
+					/>
+				</div>
+			</div>
+
+			<div className="max-w-4xl mx-auto mb-6">
+				<FilterBar
+					value={viewType}
+					onChange={value => setViewType(value as "" | "materials" | "tools")}
+					options={viewOptions}
+					label="Select view"
+					containerClassName="w-80"
+				/>
+			</div>
+			{/* <div className="max-w-4xl mx-auto flex justify-end mb-4">
 				<Button
 					label={
 						projectStatus === "COMPLETED"
@@ -165,20 +215,53 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 					disabled={isCompleting || projectStatus === "COMPLETED"}
 					onClick={() => setIsConfirmModalOpen(true)}
 				/>
-			</div>
-
-			{rows.length === 0 ? (
-				<div className="text-gray-500">
-					No materials found for this project.
+			</div> */}
+			{viewType === "" ? (
+				<div className="flex justify-center mt-16">
+					<div className="card bg-base-100 w-full max-w-sm shadow-sm p-8">
+						<div className="text-center">
+							<Building
+								size={64}
+								className="mx-auto mb-4 text-tertiary opacity-50"
+							/>
+							<h3 className="text-lg font-semibold text-primary mb-2">
+								What would you like to view?
+							</h3>
+							<p className="text-tertiary mb-6">
+								Use the dropdown above to choose Materials or Tools for this
+								project.
+							</p>
+						</div>
+						.
+					</div>
 				</div>
+			) : viewType === "materials" ? (
+				<>
+					{rows.length === 0 ? (
+						<div className="text-gray-500">
+							No materials found for this project.
+						</div>
+					) : (
+						<ProjectDetailsTable
+							rows={rows}
+							totalPrice={calculateTotalPrice(rows)}
+						/>
+					)}
+					<ProjectCost totalCost={totalCost} />
+				</>
 			) : (
-				<ProjectDetailsTable
-					rows={rows}
-					totalPrice={calculateTotalPrice(rows)}
-				/>
+				<>
+					{tools.length === 0 ? (
+						<div className="text-gray-500">
+							No tools assigned to this project.
+						</div>
+					) : (
+						<div className="overflow-x-auto">
+							<ProjectToolsTable tools={tools} />
+						</div>
+					)}
+				</>
 			)}
-			<ProjectCost totalCost={totalCost} />
-
 			{isConfirmModalOpen && (
 				<div className="modal modal-open modal-middle">
 					<div className="modal-box max-w-2xl bg-base-100 shadow-2xl">
