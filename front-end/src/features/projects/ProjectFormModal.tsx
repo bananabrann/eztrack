@@ -116,13 +116,13 @@ export default function ProjectFormModal({
 						<div className="mt-4 mb-4 grid grid-cols-2 gap-3 w-full">
 							<Button
 								label="Cancel"
-								variant="orange"
+								variant="blue"
 								onClick={onClose}
 								disabled={isSaving}
 							/>
 							<Button
 								label={isSaving ? "Saving..." : "Save Project"}
-								variant="blue"
+								variant="orange"
 								type="submit"
 								onClick={() => undefined}
 								disabled={isSaving}

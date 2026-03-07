@@ -31,11 +31,13 @@ export function Button({
 			: "max-w-[420px] px-6 py-3";
 
 	if (variant === "blue") {
+		// Secondary action: Dark navy with subtle opacity hover
 		variantClasses =
-			"bg-primary hover:bg-secondary active:bg-tertiary focus-visible:ring-tertiary";
+			"bg-primary hover:opacity-90 active:opacity-75 focus-visible:ring-primary";
 	} else {
+		// Primary action: Orange with subtle opacity hover
 		variantClasses =
-			"bg-secondary hover:bg-tertiary active:bg-enabled focus-visible:ring-secondary";
+			"bg-secondary hover:opacity-90 active:opacity-75 focus-visible:ring-secondary";
 	}
 
 	return (

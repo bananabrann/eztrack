@@ -5,7 +5,7 @@ import { apiFetch } from "../../api/api";
 import MaterialModalForm from "./MaterialFormModal";
 import { FilterBar } from "../../components/FilterBar";
 import { Button } from "../../components/Button";
-import { TriangleAlert, Package, Building } from "lucide-react";
+import { TriangleAlert, Package, Building, SquarePlus } from "lucide-react";
 import RecordUsageModal from "./RecordUsageModal";
 
 export function MaterialsTable() {
@@ -267,13 +267,12 @@ export function MaterialsTable() {
 			{/* Add Material Button using Button component */}
 			{selectedProjectId && (
 				<div className="mb-4 flex justify-center mt-8">
-					<div className="btn-wide">
-						<Button
-							label="Add Material"
-							variant="blue"
-							onClick={handleAddMaterial}
-						/>
-					</div>
+					<Button
+						label="Create Material"
+						variant="orange"
+						icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
+						onClick={handleAddMaterial}
+					/>
 				</div>
 			)}
 

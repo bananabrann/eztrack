@@ -127,14 +127,12 @@ export default function ToolsManagement({
 				)}
 			</div>
 			<div className="mb-4 flex justify-center mt-8">
-				<div className="btn-wide">
-					<Button
-						label="Create Tool"
-						variant="blue"
-						onClick={handleAddTool}
-						icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
-					/>
-				</div>
+				<Button
+					label="Create Tool"
+					variant="orange"
+					onClick={handleAddTool}
+					icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
+				/>
 			</div>
 			<ToolsFormModal
 				isOpen={isModalOpen}

@@ -211,7 +211,7 @@ export default function ToolsFormModal({
 						<div className="modal-action pt-4 border-t border-base-300">
 							<Button
 								label="Cancel"
-								variant="orange"
+								variant="blue"
 								onClick={onClose}
 								disabled={loading}
 							/>
@@ -220,7 +220,7 @@ export default function ToolsFormModal({
 							) : (
 								<Button
 									label={form.id ? "Save" : "Submit"}
-									variant="blue"
+									variant="orange"
 									type="submit"
 									onClick={() => undefined}
 								/>
