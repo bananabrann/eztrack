@@ -159,6 +159,12 @@ export function MaterialsTable() {
 		label: project.project_name,
 	}));
 
+	const formatCurrency = (value: number) =>
+		new Intl.NumberFormat("en-US", {
+			style: "currency",
+			currency: "USD",
+		}).format(value);
+
 	return (
 		<div>
 			{/* Project Selection using FilterBar */}
@@ -185,7 +191,7 @@ export function MaterialsTable() {
 
 					{/* Materials Table */}
 					{!loading && !error && materials.length > 0 && (
-						<div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 w-full">
+						<div className="overflow-x-auto overflow-y-auto max-h-[500px] rounded-box border border-base-content/5 bg-base-100 w-full">
 							<table className="table table-zebra">
 								<thead>
 									<tr>
@@ -210,7 +216,7 @@ export function MaterialsTable() {
 												</span>
 											</td>
 											<td>{material.unit_qty}</td>
-											<td>{`$${(material.unit_cost ?? 0).toFixed(2)}`}</td>
+											<td>{formatCurrency(material.unit_cost ?? 0)}</td>
 											<td>{material.low_stock_threshold}</td>
 											<td className="flex gap-6">
 												<button
