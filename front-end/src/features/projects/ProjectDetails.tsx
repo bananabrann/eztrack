@@ -183,19 +183,15 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 
 	return (
 		<div className="p-6 min-h-screen">
-			<div className="max-w-4xl mx-auto flex items-center justify-between mt-8 mb-4">
-				<div>
-					<h1 className="text-2xl font-bold">Project Details</h1>
-					<p className="text-lg text-primary">{projectName || projectId}</p>
+			<div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+				<div className="min-w-0">
+					<h1 className="text-xl sm:text-2xl font-bold">Project Details</h1>
+					<p className="text-base sm:text-lg text-primary truncate">
+						{projectName || projectId}
+					</p>
 				</div>
 
-				<div className="flex items-center gap-3">
-					<span
-						className={`px-2 py-1 rounded text-sm font-medium ${projectStatus === "COMPLETED" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}
-					>
-						{projectStatus ?? "Unknown"}
-					</span>
-
+				<div className="flex items-center gap-3 whitespace-nowrap">
 					<Button
 						label={
 							projectStatus === "COMPLETED"
@@ -212,14 +208,16 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 				</div>
 			</div>
 
-			<div className="max-w-4xl mx-auto mb-6">
-				<FilterBar
-					value={viewType}
-					onChange={value => setViewType(value as "" | "materials" | "tools")}
-					options={viewOptions}
-					label="Select view"
-					containerClassName="w-80"
-				/>
+			<div className="w-full px-4 mb-6">
+				<div className="max-w-4xl mx-auto mt-6">
+					<FilterBar
+						value={viewType}
+						onChange={value => setViewType(value as "" | "materials" | "tools")}
+						options={viewOptions}
+						label="Select view"
+						containerClassName="w-full sm:w-80"
+					/>
+				</div>
 			</div>
 
 			{viewType === "" ? (
@@ -261,10 +259,12 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 							</div>
 						</div>
 					) : (
-						<ProjectDetailsTable
-							rows={rows}
-							totalPrice={calculateTotalPrice(rows)}
-						/>
+						<div className="overflow-x-auto">
+							<ProjectDetailsTable
+								rows={rows}
+								totalPrice={calculateTotalPrice(rows)}
+							/>
+						</div>
 					)}
 					<ProjectCost totalCost={totalCost} />
 				</>

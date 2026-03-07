@@ -191,7 +191,7 @@ export function MaterialsTable() {
 
 					{/* Materials Table */}
 					{!loading && !error && materials.length > 0 && (
-						<div className="overflow-x-auto overflow-y-auto max-h-[500px] rounded-box border border-base-content/5 bg-base-100 w-full">
+						<div className="overflow-x-auto overflow-y-auto max-h-[500px] rounded-box border border-base-content/5 bg-base-100 w-full max-w-full md:max-w-3xl mx-auto">
 							<table className="table table-zebra">
 								<thead>
 									<tr>
@@ -218,10 +218,10 @@ export function MaterialsTable() {
 											<td>{material.unit_qty}</td>
 											<td>{formatCurrency(material.unit_cost ?? 0)}</td>
 											<td>{material.low_stock_threshold}</td>
-											<td className="flex gap-6">
+											<td className="flex gap-2">
 												<button
 													onClick={() => handleEditMaterial(material)}
-													className="btn btn-sm btn-outline btn-ghost rounded-md p-2 transition hover:bg-secondary/20 hover:text-secondary"
+													className="p-2 text-tertiary hover:text-secondary hover:bg-secondary/10 rounded transition"
 													aria-label="Edit material"
 													title="Edit"
 												>
@@ -229,7 +229,7 @@ export function MaterialsTable() {
 												</button>
 												<button
 													onClick={() => handleRecordUsage(material)}
-													className="btn btn-sm btn-outline btn-ghost rounded-md p-2 transition hover:bg-secondary/20 hover:text-secondary"
+													className="p-2 text-tertiary hover:text-secondary hover:bg-secondary/10 rounded transition"
 													aria-label="Record usage"
 													title="Record Usage"
 												>
