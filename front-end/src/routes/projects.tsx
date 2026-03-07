@@ -76,7 +76,7 @@ export default function Projects() {
 	return (
 		<main className="flex-1 max-w-7xl mx-auto px-6 py-16 min-h-screen">
 			<div className="flex flex-col gap-6 items-center">
-				<h1 className="text-[--tertiary-color] text-3xl font-bold mb-6 flex items-center justify-center">
+				<h1 className="text-[--tertiary-color] font-bold text-2xl md:text-3xl lg:text-4xl mb-6 flex items-center justify-center">
 					Project Management
 				</h1>
 
