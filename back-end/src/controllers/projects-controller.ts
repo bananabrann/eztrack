@@ -165,6 +165,36 @@ export default class ProjectsController {
 			if (validation.end_date !== undefined)
 				updateData.end_date = validation.end_date;
 
+			/**
+			 * Before executing the update, check if trying to complete the project
+			 * If so, verify no tools are still checked out
+			 */
+			if (
+				updateData.status === PROJECT_STATUS.COMPLETED &&
+				existingProject.status !== PROJECT_STATUS.COMPLETED
+			) {
+				const { data: checkedOutTools, error: toolsCheckError } =
+					await supabaseClient
+						.from("tools")
+						.select("id,name,status")
+						.eq("project_id", id)
+						.eq("status", TOOL_STATUS.CHECKEDOUT);
+
+				if (toolsCheckError) {
+					throw toolsCheckError;
+				}
+
+				if (checkedOutTools && checkedOutTools.length > 0) {
+					res.status(400).json({
+						error: "RETURN_TOOLS_FIRST",
+						message:
+							"Cannot complete project: some tools are still checked out.",
+						tools: checkedOutTools,
+					});
+					return;
+				}
+			}
+
 			// Execute the update query and return the updated record
 			const { data, error } = await supabaseClient
 				.from("projects")
