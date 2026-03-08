@@ -254,7 +254,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 									</h3>
 
 									<p className="text-tertiary mb-6">
-										To add materials for this project,{" "}
+										To add materials to get started with this project&nbsp;
 										<button
 											onClick={() =>
 												navigate(`/materials?projectId=${projectId}`)
@@ -266,7 +266,6 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 											click here
 											<ArrowRight className="w-4 h-4 ml-2" />
 										</button>
-										.
 									</p>
 								</div>
 							</div>
@@ -295,7 +294,18 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 										No tools yet
 									</h3>
 									<p className="text-tertiary mb-6">
-										Add a tools to get started with this project.
+										To add a tools to get started with this project&nbsp;
+										<button
+											onClick={() =>
+												navigate(`/toolsManagement?projectId=${projectId}`)
+											}
+											className="inline-flex items-center text-secondary hover:underline focus:outline-none focus:ring-2 focus:ring-secondary rounded"
+											aria-label="Go to Tools page to add tools"
+											title="Add tools"
+										>
+											click here
+											<ArrowRight className="w-4 h-4 ml-2" />
+										</button>
 									</p>
 								</div>
 							</div>
