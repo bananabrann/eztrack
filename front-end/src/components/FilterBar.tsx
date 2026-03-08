@@ -16,7 +16,7 @@ export function FilterBar({
 	onChange,
 	options,
 	label = "Filter by",
-	containerClassName = "w-48 max-w-md",
+	containerClassName = "w-full max-w-lg",
 }: FilterBarProps) {
 	return (
 		<div
