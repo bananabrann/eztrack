@@ -12,7 +12,7 @@ import ProjectDetailsTable, {
 } from "./ProjectDetailsTable";
 import { Button } from "../../components/Button";
 import { FilterBar } from "../../components/FilterBar";
-import { Building2, Hammer, Package } from "lucide-react";
+import { Building2, Hammer, Package, ArrowRight } from "lucide-react";
 import ProjectToolsTable from "./ProjectToolsTable";
 
 type ProjectDetailsProps = {
@@ -252,8 +252,21 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 									<h3 className="text-lg font-semibold text-primary mb-2">
 										No materials yet
 									</h3>
+
 									<p className="text-tertiary mb-6">
-										Add a material to get started with this project.
+										To add materials for this project,{" "}
+										<button
+											onClick={() =>
+												navigate(`/materials?projectId=${projectId}`)
+											}
+											className="inline-flex items-center text-secondary hover:underline focus:outline-none focus:ring-2 focus:ring-secondary rounded"
+											aria-label="Go to materials page to add materials"
+											title="Add materials"
+										>
+											click here
+											<ArrowRight className="w-4 h-4 ml-2" />
+										</button>
+										.
 									</p>
 								</div>
 							</div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
 import type { Materials } from "../../types/materials";
 import type { Project } from "../../types/projects";
 import { apiFetch } from "../../api/api";
@@ -29,6 +30,8 @@ export function MaterialsTable() {
 	// Usage Modal state
 	const [isUsageModalOpen, setIsUsageModalOpen] = useState(false);
 	const [usageMaterial, setUsageMaterial] = useState<Materials | null>(null);
+	const [searchParams] = useSearchParams();
+
 	/**
 	 * Fetch projects
 	 */
@@ -78,6 +81,13 @@ export function MaterialsTable() {
 				setLoading(false);
 			});
 	};
+
+	useEffect(() => {
+		const projectIdFromQuery = searchParams.get("projectId");
+		if (projectIdFromQuery) {
+			setSelectedProjectId(projectIdFromQuery);
+		}
+	}, [searchParams]);
 
 	useEffect(() => {
 		fetchProjects();
