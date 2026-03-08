@@ -30,6 +30,7 @@ export function MaterialsTable() {
 	// Usage Modal state
 	const [isUsageModalOpen, setIsUsageModalOpen] = useState(false);
 	const [usageMaterial, setUsageMaterial] = useState<Materials | null>(null);
+	// Params Modal
 	const [searchParams] = useSearchParams();
 
 	/**
