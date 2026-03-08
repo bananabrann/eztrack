@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { toolsApi, Tool } from "../../api/tools-api";
+import { toolsApi, Tool, ToolStatus } from "../../api/tools-api";
 import { Button } from "../../components/Button";
 import ToolsFormModal from "./ToolsFormModal";
 import { SquarePlus } from "lucide-react";
 
 interface ToolsManagementProps {
 	search?: string;
-	filter?: string;
+	filter?: { status?: ToolStatus; project_id?: string };
+	isForeman?: boolean;
 }
 
 export default function ToolsManagement({
 	search = "",
-	filter = "",
+	filter,
+	isForeman = false,
 }: ToolsManagementProps) {
 	const [tools, setTools] = useState<Tool[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -25,13 +27,19 @@ export default function ToolsManagement({
 
 	useEffect(() => {
 		fetchTools();
-	}, [filter]);
+	}, [filter?.status, filter?.project_id]);
 
 	const fetchTools = async () => {
 		try {
 			setLoading(true);
-			const response = await toolsApi.getAll(filter as any);
-			setTools(response.data);
+			const response = await toolsApi.getAll(filter);
+
+			const sortedTools = response.data.sort((a, b) => {
+				if (a.status === "AVAILABLE" && b.status !== "AVAILABLE") return -1;
+				if (b.status === "AVAILABLE" && a.status !== "AVAILABLE") return 1;
+				return 0;
+			});
+			setTools(sortedTools);
 		} catch (err: any) {
 			setError(err.message);
 		} finally {
@@ -39,9 +47,14 @@ export default function ToolsManagement({
 		}
 	};
 
-	const filteredTools = tools.filter(tool =>
-		tool.name.toLowerCase().includes(search.toLowerCase()),
-	);
+	const filteredTools = tools.filter(tool => {
+		const matchesSearch = tool.name
+			.toLowerCase()
+			.includes(search.toLowerCase());
+		const hideArchived =
+			filter?.status !== "ARCHIVE" ? tool.status !== "ARCHIVE" : true;
+		return matchesSearch && hideArchived;
+	});
 
 	const handleAddTool = () => {
 		setIsModalOpen(true);
@@ -98,22 +111,26 @@ export default function ToolsManagement({
 							<div
 								key={tool.id}
 								onClick={() => navigate(`/tools/${tool.id}`)}
-								className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer"
+								className="card bg-base-100 border border-outline shadow-sm hover:shadow-md active:shadow-sm hover:border-tertiary active:border-tertiary transition cursor-pointer"
 							>
-								<div className="card-body">
-									<h2 className="text-xl font-bold text-[--primary-text-color] mb-1">
+								<div className="card-body flex flex-col items-center text-center p-6">
+									<h2 className="text-xl font-bold text-[--primary-text-color] mb-2">
 										{tool.name}
 									</h2>
 									<span
-										className={`w-fit px-4 py-2 rounded-full text-sm font-medium ${
+										className={`w-fit px-3 py-1 rounded-full text-xs font-bold tracking-wide shadow-sm border ${
 											tool.status === "AVAILABLE"
-												? "bg-green-50 text-green-800"
+												? "bg-green-50 text-green-700 border-green-200"
 												: tool.status === "CHECKEDOUT"
-													? "bg-yellow-50 text-yellow-800"
-													: "bg-gray-50 text-gray-800"
+													? "bg-orange-50 text-secondary border-orange-200"
+													: "bg-slate-50 text-tertiary border-slate-200"
 										}`}
 									>
-										{tool.status}
+										{tool.status === "AVAILABLE"
+											? "Available"
+											: tool.status === "CHECKEDOUT"
+												? "Checked Out"
+												: "Archived"}
 									</span>
 									{tool.checked_out_by && (
 										<p className="text-sm text-gray-600 mt-2">
@@ -126,19 +143,23 @@ export default function ToolsManagement({
 					</div>
 				)}
 			</div>
-			<div className="mb-4 flex justify-center mt-8">
-				<Button
-					label="Create Tool"
-					variant="orange"
-					onClick={handleAddTool}
-					icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
+			{isForeman && (
+				<div className="mb-4 flex justify-center mt-8">
+					<Button
+						label="Create Tool"
+						variant="orange"
+						onClick={handleAddTool}
+						icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
+					/>
+				</div>
+			)}
+			{isForeman && (
+				<ToolsFormModal
+					isOpen={isModalOpen}
+					onClose={handleCloseModal}
+					onSubmit={handleToolSubmit}
 				/>
-			</div>
-			<ToolsFormModal
-				isOpen={isModalOpen}
-				onClose={handleCloseModal}
-				onSubmit={handleToolSubmit}
-			/>
+			)}
 		</section>
 	);
 }
