@@ -14,8 +14,14 @@ export interface Tool {
 }
 
 export const toolsApi = {
-	getAll: (status?: ToolStatus) =>
-		apiFetch<{ data: Tool[] }>(`/tools${status ? `?status=${status}` : ""}`),
+	getAll: (params?: { status?: ToolStatus; project_id?: string }) => {
+		const searchParams = new URLSearchParams();
+		if (params?.status) searchParams.append("status", params.status);
+		if (params?.project_id)
+			searchParams.append("project_id", params.project_id);
+		const qs = searchParams.toString();
+		return apiFetch<{ data: Tool[] }>(`/tools${qs ? `?${qs}` : ""}`);
+	},
 
 	update: (toolId: string, payload: { name?: string; status?: ToolStatus }) =>
 		apiFetch<{ data: Tool }>(`/tools/${toolId}`, {
