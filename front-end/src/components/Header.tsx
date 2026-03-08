@@ -35,7 +35,7 @@ export default function Header({ role }: HeaderProps) {
 				<nav className="flex items-center gap-6">
 					<NavLink
 						to="/toolsManagement"
-						className="whitespace-nowrap"
+						className="whitespace-nowrap px-3 py-2 text-center hover:bg-[--secondary-color]/20 hover:text-[--secondary-color] transition-colors active:opacity-80"
 						aria-label="Go to Tools Management"
 					>
 						Tools Management
@@ -44,14 +44,14 @@ export default function Header({ role }: HeaderProps) {
 						<>
 							<NavLink
 								to="/materials"
-								className="whitespace-nowrap"
+								className="whitespace-nowrap px-3 py-2 text-center rounded-md hover:bg-[--secondary-color]/20 hover:text-[--secondary-color] transition-colors active:opacity-80"
 								aria-label="Go to Materials Management"
 							>
 								Materials Management
 							</NavLink>
 							<NavLink
 								to="/projects"
-								className="whitespace-nowrap"
+								className="whitespace-nowrap px-3 py-2 text-center rounded-md hover:bg-[--secondary-color]/20 hover:text-[--secondary-color] transition-colors active:opacity-80"
 								aria-label="Go to Project Management"
 							>
 								Project Management
@@ -119,16 +119,28 @@ export default function Header({ role }: HeaderProps) {
 					menuOpen ? "max-h-96 p-4" : "max-h-0 p-0"
 				}`}
 			>
-				<nav className="flex flex-col items-start gap-4">
-					<NavLink to="/toolsManagement" onClick={() => setMenuOpen(false)}>
+				<nav className="flex flex-col items-start gap-4 py-3 text-lg">
+					<NavLink
+						to="/toolsManagement"
+						className="w-full text-center"
+						onClick={() => setMenuOpen(false)}
+					>
 						Tools Management
 					</NavLink>
 					{role !== "CREW" && (
 						<>
-							<NavLink to="/materials" onClick={() => setMenuOpen(false)}>
+							<NavLink
+								to="/materials"
+								className="w-full text-center"
+								onClick={() => setMenuOpen(false)}
+							>
 								Materials Management
 							</NavLink>
-							<NavLink to="/projects" onClick={() => setMenuOpen(false)}>
+							<NavLink
+								to="/projects"
+								className="w-full text-center"
+								onClick={() => setMenuOpen(false)}
+							>
 								Project Management
 							</NavLink>
 						</>

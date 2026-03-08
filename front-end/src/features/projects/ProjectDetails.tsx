@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { apiFetch } from "../../api/api";
 import { updateProject } from "../../api/projects-api";
-
 import type { Materials } from "../../types/materials";
 import type { Project } from "../../types/projects";
 import type { Tool } from "../../api/tools-api";
@@ -12,7 +11,13 @@ import ProjectDetailsTable, {
 } from "./ProjectDetailsTable";
 import { Button } from "../../components/Button";
 import { FilterBar } from "../../components/FilterBar";
-import { Building2, Hammer, Package } from "lucide-react";
+import {
+	Building2,
+	Hammer,
+	Package,
+	ArrowRight,
+	ChevronLeft,
+} from "lucide-react";
 import ProjectToolsTable from "./ProjectToolsTable";
 
 type ProjectDetailsProps = {
@@ -183,15 +188,44 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 
 	return (
 		<div className="p-6 min-h-screen">
-			<div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-				<div className="min-w-0">
-					<h1 className="text-xl sm:text-2xl font-bold">Project Details</h1>
-					<p className="text-base sm:text-lg text-primary truncate">
+			<div className="max-w-4xl mx-auto mb-6">
+				{/* Desktop layout */}
+				<div className="hidden sm:flex items-center justify-between gap-4">
+					<Link
+						to="/projects"
+						className="inline-flex items-center gap-2 rounded-md px-2 py-1 hover:bg-[--primary-color] hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-current focus:ring-offset-2 flex-shrink-0"
+						aria-label="Back to Projects"
+						title="Back to Projects"
+					>
+						<ChevronLeft className="w-5 h-5" />
+						<span className="text-sm md:text-base">Back to projects</span>
+					</Link>
+					<h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-center truncate flex-1">
 						{projectName || projectId}
-					</p>
+					</h1>
+					<div className="flex-shrink-0 w-40">
+						<Button
+							label={
+								projectStatus === "COMPLETED"
+									? "Project Completed"
+									: "Complete Project"
+							}
+							variant="orange"
+							size="sm"
+							disabled={isCompleting || projectStatus === "COMPLETED"}
+							onClick={handleCompleteClick}
+							aria-disabled={isCompleting || projectStatus === "COMPLETED"}
+							aria-label="Mark project as completed"
+						/>
+					</div>
 				</div>
 
-				<div className="flex items-center gap-3 whitespace-nowrap">
+				{/* Mobile layout */}
+				<div className="flex sm:hidden flex-col items-center gap-4">
+					<h1 className="text-xl font-bold text-center truncate w-full">
+						{projectName || projectId}
+					</h1>
+
 					<Button
 						label={
 							projectStatus === "COMPLETED"
@@ -207,7 +241,6 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 					/>
 				</div>
 			</div>
-
 			<div className="w-full px-4 mb-6">
 				<div className="max-w-4xl mx-auto mt-6">
 					<FilterBar
@@ -252,8 +285,20 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 									<h3 className="text-lg font-semibold text-primary mb-2">
 										No materials yet
 									</h3>
+
 									<p className="text-tertiary mb-6">
-										Add a material to get started with this project.
+										To add materials to get started with this project&nbsp;
+										<button
+											onClick={() =>
+												navigate(`/materials?projectId=${projectId}`)
+											}
+											className="inline-flex items-center text-secondary hover:underline focus:outline-none focus:ring-2 focus:ring-secondary rounded"
+											aria-label="Go to materials page to add materials"
+											title="Add materials"
+										>
+											click here
+											<ArrowRight className="w-4 h-4 ml-2" />
+										</button>
 									</p>
 								</div>
 							</div>
@@ -282,7 +327,18 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
 										No tools yet
 									</h3>
 									<p className="text-tertiary mb-6">
-										Add a tools to get started with this project.
+										To add a tools to get started with this project&nbsp;
+										<button
+											onClick={() =>
+												navigate(`/toolsManagement?projectId=${projectId}`)
+											}
+											className="inline-flex items-center text-secondary hover:underline focus:outline-none focus:ring-2 focus:ring-secondary rounded"
+											aria-label="Go to Tools page to add tools"
+											title="Add tools"
+										>
+											click here
+											<ArrowRight className="w-4 h-4 ml-2" />
+										</button>
 									</p>
 								</div>
 							</div>
