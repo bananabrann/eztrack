@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router";
 import { FilterBar } from "../components/FilterBar";
 import { SearchBar } from "../components/SearchBar";
 import ToolsManagement from "../features/tools/ToolsManagement";
 import { getProjects } from "../api/projects-api";
 
 export default function ToolsManagementRoute() {
+	const outletContext = useOutletContext<{ role: string | null } | undefined>();
+	const role = outletContext?.role ?? null;
+	const isForeman = role === "FOREMAN";
+
 	const TOOL_FILTERS = [
 		{ value: "", label: "All" },
 		{ value: "AVAILABLE", label: "Available" },
@@ -72,6 +77,7 @@ export default function ToolsManagementRoute() {
 						status: filter ? (filter as any) : undefined,
 						project_id: projectFilter ? projectFilter : undefined,
 					}}
+					isForeman={isForeman}
 				/>
 			</main>
 		</>
