@@ -138,7 +138,6 @@ export default function ToolDetail() {
 								aria-label="Edit tool"
 							>
 								<Pencil className="h-4 w-4" />
-								<span>Edit Tool</span>
 							</button>
 						) : null}
 					</div>
