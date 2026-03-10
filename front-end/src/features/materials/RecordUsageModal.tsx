@@ -111,16 +111,20 @@ export default function RecordUsageModal({
 
 						{/* Actions */}
 						<div className="modal-action pt-4 border-t border-base-300">
-							<Button label="Cancel" variant="blue" onClick={onClose} />
 							{loading ? (
-								<span className="loading loading-spinner loading-md"></span>
+								<div className="flex justify-center w-full">
+									<span className="loading loading-spinner loading-md"></span>
+								</div>
 							) : (
-								<Button
-									label="Confirm"
-									variant="orange"
-									type="submit"
-									onClick={() => undefined}
-								/>
+								<div className="flex justify-center gap-4 w-full">
+									<Button label="Cancel" variant="orange" onClick={onClose} />
+									<Button
+										label="Confirm"
+										variant="blue"
+										type="submit"
+										onClick={() => undefined}
+									/>
+								</div>
 							)}
 						</div>
 					</form>

@@ -113,21 +113,21 @@ export default function ProjectFormModal({
 								onChange={event => setEndDate(event.target.value)}
 							/>
 						</div>
-						<div className="mt-4 mb-4 grid grid-cols-2 gap-3 w-full">
-							<Button
-								label="Cancel"
-								variant="blue"
-								onClick={onClose}
-								disabled={isSaving}
-							/>
-							<Button
-								label={isSaving ? "Saving..." : "Save Project"}
-								variant="orange"
-								type="submit"
-								onClick={() => undefined}
-								disabled={isSaving}
-							/>
-						</div>
+						{isSaving ? (
+							<div className="flex justify-center w-full mt-4 mb-4">
+								<span className="loading loading-spinner loading-md"></span>
+							</div>
+						) : (
+							<div className="mt-4 mb-4 flex justify-center gap-4 w-full">
+								<Button label="Cancel" variant="blue" onClick={onClose} />
+								<Button
+									label="Save Project"
+									variant="orange"
+									type="submit"
+									onClick={() => undefined}
+								/>
+							</div>
+						)}
 						<button
 							type="button"
 							className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
