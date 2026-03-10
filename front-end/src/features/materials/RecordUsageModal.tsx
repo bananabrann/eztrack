@@ -102,7 +102,7 @@ export default function RecordUsageModal({
 								min={1}
 								max={material.unit_qty}
 								step={1}
-								className="input input-bordered input-lg w-full"
+								className="input input-bordered w-full px-4 border-2 bg-base-50 focus:bg-base-100 focus:border-primary focus:outline-none transition-all"
 								value={quantityUsed}
 								onChange={e => setQuantityUsed(e.target.value)}
 								required
