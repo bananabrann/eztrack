@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router";
 import { ModuleCard } from "../components/ModuleCard";
+import foreman from "../assets/foreman_cropped.png";
 
 export default function Foreman() {
 	const navigate = useNavigate();
@@ -24,6 +25,9 @@ export default function Foreman() {
 						label="Project Management"
 						onClick={() => navigate("/projects")}
 					/>
+				</div>
+				<div className="mt-10">
+					<img src={foreman} alt="Foreman" className="w-64 h-auto" />
 				</div>
 			</div>
 		</main>
