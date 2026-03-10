@@ -6,6 +6,7 @@ import ProjectsTable from "../features/projects/ProjectsTable";
 import ProjectFormModal from "../features/projects/ProjectFormModal";
 import { createProject, getProjects } from "../api/projects-api";
 import type { CreateProjectInput, Project } from "../types/projects";
+import { FilterBar } from "../components/FilterBar";
 
 export default function Projects() {
 	const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function Projects() {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
 	const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+	const [statusFilter, setStatusFilter] = useState<string>("");
 
 	useEffect(() => {
 		const fetchProjects = async () => {
@@ -73,10 +75,15 @@ export default function Projects() {
 		);
 	}
 
+	// Filter
+	const filteredProjects = projects.filter(project =>
+		statusFilter ? project.status === statusFilter : true,
+	);
+
 	return (
 		<main className="flex-1 max-w-7xl mx-auto px-6 py-16 min-h-screen">
-			<div className="flex flex-col gap-6 items-center">
-				<h1 className="text-[--tertiary-color] font-bold text-2xl md:text-3xl lg:text-4xl mb-6 flex items-center justify-center">
+			<div className="flex flex-col gap-4 items-center">
+				<h1 className="text-[--tertiary-color] font-bold text-2xl md:text-3xl lg:text-4xl flex items-center justify-center">
 					Project Management
 				</h1>
 
@@ -86,16 +93,35 @@ export default function Projects() {
 						No projects found. Please create a new project.
 					</div>
 				) : (
-					<ProjectsTable projects={projects} />
-				)}
+					<>
+						<FilterBar
+							value={statusFilter}
+							onChange={setStatusFilter}
+							label="All"
+							options={[
+								{ value: "ACTIVE", label: "Active" },
+								{ value: "COMPLETED", label: "Completed" },
+							]}
+							containerClassName="w-80 max-w-md"
+						/>
 
-				{/* Create New Project */}
-				<Button
-					label="Create New Project"
-					variant="orange"
-					icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
-					onClick={() => setIsProjectModalOpen(true)}
-				/>
+						{/* Create New Project */}
+						<Button
+							label="Create New Project"
+							variant="orange"
+							icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
+							onClick={() => setIsProjectModalOpen(true)}
+						/>
+
+						{filteredProjects.length === 0 ? (
+							<div className="text-gray-500">
+								No projects match the selected filter.
+							</div>
+						) : (
+							<ProjectsTable projects={filteredProjects} />
+						)}
+					</>
+				)}
 				<ProjectFormModal
 					isOpen={isProjectModalOpen}
 					onClose={() => setIsProjectModalOpen(false)}
