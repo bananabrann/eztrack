@@ -82,8 +82,8 @@ export default function Projects() {
 
 	return (
 		<main className="flex-1 max-w-7xl mx-auto px-6 py-16 min-h-screen">
-			<div className="flex flex-col gap-6 items-center">
-				<h1 className="text-[--tertiary-color] font-bold text-2xl md:text-3xl lg:text-4xl mb-6 flex items-center justify-center">
+			<div className="flex flex-col gap-4 items-center">
+				<h1 className="text-[--tertiary-color] font-bold text-2xl md:text-3xl lg:text-4xl flex items-center justify-center">
 					Project Management
 				</h1>
 
@@ -105,6 +105,14 @@ export default function Projects() {
 							containerClassName="w-80 max-w-md"
 						/>
 
+						{/* Create New Project */}
+						<Button
+							label="Create New Project"
+							variant="orange"
+							icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
+							onClick={() => setIsProjectModalOpen(true)}
+						/>
+
 						{filteredProjects.length === 0 ? (
 							<div className="text-gray-500">
 								No projects match the selected filter.
@@ -114,13 +122,6 @@ export default function Projects() {
 						)}
 					</>
 				)}
-				{/* Create New Project */}
-				<Button
-					label="Create New Project"
-					variant="orange"
-					icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
-					onClick={() => setIsProjectModalOpen(true)}
-				/>
 				<ProjectFormModal
 					isOpen={isProjectModalOpen}
 					onClose={() => setIsProjectModalOpen(false)}

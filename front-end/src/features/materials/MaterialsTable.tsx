@@ -187,6 +187,18 @@ export function MaterialsTable() {
 				containerClassName="w-80"
 			/>
 
+			{/* Add Material Button using Button component */}
+			{selectedProjectId && (
+				<div className="mb-6 flex justify-center mt-8">
+					<Button
+						label="Create Material"
+						variant="orange"
+						icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
+						onClick={handleAddMaterial}
+					/>
+				</div>
+			)}
+
 			{/* Show materials only if project is selected */}
 			{selectedProjectId ? (
 				<>
@@ -291,18 +303,6 @@ export function MaterialsTable() {
 							</p>
 						</div>
 					</div>
-				</div>
-			)}
-
-			{/* Add Material Button using Button component */}
-			{selectedProjectId && (
-				<div className="mb-4 flex justify-center mt-8">
-					<Button
-						label="Create Material"
-						variant="orange"
-						icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
-						onClick={handleAddMaterial}
-					/>
 				</div>
 			)}
 

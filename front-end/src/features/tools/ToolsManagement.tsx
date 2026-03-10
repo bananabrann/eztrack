@@ -84,6 +84,16 @@ export default function ToolsManagement({
 
 	return (
 		<section className="w-10/12 md:w-3/4 max-w-7xl min-w-0 mx-auto">
+			{isForeman && (
+				<div className="mb-6 flex justify-center mt-6">
+					<Button
+						label="Create Tool"
+						variant="orange"
+						onClick={handleAddTool}
+						icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
+					/>
+				</div>
+			)}
 			{successMessage && (
 				<div className="alert alert-success mb-6 shadow-lg">
 					<svg
@@ -143,16 +153,7 @@ export default function ToolsManagement({
 					</div>
 				)}
 			</div>
-			{isForeman && (
-				<div className="mb-4 flex justify-center mt-8">
-					<Button
-						label="Create Tool"
-						variant="orange"
-						onClick={handleAddTool}
-						icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
-					/>
-				</div>
-			)}
+
 			{isForeman && (
 				<ToolsFormModal
 					isOpen={isModalOpen}
