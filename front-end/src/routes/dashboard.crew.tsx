@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import crew from "../assets/crew.png";
 import { getSupabaseClient } from "../lib/supabase";
-import { Calendar, Clock } from "lucide-react";
+import { Calendar, Clock, Toolbox } from "lucide-react";
 import { toolsApi } from "../api/tools-api";
 import { getProjects } from "../api/projects-api";
+import { ModuleCard } from "../components/ModuleCard";
 
 export default function Crew() {
+	const navigate = useNavigate();
 	const [firstName, setFirstName] = useState("Crew");
 	const [currentProjectName, setCurrentProjectName] = useState("Loading...");
 	const [checkedOutToolNames, setCheckedOutToolNames] = useState<string[]>([]);
@@ -109,11 +112,11 @@ export default function Crew() {
 
 				<div className="flex w-full flex-col items-center justify-center gap-8 lg:flex-row lg:items-start">
 					<div className="flex w-full max-w-xl flex-col items-center gap-6 mt-12">
-						<div className="card w-96 bg-base-100 card-sm shadow-sm">
+						<div className="card w-full max-w-md bg-base-100 card-sm shadow-sm">
 							<div className="card-body">
 								<h2 className="card-title text-[--tertiary-color] font-bold text-xl md:text-xl lg:text-2xl">Welcome, {firstName}</h2>
 								<h4 className="text-md">Current Project: {currentProjectName}</h4>
-								<h4 className="text-md">
+								<h4 className="text-md mb-3">
 									Checked Out Tools:{" "}
 									{checkedOutToolNames.length > 0
 										? checkedOutToolNames.join(", ")
@@ -130,11 +133,13 @@ export default function Crew() {
 
 							</div>
 						</div>
-						<div className="card w-96 bg-base-100 card-xs shadow-sm">
-							<div className="card-body">
-								<h2 className="card-title">Xsmall Card</h2>
-								<p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
-							</div>
+						<div className="w-full max-w-md">
+							<ModuleCard
+								label="Tool Management"
+								variant="blue"
+								icon={<Toolbox className="h-7 w-7" aria-hidden="true" />}
+								onClick={() => navigate("/toolsManagement")}
+							/>
 						</div>
 					</div>
 					<div className="w-full max-w-md">
