@@ -58,7 +58,7 @@ export default function Foreman() {
 				<h1 className="text-[--tertiary-color] font-bold text-2xl md:text-3xl lg:text-4xl flex items-center justify-center">
 					Welcome {firstName}
 				</h1>
-				<p className="mb-4 flex items-center gap-4 text-lg text-muted-foreground whitespace-nowrap">
+				<p className="flex items-center gap-4 text-md text-muted-foreground whitespace-nowrap">
 					<span className="inline-flex items-center gap-2">
 						<Calendar className="h-5 w-5" aria-hidden="true" />
 						{new Date().toLocaleDateString(undefined, {
