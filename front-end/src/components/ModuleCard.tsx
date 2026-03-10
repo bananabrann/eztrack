@@ -3,8 +3,8 @@ type ModuleCardProps = {
 	onClick: React.MouseEventHandler<HTMLButtonElement>;
 	ariaLabel?: string;
 	disabled?: boolean;
-	variant?: "default" | "blue";
 	icon?: React.ReactNode;
+	variant?: "default" | "blue";
 };
 
 export function ModuleCard({
@@ -12,8 +12,8 @@ export function ModuleCard({
 	onClick,
 	ariaLabel,
 	disabled = false,
-	variant = "default",
 	icon,
+	variant = "default",
 }: ModuleCardProps) {
 	const isBlue = variant === "blue";
 
@@ -48,14 +48,13 @@ export function ModuleCard({
 			].join(" ")}
 		>
 			<div className="card-body flex items-center justify-center text-center p-6">
-				{icon ? <span className="mb-2">{icon}</span> : null}
 				<span
-					className={
-						isBlue
-							? "text-white font-semibold text-lg"
-							: "text-primary font-semibold text-lg"
-					}
+					className={[
+						"inline-flex items-center gap-2 font-semibold text-lg",
+						isBlue ? "text-white" : "text-primary",
+					].join(" ")}
 				>
+					{icon ? <span>{icon}</span> : null}
 					{label}
 				</span>
 			</div>
