@@ -20,6 +20,7 @@ export default function Crew() {
 		}).format(new Date()),
 	);
 	const currentDate = new Intl.DateTimeFormat("en-US", {
+		weekday: "long",
 		month: "long",
 		day: "numeric",
 		year: "numeric",
