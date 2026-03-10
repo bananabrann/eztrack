@@ -77,13 +77,19 @@ export default function ProjectFormModal({
 				<h3 className="font-bold text-lg">Create New Project</h3>
 				<div className="modal-action">
 					<form onSubmit={handleSubmit} className="w-full">
-						<input
-							type="text"
-							placeholder="Project Name"
-							className="input input-bordered w-full mb-4"
-							value={newProjectName}
-							onChange={event => setNewProjectName(event.target.value)}
-						/>
+						<div className="form-control mb-6">
+							<label className="label" htmlFor="project-name">
+								<span className="label-text">Project Name</span>
+							</label>
+							<input
+								id="project-name"
+								type="text"
+								className="input input-bordered w-full px-4 border-2 bg-base-50 focus:bg-base-100 focus:border-primary focus:outline-none transition-all"
+								placeholder="Enter project name..."
+								value={newProjectName}
+								onChange={event => setNewProjectName(event.target.value)}
+							/>
+						</div>
 						{error ? (
 							<p className="text-sm text-red-600 mb-4">{error}</p>
 						) : null}
@@ -94,7 +100,7 @@ export default function ProjectFormModal({
 							<input
 								id="project-start-date"
 								type="date"
-								className="input input-bordered w-full"
+								className="input input-bordered w-full px-4 border-2 bg-base-50 focus:bg-base-100 focus:border-primary focus:outline-none transition-all"
 								placeholder="Start Date"
 								value={startDate}
 								onChange={event => setStartDate(event.target.value)}
@@ -107,7 +113,7 @@ export default function ProjectFormModal({
 							<input
 								id="project-end-date"
 								type="date"
-								className="input input-bordered w-full"
+								className="input input-bordered w-full px-4 border-2 bg-base-50 focus:bg-base-100 focus:border-primary focus:outline-none transition-all"
 								min={startDate || undefined}
 								value={endDate}
 								onChange={event => setEndDate(event.target.value)}
