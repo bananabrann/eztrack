@@ -70,7 +70,10 @@ export default function Crew() {
 				for (const tool of myCheckedOutToolsWithProject) {
 					const projectId = tool.project_id;
 					if (!projectId) continue;
-					projectUsageCount.set(projectId, (projectUsageCount.get(projectId) ?? 0) + 1);
+					projectUsageCount.set(
+						projectId,
+						(projectUsageCount.get(projectId) ?? 0) + 1,
+					);
 				}
 
 				const [projectId] = [...projectUsageCount.entries()].sort(
@@ -83,7 +86,9 @@ export default function Crew() {
 				}
 
 				const project = projects.find(p => p.id === projectId);
-				setCurrentProjectName(project?.project_name ?? "Unknown active project");
+				setCurrentProjectName(
+					project?.project_name ?? "Unknown active project",
+				);
 			} catch {
 				setCurrentProjectName("Unable to load project");
 				setCheckedOutToolNames([]);
@@ -110,13 +115,16 @@ export default function Crew() {
 	return (
 		<main className="min-h-screen bg-background px-2">
 			<div className="mx-auto flex min-h-[calc(100vh-120px)] max-w-4xl flex-col items-center justify-start gap-6 py-6">
-
 				<div className="flex w-full flex-col items-center justify-center gap-8 lg:flex-row lg:items-end">
 					<div className="flex w-full max-w-xl flex-col items-center gap-6 lg:self-end">
 						<div className="card w-full max-w-md bg-base-100 card-sm shadow-sm">
 							<div className="card-body">
-								<h2 className="card-title text-[--tertiary-color] font-bold text-xl md:text-xl lg:text-2xl">Welcome, {firstName}</h2>
-								<h4 className="text-md">Current Project: {currentProjectName}</h4>
+								<h2 className="card-title text-[--tertiary-color] font-bold text-xl md:text-xl lg:text-2xl">
+									Welcome, {firstName}
+								</h2>
+								<h4 className="text-md">
+									Current Project: {currentProjectName}
+								</h4>
 								<h4 className="text-md mb-3">
 									Checked Out Tools:{" "}
 									{checkedOutToolNames.length > 0
@@ -131,7 +139,6 @@ export default function Crew() {
 									<Clock className="inline-block mr-2 text-[--tertiary-color]" />
 									{currentTime}
 								</h4>
-
 							</div>
 						</div>
 						<div className="w-full max-w-md">

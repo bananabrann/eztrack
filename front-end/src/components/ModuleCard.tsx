@@ -49,7 +49,13 @@ export function ModuleCard({
 		>
 			<div className="card-body flex items-center justify-center text-center p-6">
 				{icon ? <span className="mb-2">{icon}</span> : null}
-				<span className={isBlue ? "text-white font-semibold text-lg" : "text-primary font-semibold text-lg"}>
+				<span
+					className={
+						isBlue
+							? "text-white font-semibold text-lg"
+							: "text-primary font-semibold text-lg"
+					}
+				>
 					{label}
 				</span>
 			</div>
