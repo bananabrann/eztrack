@@ -205,21 +205,20 @@ export default function ToolsFormModal({
 						</div>
 
 						<div className="modal-action pt-4 border-t border-base-300">
-							<Button
-								label="Cancel"
-								variant="blue"
-								onClick={onClose}
-								disabled={loading}
-							/>
 							{loading ? (
-								<span className="loading loading-spinner loading-md"></span>
+								<div className="flex justify-center w-full">
+									<span className="loading loading-spinner loading-md"></span>
+								</div>
 							) : (
-								<Button
-									label={form.id ? "Save" : "Submit"}
-									variant="orange"
-									type="submit"
-									onClick={() => undefined}
-								/>
+								<div className="flex justify-center gap-4 w-full">
+									<Button label="Cancel" variant="blue" onClick={onClose} />
+									<Button
+										label={form.id ? "Save" : "Submit"}
+										variant="orange"
+										type="submit"
+										onClick={() => undefined}
+									/>
+								</div>
 							)}
 						</div>
 					</form>
