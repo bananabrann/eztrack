@@ -119,7 +119,7 @@ export default function Header({ role }: HeaderProps) {
 					menuOpen ? "max-h-96 p-4" : "max-h-0 p-0"
 				}`}
 			>
-				<nav className="flex flex-col items-start gap-4 py-3 text-lg">
+				<nav className="flex flex-col w-full text-center items-center gap-6 text-lg py-2">
 					<NavLink
 						to="/toolsManagement"
 						className="w-full text-center"
