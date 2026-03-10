@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
 import crew from "../assets/crew.png";
 import { getSupabaseClient } from "../lib/supabase";
 import { Calendar, Clock } from "lucide-react";
+import { toolsApi } from "../api/tools-api";
+import { getProjects } from "../api/projects-api";
 
 export default function Crew() {
-	const navigate = useNavigate();
 	const [firstName, setFirstName] = useState("Crew");
+	const [currentProjectName, setCurrentProjectName] = useState("Loading...");
 	const [currentTime, setCurrentTime] = useState(
 		new Intl.DateTimeFormat("en-US", {
 			hour: "numeric",
@@ -19,7 +20,6 @@ export default function Crew() {
 		day: "numeric",
 		year: "numeric",
 	}).format(new Date());
-	const handleToolsClick = () => navigate("/toolsManagement");
 
 	useEffect(() => {
 		const loadFirstName = async () => {
@@ -39,6 +39,50 @@ export default function Crew() {
 		};
 
 		loadFirstName();
+	}, []);
+
+	useEffect(() => {
+		const loadCurrentProject = async () => {
+			try {
+				const [{ data: tools }, { data: projects }] = await Promise.all([
+					toolsApi.getAll({ status: "CHECKEDOUT" }),
+					getProjects("ACTIVE"),
+				]);
+
+				const myCheckedOutTools = tools.filter(
+					tool => tool.checked_out_by_me && tool.project_id,
+				);
+
+				if (myCheckedOutTools.length === 0) {
+					setCurrentProjectName("No active project assigned");
+					return;
+				}
+
+				// Select project with most currently checked-out tools by this user.
+				const projectUsageCount = new Map<string, number>();
+				for (const tool of myCheckedOutTools) {
+					const projectId = tool.project_id;
+					if (!projectId) continue;
+					projectUsageCount.set(projectId, (projectUsageCount.get(projectId) ?? 0) + 1);
+				}
+
+				const [projectId] = [...projectUsageCount.entries()].sort(
+					(a, b) => b[1] - a[1],
+				)[0] ?? [undefined];
+
+				if (!projectId) {
+					setCurrentProjectName("No active project assigned");
+					return;
+				}
+
+				const project = projects.find(p => p.id === projectId);
+				setCurrentProjectName(project?.project_name ?? "Unknown active project");
+			} catch {
+				setCurrentProjectName("Unable to load project");
+			}
+		};
+
+		loadCurrentProject();
 	}, []);
 
 	useEffect(() => {
@@ -63,17 +107,17 @@ export default function Crew() {
 					<div className="flex w-full max-w-xl flex-col items-center gap-6 mt-12">
 						<div className="card w-96 bg-base-100 card-sm shadow-sm">
 							<div className="card-body">
-								<h2 className="card-title text-[--tertiary-color] font-bold text-xl md:text-xl lg:text-2xl">Welcome {firstName}</h2>
-								<h4 className="text-lg">project information</h4>
+								<h2 className="card-title text-[--tertiary-color] font-bold text-xl md:text-xl lg:text-2xl">Welcome, {firstName}</h2>
+								<h4 className="text-md">Current Project: {currentProjectName}</h4>
 								<h4 className="text-lg">tool information</h4>
-								<p className="text-sm">
+								<h4 className="text-md">
 									<Calendar className="inline-block mr-2 text-[--tertiary-color]" />
 									{currentDate}
-								</p>
-								<p className="text-sm">
+								</h4>
+								<h4 className="text-md">
 									<Clock className="inline-block mr-2 text-[--tertiary-color]" />
 									{currentTime}
-								</p>
+								</h4>
 
 							</div>
 						</div>
@@ -81,9 +125,6 @@ export default function Crew() {
 							<div className="card-body">
 								<h2 className="card-title">Xsmall Card</h2>
 								<p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
-								<div className="justify-end card-actions">
-									<button className="btn btn-primary">Buy Now</button>
-								</div>
 							</div>
 						</div>
 					</div>
