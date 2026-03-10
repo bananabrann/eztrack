@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import crew from "../assets/crew.png";
+import crew from "../assets/crew_cropped.png";
 import { getSupabaseClient } from "../lib/supabase";
 import { Calendar, Clock, Toolbox } from "lucide-react";
 import { toolsApi } from "../api/tools-api";
@@ -108,10 +108,10 @@ export default function Crew() {
 
 	return (
 		<main className="min-h-screen bg-background px-2">
-			<div className="mx-auto flex min-h-[calc(100vh-120px)] max-w-4xl flex-col items-center justify-center gap-6 py-10">
+			<div className="mx-auto flex min-h-[calc(100vh-120px)] max-w-4xl flex-col items-center justify-start gap-6 py-6">
 
-				<div className="flex w-full flex-col items-center justify-center gap-8 lg:flex-row lg:items-start">
-					<div className="flex w-full max-w-xl flex-col items-center gap-6 mt-12">
+				<div className="flex w-full flex-col items-center justify-center gap-8 lg:flex-row lg:items-end">
+					<div className="flex w-full max-w-xl flex-col items-center gap-6 lg:self-end">
 						<div className="card w-full max-w-md bg-base-100 card-sm shadow-sm">
 							<div className="card-body">
 								<h2 className="card-title text-[--tertiary-color] font-bold text-xl md:text-xl lg:text-2xl">Welcome, {firstName}</h2>
@@ -142,7 +142,7 @@ export default function Crew() {
 							/>
 						</div>
 					</div>
-					<div className="w-full max-w-md">
+					<div className="w-full max-w-md lg:self-end">
 						<img src={crew} alt="Crew" className="w-full" />
 					</div>
 				</div>
