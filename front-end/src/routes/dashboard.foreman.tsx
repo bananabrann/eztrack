@@ -56,7 +56,7 @@ export default function Foreman() {
 		<main className="min-h-screen bg-background px-6">
 			<div className="mx-auto flex min-h-[calc(100vh-120px)] max-w-4xl flex-col items-center justify-center gap-6 py-10">
 				<h1 className="text-[--tertiary-color] font-bold text-2xl md:text-3xl lg:text-4xl flex items-center justify-center">
-					Welcome Foreman {firstName}
+					Welcome, Foreman {firstName}
 				</h1>
 				<p className="flex items-center gap-4 text-md text-muted-foreground whitespace-nowrap">
 					<span className="inline-flex items-center gap-2">
