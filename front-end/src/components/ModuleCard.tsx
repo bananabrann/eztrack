@@ -3,6 +3,8 @@ type ModuleCardProps = {
 	onClick: React.MouseEventHandler<HTMLButtonElement>;
 	ariaLabel?: string;
 	disabled?: boolean;
+	icon?: React.ReactNode;
+	variant?: "default" | "blue";
 };
 
 export function ModuleCard({
@@ -10,7 +12,11 @@ export function ModuleCard({
 	onClick,
 	ariaLabel,
 	disabled = false,
+	icon,
+	variant = "default",
 }: ModuleCardProps) {
+	const isBlue = variant === "blue";
+
 	return (
 		<button
 			type="button"
@@ -23,9 +29,9 @@ export function ModuleCard({
 				"min-h-24",
 				"sm:min-h-28",
 				"card",
-				"bg-base-100",
+				isBlue ? "bg-primary text-white" : "bg-base-100",
 				"border",
-				"border-outline",
+				isBlue ? "border-primary" : "border-outline",
 				"shadow-sm",
 				"text-left",
 				"transition",
@@ -36,11 +42,21 @@ export function ModuleCard({
 
 				disabled
 					? "opacity-50 cursor-not-allowed"
-					: "hover:shadow-md active:shadow-sm hover:border-tertiary active:border-tertiary",
+					: isBlue
+						? "hover:opacity-90 active:opacity-75"
+						: "hover:shadow-md active:shadow-sm hover:border-tertiary active:border-tertiary",
 			].join(" ")}
 		>
 			<div className="card-body flex items-center justify-center text-center p-6">
-				<span className="text-primary font-semibold text-lg">{label}</span>
+				<span
+					className={[
+						"inline-flex items-center gap-2 font-semibold text-lg",
+						isBlue ? "text-white" : "text-primary",
+					].join(" ")}
+				>
+					{icon ? <span>{icon}</span> : null}
+					{label}
+				</span>
 			</div>
 		</button>
 	);

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { Boxes, FolderKanban, Toolbox } from "lucide-react";
 import { ModuleCard } from "../components/ModuleCard";
 import foreman from "../assets/foreman_cropped.png";
 import { getSupabaseClient } from "../lib/supabase";
@@ -39,14 +40,20 @@ export default function Foreman() {
 					<div className="flex w-full max-w-xl flex-col items-center gap-6">
 						<ModuleCard
 							label="Tool Management"
+							variant="blue"
+							icon={<Toolbox className="h-7 w-7" aria-hidden="true" />}
 							onClick={() => navigate("/toolsManagement")}
 						/>
 						<ModuleCard
 							label="Materials Management"
+							variant="blue"
+							icon={<Boxes className="h-7 w-7" aria-hidden="true" />}
 							onClick={() => navigate("/materials")}
 						/>
 						<ModuleCard
 							label="Project Management"
+							variant="blue"
+							icon={<FolderKanban className="h-7 w-7" aria-hidden="true" />}
 							onClick={() => navigate("/projects")}
 						/>
 					</div>
