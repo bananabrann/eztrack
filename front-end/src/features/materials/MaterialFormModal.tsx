@@ -170,7 +170,7 @@ export default function MaterialModalForm({
 							<input
 								id="material-name"
 								type="text"
-								className="input input-bordered input-lg w-full"
+								className="input input-bordered w-full px-4 border-2 bg-base-50 focus:bg-base-100 focus:border-primary focus:outline-none transition-all"
 								value={form.name}
 								onChange={e => update("name", e.target.value)}
 								required
@@ -189,7 +189,7 @@ export default function MaterialModalForm({
 									type="number"
 									min={0}
 									step={1}
-									className="input input-bordered input-lg w-full"
+									className="input input-bordered w-full px-4 border-2 bg-base-50 focus:bg-base-100 focus:border-primary focus:outline-none transition-all"
 									value={form.unit_qty}
 									onChange={e => update("unit_qty", e.target.value)}
 								/>
@@ -198,7 +198,7 @@ export default function MaterialModalForm({
 							<div className="form-control w-full">
 								<label className="label" htmlFor="unit-cost">
 									<span className="label-text text-base font-semibold">
-										Unit Cost
+										Unit Cost (USD)
 									</span>
 								</label>
 								<input
@@ -206,7 +206,8 @@ export default function MaterialModalForm({
 									type="number"
 									min={0}
 									step={0.01}
-									className="input input-bordered input-lg w-full"
+									placeholder="0.00"
+									className="input input-bordered w-full px-4 border-2 bg-base-50 focus:bg-base-100 focus:border-primary focus:outline-none transition-all"
 									value={form.unit_cost}
 									onChange={e => update("unit_cost", e.target.value)}
 								/>
@@ -224,7 +225,7 @@ export default function MaterialModalForm({
 								type="number"
 								min={0}
 								step={1}
-								className="input input-bordered input-lg w-full"
+								className="input input-bordered w-full px-4 border-2 bg-base-50 focus:bg-base-100 focus:border-primary focus:outline-none transition-all"
 								value={form.low_stock_threshold}
 								onChange={e => update("low_stock_threshold", e.target.value)}
 							/>

@@ -175,9 +175,9 @@ export default function ToolsFormModal({
 								onChange={e => update("status", e.target.value as ToolStatus)}
 								className="select select-bordered w-full px-4 border-2 bg-base-50 focus:bg-base-100 focus:border-primary focus:outline-none transition-all font-medium"
 							>
-								<option value="AVAILABLE">AVAILABLE</option>
-								<option value="CHECKEDOUT">CHECKEDOUT</option>
-								<option value="ARCHIVE">ARCHIVE</option>
+								<option value="AVAILABLE">Available</option>
+								<option value="CHECKEDOUT">Checked Out</option>
+								<option value="ARCHIVE">Archived</option>
 							</select>
 						</div>
 

@@ -11,7 +11,6 @@ export default function ToolsManagementRoute() {
 	const isForeman = role === "FOREMAN";
 
 	const TOOL_FILTERS = [
-		{ value: "", label: "All" },
 		{ value: "AVAILABLE", label: "Available" },
 		{ value: "CHECKEDOUT", label: "Checked Out" },
 		{ value: "ARCHIVE", label: "Archive" },
@@ -32,7 +31,7 @@ export default function ToolsManagementRoute() {
 					value: p.id,
 					label: p.project_name,
 				}));
-				setProjectOptions([{ value: "", label: "All" }, ...options]);
+				setProjectOptions([...options]);
 			} catch (error) {
 				console.error("Failed to fetch projects for filter:", error);
 			}
