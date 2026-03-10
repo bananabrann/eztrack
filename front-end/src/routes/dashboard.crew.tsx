@@ -8,6 +8,7 @@ import { getProjects } from "../api/projects-api";
 export default function Crew() {
 	const [firstName, setFirstName] = useState("Crew");
 	const [currentProjectName, setCurrentProjectName] = useState("Loading...");
+	const [checkedOutToolNames, setCheckedOutToolNames] = useState<string[]>([]);
 	const [currentTime, setCurrentTime] = useState(
 		new Intl.DateTimeFormat("en-US", {
 			hour: "numeric",
@@ -49,18 +50,20 @@ export default function Crew() {
 					getProjects("ACTIVE"),
 				]);
 
-				const myCheckedOutTools = tools.filter(
-					tool => tool.checked_out_by_me && tool.project_id,
+				const myCheckedOutTools = tools.filter(tool => tool.checked_out_by_me);
+				setCheckedOutToolNames(myCheckedOutTools.map(tool => tool.name));
+				const myCheckedOutToolsWithProject = myCheckedOutTools.filter(
+					tool => tool.project_id,
 				);
 
-				if (myCheckedOutTools.length === 0) {
+				if (myCheckedOutToolsWithProject.length === 0) {
 					setCurrentProjectName("No active project assigned");
 					return;
 				}
 
 				// Select project with most currently checked-out tools by this user.
 				const projectUsageCount = new Map<string, number>();
-				for (const tool of myCheckedOutTools) {
+				for (const tool of myCheckedOutToolsWithProject) {
 					const projectId = tool.project_id;
 					if (!projectId) continue;
 					projectUsageCount.set(projectId, (projectUsageCount.get(projectId) ?? 0) + 1);
@@ -79,6 +82,7 @@ export default function Crew() {
 				setCurrentProjectName(project?.project_name ?? "Unknown active project");
 			} catch {
 				setCurrentProjectName("Unable to load project");
+				setCheckedOutToolNames([]);
 			}
 		};
 
@@ -109,7 +113,12 @@ export default function Crew() {
 							<div className="card-body">
 								<h2 className="card-title text-[--tertiary-color] font-bold text-xl md:text-xl lg:text-2xl">Welcome, {firstName}</h2>
 								<h4 className="text-md">Current Project: {currentProjectName}</h4>
-								<h4 className="text-lg">tool information</h4>
+								<h4 className="text-md">
+									Checked Out Tools:{" "}
+									{checkedOutToolNames.length > 0
+										? checkedOutToolNames.join(", ")
+										: "No tools checked out"}
+								</h4>
 								<h4 className="text-md">
 									<Calendar className="inline-block mr-2 text-[--tertiary-color]" />
 									{currentDate}
