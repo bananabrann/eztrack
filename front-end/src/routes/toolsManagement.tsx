@@ -50,7 +50,7 @@ export default function ToolsManagementRoute() {
 						<SearchBar
 							value={search}
 							onChange={setSearch}
-							placeholder="Search Tool..."
+							placeholder="Search project..."
 						/>
 					</div>
 					<div className="flex-1">
