@@ -132,6 +132,8 @@ export function MaterialsTable() {
 		} else {
 			setMaterials(prev => [...prev, sanitizedMaterial]);
 		}
+
+		fetchMaterials();
 	};
 
 	/**
