@@ -216,8 +216,8 @@ export function MaterialsTable() {
 					{!loading && !error && materials.length > 0 && (
 						<div className="overflow-x-auto overflow-y-auto max-h-[500px] rounded-box border border-base-content/5 bg-base-100 w-full max-w-full md:max-w-3xl mx-auto">
 							<table className="table table-zebra">
-								<thead>
-									<tr>
+								<thead className="sticky top-0 z-10 bg-base-200/80 backdrop-blur-sm">
+									<tr className="border-b border-base-content/10">
 										<th className="text-tertiary text-lg">Name</th>
 										<th className="text-tertiary text-lg">Quantity</th>
 										<th className="text-tertiary text-lg">Unit Cost</th>
