@@ -11,6 +11,7 @@ export default function ToolsManagementRoute() {
 	const isForeman = role === "FOREMAN";
 
 	const TOOL_FILTERS = [
+		{ value: "MY_TOOLS", label: "My Tools" },
 		{ value: "AVAILABLE", label: "Available" },
 		{ value: "CHECKEDOUT", label: "Checked Out" },
 		{ value: "ARCHIVE", label: "Archive" },
