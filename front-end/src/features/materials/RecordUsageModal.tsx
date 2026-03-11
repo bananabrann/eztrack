@@ -117,10 +117,10 @@ export default function RecordUsageModal({
 								</div>
 							) : (
 								<div className="flex justify-center gap-4 w-full">
-									<Button label="Cancel" variant="orange" onClick={onClose} />
+									<Button label="Cancel" variant="blue" onClick={onClose} />
 									<Button
 										label="Confirm"
-										variant="blue"
+										variant="orange"
 										type="submit"
 										onClick={() => undefined}
 									/>

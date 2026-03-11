@@ -17,6 +17,7 @@ export default function Projects() {
 	const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 	const [statusFilter, setStatusFilter] = useState<string>("");
 	const [search, setSearch] = useState("");
+	const [successMessage, setSuccessMessage] = useState("");
 
 	useEffect(() => {
 		const fetchProjects = async () => {
@@ -48,6 +49,8 @@ export default function Projects() {
 		try {
 			const response = await createProject(project);
 			setProjects(prev => [response.data, ...prev]);
+			setSuccessMessage("Project created successfully!");
+			setTimeout(() => setSuccessMessage(""), 3000);
 		} catch (err) {
 			const message =
 				err instanceof Error ? err.message : "Failed to create project.";
@@ -141,6 +144,29 @@ export default function Projects() {
 							onClick={() => setIsProjectModalOpen(true)}
 						/>
 					</div>
+
+					{/* ADD THIS SUCCESS MESSAGE BLOCK */}
+					{successMessage && (
+						<div className="flex justify-center mt-6">
+							<div className="alert alert-success mb-6 shadow-lg w-full max-w-3xl">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									className="stroke-current shrink-0 h-6 w-6"
+									fill="none"
+									viewBox="0 0 24 24"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth="2"
+										d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+									/>
+								</svg>
+								<span>{successMessage}</span>
+							</div>
+						</div>
+					)}
+
 					{filteredProjects.length === 0 ? (
 						<div className="flex justify-center mt-16">
 							<div className="card bg-base-100 w-full max-w-sm shadow-sm p-8">
