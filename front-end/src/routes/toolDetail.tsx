@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useOutletContext } from "react-router";
 import { Link } from "react-router-dom";
-import { Pencil, ArrowLeft } from "lucide-react";
+import { Pencil, ChevronLeft } from "lucide-react";
 import { toolsApi, Tool } from "../api/tools-api";
 import { getProjects } from "../api/projects-api";
 import { Project } from "../types/projects";
@@ -113,10 +113,12 @@ export default function ToolDetail() {
 			<div className="mx-auto w-full max-w-2xl flex flex-col gap-6">
 				<button
 					onClick={() => navigate("/toolsManagement")}
-					className="w-fit flex items-center gap-2 text-sm font-semibold text-tertiary hover:text-secondary transition-colors"
+					className="w-fit flex items-center gap-2 rounded-md px-2 py-1 hover:bg-[--primary-color] hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-current focus:ring-offset-2 flex-shrink-0"
+					aria-label="Back to Tools"
+					title="Back to Tools"
 				>
-					<ArrowLeft className="h-4 w-4" />
-					<span>Back to Tools</span>
+					<ChevronLeft className="w-5 h-5" />
+					<span className="text-sm md:text-base">Back to tools</span>
 				</button>
 
 				<div className="bg-base-100 border border-outline rounded-xl p-8 flex flex-col gap-8">
