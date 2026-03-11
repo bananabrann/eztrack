@@ -7,7 +7,7 @@ import { SquarePlus } from "lucide-react";
 
 interface ToolsManagementProps {
 	search?: string;
-	filter?: { status?: ToolStatus; project_id?: string };
+	filter?: { status?: ToolStatus | "MY_TOOLS"; project_id?: string };
 	isForeman?: boolean;
 }
 
@@ -32,7 +32,13 @@ export default function ToolsManagement({
 	const fetchTools = async () => {
 		try {
 			setLoading(true);
-			const response = await toolsApi.getAll(filter);
+			const apiFilter = { ...filter };
+			if (apiFilter.status === "MY_TOOLS") {
+				apiFilter.status = "CHECKEDOUT";
+			}
+			const response = await toolsApi.getAll(
+				apiFilter as { status?: ToolStatus; project_id?: string },
+			);
 
 			const sortedTools = response.data.sort((a, b) => {
 				if (a.status === "AVAILABLE" && b.status !== "AVAILABLE") return -1;
@@ -51,6 +57,11 @@ export default function ToolsManagement({
 		const matchesSearch = tool.name
 			.toLowerCase()
 			.includes(search.toLowerCase());
+
+		if (filter?.status === "MY_TOOLS") {
+			return matchesSearch && tool.checked_out_by_me;
+		}
+
 		const hideArchived =
 			filter?.status !== "ARCHIVE" ? tool.status !== "ARCHIVE" : true;
 		return matchesSearch && hideArchived;

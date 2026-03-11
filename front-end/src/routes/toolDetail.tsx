@@ -153,12 +153,14 @@ export default function ToolDetail() {
 									<span className="text-lg text-primary font-medium">
 										{project?.project_name || "Loading..."}
 									</span>
-									<Link
-										to={`/projects/${tool.project_id}`}
-										className="text-secondary hover:text-secondary/80 text-sm font-medium underline underline-offset-2 transition-colors"
-									>
-										View Project
-									</Link>
+									{isForeman && project && (
+										<Link
+											to={`/projects/${tool.project_id}`}
+											className="text-secondary hover:text-secondary/80 text-sm font-medium underline underline-offset-2 transition-colors"
+										>
+											View Project
+										</Link>
+									)}
 								</>
 							) : (
 								<span className="text-lg text-tertiary">Unassigned</span>
