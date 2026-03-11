@@ -35,7 +35,7 @@ export default function RecordUsageModal({
 		setError(null);
 
 		try {
-			const response = await apiFetch<{ data: Materials; message: string }>(
+			await apiFetch<{ data: Materials; message: string }>(
 				`/materials/${material?.id}/usage`,
 				{
 					method: "POST",
