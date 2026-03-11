@@ -117,25 +117,25 @@ export default function Crew() {
 			<div className="mx-auto flex min-h-[calc(100vh-120px)] max-w-4xl flex-col items-center justify-start gap-6 py-6">
 				<div className="flex w-full flex-col items-center justify-center gap-8 lg:flex-row lg:items-end">
 					<div className="flex w-full max-w-xl flex-col items-center gap-6 lg:self-end">
-						<div className="card w-full max-w-md bg-disabled card-sm shadow-sm py-5 px-6">
+						<div className="card w-full max-w-md bg-gray-200 card-sm shadow-sm py-2 px-6">
 							<div className="card-body">
 								<h2 className="card-title text-[--tertiary-color] font-bold text-xl md:text-xl lg:text-2xl ">
 									Welcome, {firstName}
 								</h2>
-								<h4 className="text-md">
+								<h4 className="text-base">
 									Current Project: {currentProjectName}
 								</h4>
-								<h4 className="text-md mb-3">
+								<h4 className="text-base mb-3">
 									Checked Out Tools:{" "}
 									{checkedOutToolNames.length > 0
 										? checkedOutToolNames.join(", ")
 										: "No tools checked out"}
 								</h4>
-								<h4 className="text-md">
+								<h4 className="text-base">
 									<Calendar className="inline-block mr-2 text-[--tertiary-color]" />
 									{currentDate}
 								</h4>
-								<h4 className="text-md">
+								<h4 className="text-base">
 									<Clock className="inline-block mr-2 text-[--tertiary-color]" />
 									{currentTime}
 								</h4>
