@@ -162,6 +162,7 @@ export function MaterialsTable() {
 	 */
 	const handleUsageSubmit = () => {
 		setUsageSuccessMessage("Usage recorded successfully!");
+		setTimeout(() => setUsageSuccessMessage(""), 3000);
 		fetchMaterials();
 	};
 
@@ -207,7 +208,7 @@ export function MaterialsTable() {
 				</div>
 			)}
 
-			{/* CREATE MATERIAL SUCCESS MESSAGE */}
+			{/* Materials Success Message */}
 			{successMessage && (
 				<div className="flex justify-center mt-6">
 					<div className="alert alert-success mb-6 shadow-lg w-full max-w-3xl">
@@ -225,6 +226,28 @@ export function MaterialsTable() {
 							/>
 						</svg>
 						<span>{successMessage}</span>
+					</div>
+				</div>
+			)}
+
+			{/* Usage Success Message */}
+			{usageSuccessMessage && (
+				<div className="flex justify-center mt-6">
+					<div className="alert alert-success mb-6 shadow-lg w-full max-w-3xl">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							className="stroke-current shrink-0 h-6 w-6"
+							fill="none"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+							/>
+						</svg>
+						<span>{usageSuccessMessage}</span>
 					</div>
 				</div>
 			)}
