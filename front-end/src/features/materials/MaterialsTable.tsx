@@ -32,6 +32,9 @@ export function MaterialsTable() {
 	const [usageMaterial, setUsageMaterial] = useState<Materials | null>(null);
 	// Params Modal
 	const [searchParams] = useSearchParams();
+	// Success messages
+	const [successMessage, setSuccessMessage] = useState("");
+	const [usageSuccessMessage, setUsageSuccessMessage] = useState("");
 
 	/**
 	 * Fetch projects
@@ -129,10 +132,12 @@ export function MaterialsTable() {
 			setMaterials(prev =>
 				prev.map(m => (m.id === sanitizedMaterial.id ? sanitizedMaterial : m)),
 			);
+			setSuccessMessage("Material updated successfully!");
 		} else {
 			setMaterials(prev => [...prev, sanitizedMaterial]);
+			setSuccessMessage("Material created successfully!");
 		}
-
+		setTimeout(() => setSuccessMessage(""), 3000);
 		fetchMaterials();
 	};
 
@@ -156,6 +161,7 @@ export function MaterialsTable() {
 	 * Handle usage submission
 	 */
 	const handleUsageSubmit = () => {
+		setUsageSuccessMessage("Usage recorded successfully!");
 		fetchMaterials();
 	};
 
@@ -198,6 +204,28 @@ export function MaterialsTable() {
 						icon={<SquarePlus className="w-5 h-5" aria-hidden="true" />}
 						onClick={handleAddMaterial}
 					/>
+				</div>
+			)}
+
+			{/* CREATE MATERIAL SUCCESS MESSAGE */}
+			{successMessage && (
+				<div className="flex justify-center mt-6">
+					<div className="alert alert-success mb-6 shadow-lg w-full max-w-3xl">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							className="stroke-current shrink-0 h-6 w-6"
+							fill="none"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+							/>
+						</svg>
+						<span>{successMessage}</span>
+					</div>
 				</div>
 			)}
 
