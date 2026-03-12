@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 import { ModuleCard } from "../components/ModuleCard";
-import foreman from "../assets/foreman_cropped.png";
+import foreman from "../assets/foreman2_cropped.png";
 import { getSupabaseClient } from "../lib/supabase";
 
 import { Boxes, Calendar, Clock, FolderKanban, Toolbox } from "lucide-react";
