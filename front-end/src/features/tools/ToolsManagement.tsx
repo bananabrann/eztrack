@@ -170,6 +170,7 @@ export default function ToolsManagement({
 					isOpen={isModalOpen}
 					onClose={handleCloseModal}
 					onSubmit={handleToolSubmit}
+					preSelectedProjectId={filter?.project_id}
 				/>
 			)}
 		</section>

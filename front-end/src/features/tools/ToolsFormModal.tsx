@@ -10,6 +10,7 @@ type Props = {
 	onClose: () => void;
 	onSubmit?: (tool: Tool) => void;
 	initialData?: Tool | null;
+	preSelectedProjectId?: string;
 };
 
 type FormState = {
@@ -19,10 +20,10 @@ type FormState = {
 	project_id: string;
 };
 
-const createEmptyForm = (): FormState => ({
+const createEmptyForm = (projectId = ""): FormState => ({
 	name: "",
 	status: "AVAILABLE",
-	project_id: "",
+	project_id: projectId,
 });
 
 function toFormState(tool: Tool): FormState {
@@ -51,6 +52,7 @@ export default function ToolsFormModal({
 	onClose,
 	onSubmit,
 	initialData,
+	preSelectedProjectId,
 }: Props) {
 	const [form, setForm] = useState<FormState>(createEmptyForm());
 	const [loading, setLoading] = useState(false);
@@ -62,12 +64,12 @@ export default function ToolsFormModal({
 		setError(null);
 		setLoading(false);
 		if (initialData) setForm(toFormState(initialData));
-		else setForm(createEmptyForm());
+		else setForm(createEmptyForm(preSelectedProjectId));
 
 		getProjects("ACTIVE")
 			.then(res => setProjects(res.data))
 			.catch(err => console.error("Failed to fetch projects", err));
-	}, [isOpen, initialData]);
+	}, [isOpen, initialData, preSelectedProjectId]);
 
 	function update<K extends keyof FormState>(key: K, value: FormState[K]) {
 		setForm(prev => ({ ...prev, [key]: value }));
