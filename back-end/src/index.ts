@@ -9,11 +9,15 @@ import toolsRouter from "./routes/tools";
 import { testSupabaseConnection } from "./config/supbaseHealthCheck";
 import { verifyAuth } from "./middleware/auth-middleware";
 import authRouter from "./routes/auth";
+import swaggerUi from "swagger-ui-express";
+import swaggerOutput from "../swagger-output.json";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerOutput));
 
 app.get("/", (req: Request, res: Response) => {
 	res.json({ message: "Hello World from Backend!" });
